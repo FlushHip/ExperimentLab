@@ -8,6 +8,7 @@
 #include <limits>
 #include <algorithm>
 #include <numeric>
+#include <bitset>
 
 #include <vector>
 #include <array>
