@@ -1,5 +1,6 @@
-#include <iostream>
-#include <vector>
+#include "headers.h"
+
+#include "class.hpp"
 
 int main(int argc, char **argv)
 {

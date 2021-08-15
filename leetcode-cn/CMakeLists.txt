@@ -18,6 +18,8 @@ foreach(FRIST_SUBDIR ${FRIST_SUBDIRS})
                 ${CMAKE_CURRENT_SOURCE_DIR}/${FRIST_SUBDIR}/${SECOND_SUBDIR}/*.cpp)
 
             add_executable(${TARGET_NAME} ${FILES})
+            target_include_directories(${TARGET_NAME}
+                PRIVATE ${CMAKE_SOURCE_DIR}/template/LeetCode)
 
             if(AppleClang)
                 set_target_properties(${TARGET_NAME} PROPERTIES CXX_STANDARD 17)
