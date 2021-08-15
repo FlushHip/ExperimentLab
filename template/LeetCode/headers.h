@@ -1,5 +1,14 @@
 #include <iostream>
 #include <iomanip>
+#include <string>
+#include <sstream>
+
+#include <utility>
+#include <memory>
+#include <limits>
+#include <algorithm>
+#include <numeric>
+
 #include <vector>
 #include <array>
 #include <deque>
