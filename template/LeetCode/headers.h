@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <numeric>
 #include <bitset>
+#include <functional>
 
 #include <vector>
 #include <array>
