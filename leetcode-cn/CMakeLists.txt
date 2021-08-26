@@ -5,6 +5,37 @@ file(GLOB FRIST_SUBDIRS
     RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/*)
 
+function(make_leetcode_target)
+    foreach(ARG IN LISTS ARGN)
+        set(FILE_PATH_TMP ${FILE_PATH_TMP}/${ARG})
+    endforeach()
+    string(REGEX REPLACE "^/" "" FILE_PATH_TMP ${FILE_PATH_TMP})
+
+    file(GLOB_RECURSE FILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/${FILE_PATH_TMP}/*.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/${FILE_PATH_TMP}/*.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/${FILE_PATH_TMP}/*.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/${FILE_PATH_TMP}/*.cpp)
+    source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/${FILE_PATH_TMP}
+        FILES ${FILES})
+
+    set(TARGET_NAME LeetCode_${ARGV0}.${ARGV1}_${ARGV2})
+    string(REGEX REPLACE "_$" "" TARGET_NAME ${TARGET_NAME})
+
+    add_executable(${TARGET_NAME} ${FILES})
+    target_include_directories(${TARGET_NAME}
+        PRIVATE ${CMAKE_SOURCE_DIR}/template/LeetCode)
+    set_target_properties(${TARGET_NAME}
+        PROPERTIES FOLDER ${CURRENT_FOLDER}/${ARGV0}/${ARGV1})
+
+    if(AppleClang)
+        set_target_properties(${TARGET_NAME} PROPERTIES CXX_STANDARD 17)
+    else()
+        target_compile_features(${TARGET_NAME} PUBLIC cxx_std_17)
+    endif()
+endfunction()
+
+
 foreach(FRIST_SUBDIR ${FRIST_SUBDIRS})
     if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${FRIST_SUBDIR})
         file(GLOB SECOND_SUBDIRS
@@ -12,35 +43,16 @@ foreach(FRIST_SUBDIR ${FRIST_SUBDIRS})
             ${CMAKE_CURRENT_SOURCE_DIR}/${FRIST_SUBDIR}/*)
 
         foreach(SECOND_SUBDIR ${SECOND_SUBDIRS})
-            set(TARGET_NAME LeetCode_${FRIST_SUBDIR}.${SECOND_SUBDIR})
+            if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${FRIST_SUBDIR}/${SECOND_SUBDIR}/A)
+                file(GLOB THIRD_SUBDIRS
+                    RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/${FRIST_SUBDIR}/${SECOND_SUBDIR}
+                    ${CMAKE_CURRENT_SOURCE_DIR}/${FRIST_SUBDIR}/${SECOND_SUBDIR}/*)
 
-            file(GLOB_RECURSE FILES
-                ${CMAKE_CURRENT_SOURCE_DIR}/${FRIST_SUBDIR}/${SECOND_SUBDIR}/*.h
-                ${CMAKE_CURRENT_SOURCE_DIR}/${FRIST_SUBDIR}/${SECOND_SUBDIR}/*.hpp
-                ${CMAKE_CURRENT_SOURCE_DIR}/${FRIST_SUBDIR}/${SECOND_SUBDIR}/*.c
-                ${CMAKE_CURRENT_SOURCE_DIR}/${FRIST_SUBDIR}/${SECOND_SUBDIR}/*.cpp)
-
-            add_executable(${TARGET_NAME} ${FILES})
-            target_include_directories(${TARGET_NAME}
-                PRIVATE ${CMAKE_SOURCE_DIR}/template/LeetCode)
-
-            if(AppleClang)
-                set_target_properties(${TARGET_NAME} PROPERTIES CXX_STANDARD 17)
+                foreach(THIRD_SUBDIR ${THIRD_SUBDIRS})
+                    make_leetcode_target(${FRIST_SUBDIR} ${SECOND_SUBDIR} ${THIRD_SUBDIR})
+                endforeach()
             else()
-                target_compile_features(${TARGET_NAME} PUBLIC cxx_std_17)
-            endif()
-
-            source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/${FRIST_SUBDIR}/${SECOND_SUBDIR}
-                FILES ${FILES})
-
-            string(FIND ${SECOND_SUBDIR} _ HAS_MULTI)
-            if(${HAS_MULTI} EQUAL -1)
-                set_target_properties(${TARGET_NAME}
-                    PROPERTIES FOLDER ${CURRENT_FOLDER}/${FRIST_SUBDIR})
-            else()
-                string(SUBSTRING ${SECOND_SUBDIR} 0 ${HAS_MULTI} MULTI_SUBDIR)
-                set_target_properties(${TARGET_NAME}
-                    PROPERTIES FOLDER ${CURRENT_FOLDER}/${FRIST_SUBDIR}/${MULTI_SUBDIR})
+                make_leetcode_target(${FRIST_SUBDIR} ${SECOND_SUBDIR})
             endif()
         endforeach()
     endif()
