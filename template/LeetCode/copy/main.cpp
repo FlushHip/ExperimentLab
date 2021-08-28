@@ -4,7 +4,7 @@
 
 int main(int argc, char **argv)
 {
-    Solution sol{};
+    auto sol = std::make_unique<Solution>();
 
     std::cout << std::endl;
     return 0;
