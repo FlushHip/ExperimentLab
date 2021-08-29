@@ -10,6 +10,7 @@
 #include <numeric>
 #include <bitset>
 #include <functional>
+#include <random>
 
 #include <vector>
 #include <array>
