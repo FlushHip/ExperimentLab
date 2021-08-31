@@ -8,8 +8,8 @@ int main(int argc, char **argv)
 
     auto sol = std::make_unique<Solution>();
 
-    for (int L = 1; L <= EN; ++L) {
-        std::cout << "Example " << L << " :" << std::endl;
+    for (int L = 0; L < EN; ++L) {
+        std::cout << "Example " << L + 1 << " :" << std::endl;
 
         std::cout << std::endl << std::endl;
     }
