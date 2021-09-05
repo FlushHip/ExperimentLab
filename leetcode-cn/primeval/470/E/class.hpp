@@ -1,4 +1,4 @@
-// TAG : k进制
+// TAG : 利用二进制来做
 class Solution {
 public:
     int rand10() {

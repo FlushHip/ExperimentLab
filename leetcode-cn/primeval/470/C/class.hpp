@@ -1,4 +1,4 @@
-// TAG : k进制
+// TAG : k进制，拒绝采样的最优化
 class Solution {
 public:
     int rand10() {

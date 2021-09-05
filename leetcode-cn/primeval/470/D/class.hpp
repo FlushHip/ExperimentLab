@@ -1,4 +1,4 @@
-// TAG : k进制
+// TAG : 古典概型，凑概率
 class Solution {
 public:
     int rand10() {
