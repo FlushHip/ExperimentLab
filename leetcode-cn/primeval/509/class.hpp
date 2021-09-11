@@ -1,6 +1,6 @@
 class Solution {
 public:
-    Solution() ; arr_(31) {
+    Solution() : arr_(31) {
         arr_[0] = 0;
         arr_[1] = 1;
         for (int i = 2; i < 31; ++i) {

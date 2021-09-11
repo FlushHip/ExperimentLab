@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 
         auto ans = sol->minCostClimbingStairs(cost[L]);
 
-        std::cout
+        std::cout << ans
             << std::endl << std::endl;
     }
 
