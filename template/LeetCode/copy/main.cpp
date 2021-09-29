@@ -4,14 +4,16 @@
 
 int main(int argc, char **argv)
 {
-    const int EN = 2;
-
     auto sol = std::make_unique<Solution>();
 
-    for (int L = 0; L < EN; ++L) {
+    VList<> v{};
+
+    for (auto L = 0u; L < v.size(); ++L) {
         std::cout << "Example " << L + 1 << " :" << std::endl;
 
-        std::cout
+        auto ans = 0;
+
+        std::cout << ans
             << std::endl << std::endl;
     }
 

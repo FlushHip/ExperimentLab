@@ -27,3 +27,6 @@
 #include "prettyprint.hpp"
 
 using namespace std;
+
+template<class T = int>
+using VList = std::vector<T>;
