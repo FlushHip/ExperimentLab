@@ -170,3 +170,46 @@ Person q(2)
 Person k(std::string("flushhip"))
 
 ```
+
+## `std::bind`何时会绑定失败
+
+当需要绑定的对象存在重载行为时，`std::bind`不能正常工作；原因就是通用引用+完美转发不能正确推导出绑定对象的类型，如果要求能正常工作，就需要使用`static_cast`显式对绑定对象进行指定。
+
+因此啊，更推荐使用`lambda`表达式来替代`std::bind`。
+
+而且，`std::bind`中绑定的一些参数会在bind时就求值，对于有些需要推迟求值的需求来说需要嵌套可调用对象。
+
+```cpp
+auto setSoundL =
+  [](Sound s)
+  {
+    using namespace std::chrono;
+    using namespace std::literals; // for C++14 suffixes
+        setAlarm(steady_clock::now() + 1h, // C++14, but
+             s, // same meaning
+             30s); // as above
+    };
+
+auto setSoundB =
+     std::bind(setAlarm,
+     std::bind(std::plus<>(), steady_clock::now(), 1h), _1,
+     30s);
+
+```
+
+而且，`std::bind`处理更复杂的情况会更加麻烦：
+
+```cpp
+auto betweenL =
+     [lowVal, highVal]
+     (const auto& val)                          // C++14
+     { return lowVal <= val && val <= highVal; };
+
+using namespace std::placeholders;           // as above
+auto betweenB =
+    std::bind(std::logical_and<>(), // C++14
+                        std::bind(std::less_equal<>(), lowVal, _1),
+                    std::bind(std::less_equal<>(), _1, highVal));
+```
+
+`std::bind` 的工作方式是传递给绑定对象的所有参数都是通过引用传递的，因为此类对象的函数调用运算符使用完美转发。
