@@ -11,6 +11,7 @@
 #include <bitset>
 #include <functional>
 #include <random>
+#include <cstring>
 
 #include <vector>
 #include <array>
