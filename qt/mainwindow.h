@@ -37,13 +37,13 @@ private:
     void createContextMenu();
     void createToolBars();
     void createStatusBar();
+    void writeSettings();
     void readSettings();
     bool okToContinue();
     bool loadFile(const QString &fileName);
     bool saveFile(const QString &fileName);
     void setCurrentFile(const QString &fileName);
     void updateRecentFileActions();
-    QString strippedname(const QString &fileName);
 
 private:
     Spreadsheet *spreadsheet_;
@@ -92,4 +92,6 @@ private:
     QAction *selectRowAction_;
     QAction *selectColumnAction_;
     QAction *selectAllAction_;
+
+    enum { StatusBarMessageTimeout = 2000 };
 };
