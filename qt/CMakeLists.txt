@@ -12,10 +12,12 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
 set(moc_header_list
+    mainwindow.h
     forms/widget.h
     forms/finddialog.h
     forms/sortdialog.h
     forms/gotocelldialog.h
+    forms/spreadsheet.h
 )
 
 qt5_wrap_cpp(moc_list ${moc_header_list})
@@ -27,20 +29,35 @@ qt5_wrap_ui(ui_list
 )
 
 qt5_add_resources(qrc_list
+    res/main.qrc
 )
 
 set(header_list
     ${moc_header_list}
 
+    items/cell.h
+
     # other header
+    execution/base.h
+    execution/dialog_execution.h
+    execution/mainwindow_execution.h
+    execution/spreadsheet_execution.h
 )
 
 set(src_list
     main.cpp
+    mainwindow.cpp
     forms/widget.cpp
     forms/finddialog.cpp
     forms/sortdialog.cpp
     forms/gotocelldialog.cpp
+    forms/spreadsheet.cpp
+
+    items/cell.cpp
+
+    execution/dialog_execution.cpp
+    execution/mainwindow_execution.cpp
+    execution/spreadsheet_execution.cpp
 )
 
 add_executable(qtcmake

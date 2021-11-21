@@ -1,38 +1,24 @@
 #include <QApplication>
 
-#include <QInputDialog>
-#include <QProgressDialog>
-#include <QMessageBox>
-#include <QErrorMessage>
-#include <QColorDialog>
-#include <QFontDialog>
-#include <QFileDialog>
+#include <vector>
+#include <memory>
 
-#include "forms/widget.h"
-#include "forms/finddialog.h"
-#include "forms/sortdialog.h"
-#include "forms/gotocelldialog.h"
+#include "execution/dialog_execution.h"
+#include "execution/mainwindow_execution.h"
+#include "execution/spreadsheet_execution.h"
 
 int main(int argc, char **argv)
 {
     QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
     QApplication app(argc, argv);
 
-    std::vector<std::unique_ptr<QWidget>> wList;
+    std::vector<std::unique_ptr<ExecutionBase>> eList;
 
-    wList.push_back(std::make_unique<GoToCellDialog>());
-    wList.push_back(std::make_unique<FindDialog>());
-    wList.push_back(std::make_unique<SortDialog>());
-    wList.push_back(std::make_unique<Widget>());
-    wList.push_back(std::make_unique<QInputDialog>());
-    wList.push_back(std::make_unique<QProgressDialog>());
-    wList.push_back(std::make_unique<QMessageBox>());
-    wList.push_back(std::make_unique<QErrorMessage>());
-    wList.push_back(std::make_unique<QColorDialog>());
-    wList.push_back(std::make_unique<QFontDialog>());
-    wList.push_back(std::make_unique<QFileDialog>());
+    eList.push_back(std::make_unique<SpreadsheetExecution>());
+    eList.push_back(std::make_unique<MainWindowExecution>());
+    eList.push_back(std::make_unique<DialogExecution>());
 
-    wList[0]->show();
+    eList[0]->main();
 
     return app.exec();
 }
