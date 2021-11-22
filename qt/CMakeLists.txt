@@ -18,6 +18,7 @@ set(moc_header_list
     forms/sortdialog.h
     forms/gotocelldialog.h
     forms/spreadsheet.h
+    forms/hexspinbox.h
 )
 
 qt5_wrap_cpp(moc_list ${moc_header_list})
@@ -43,6 +44,7 @@ set(header_list
     execution/dialog_execution.h
     execution/mainwindow_execution.h
     execution/spreadsheet_execution.h
+    execution/customwidgets_execution.h
 )
 
 set(src_list
@@ -53,6 +55,7 @@ set(src_list
     forms/sortdialog.cpp
     forms/gotocelldialog.cpp
     forms/spreadsheet.cpp
+    forms/hexspinbox.cpp
 
     items/cell.cpp
     items/spreadsheet_compare.cpp
@@ -60,6 +63,7 @@ set(src_list
     execution/dialog_execution.cpp
     execution/mainwindow_execution.cpp
     execution/spreadsheet_execution.cpp
+    execution/customwidgets_execution.cpp
 )
 
 add_executable(qtcmake
