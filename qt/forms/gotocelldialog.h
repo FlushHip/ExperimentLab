@@ -14,6 +14,8 @@ public:
     explicit GoToCellDialog(QWidget *parent = Q_NULLPTR);
     ~GoToCellDialog() override;
 
+    QString getLocation() const;
+
 private slots:
     void on_lineEdit_textChanged();
 

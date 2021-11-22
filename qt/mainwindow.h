@@ -14,11 +14,12 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 public:
     explicit MainWindow();
+    ~MainWindow() override;
 
 protected:
     void closeEvent(QCloseEvent *event) override;
 
-private:
+private slots:
     void newFile();
     void open();
     bool save();

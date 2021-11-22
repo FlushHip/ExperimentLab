@@ -44,7 +44,7 @@
        </widget>
       </item>
       <item row="2" column="1" colspan="2">
-       <widget class="QComboBox" name="comboBox_2">
+       <widget class="QComboBox" name="comboBoxOrder_1">
         <item>
          <property name="text">
           <string>Ascending</string>
@@ -116,7 +116,7 @@
        </widget>
       </item>
       <item row="1" column="1" colspan="2">
-       <widget class="QComboBox" name="comboBox_4">
+       <widget class="QComboBox" name="comboBoxOrder_2">
         <item>
          <property name="text">
           <string>Ascending</string>
@@ -175,7 +175,7 @@
        </widget>
       </item>
       <item row="1" column="1" colspan="2">
-       <widget class="QComboBox" name="comboBox_6">
+       <widget class="QComboBox" name="comboBoxOrder_3">
         <item>
          <property name="text">
           <string>Ascending</string>
@@ -252,11 +252,11 @@
  </widget>
  <tabstops>
   <tabstop>comboBoxColumn_1</tabstop>
-  <tabstop>comboBox_2</tabstop>
+  <tabstop>comboBoxOrder_1</tabstop>
   <tabstop>comboBoxColumn_2</tabstop>
-  <tabstop>comboBox_4</tabstop>
+  <tabstop>comboBoxOrder_2</tabstop>
   <tabstop>comboBoxColumn_3</tabstop>
-  <tabstop>comboBox_6</tabstop>
+  <tabstop>comboBoxOrder_3</tabstop>
   <tabstop>btnOk</tabstop>
   <tabstop>btnCancle</tabstop>
   <tabstop>btnMore</tabstop>

@@ -14,8 +14,8 @@ int main(int argc, char **argv)
 
     std::vector<std::unique_ptr<ExecutionBase>> eList;
 
-    eList.push_back(std::make_unique<SpreadsheetExecution>());
     eList.push_back(std::make_unique<MainWindowExecution>());
+    eList.push_back(std::make_unique<SpreadsheetExecution>());
     eList.push_back(std::make_unique<DialogExecution>());
 
     eList[0]->main();

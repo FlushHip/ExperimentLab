@@ -19,6 +19,11 @@ GoToCellDialog::GoToCellDialog(QWidget *parent)
 
 GoToCellDialog::~GoToCellDialog() = default;
 
+QString GoToCellDialog::getLocation() const
+{
+    return ui_->lineEdit->text().toUpper();
+}
+
 void GoToCellDialog::on_lineEdit_textChanged()
 {
     ui_->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(ui_->lineEdit->hasAcceptableInput());

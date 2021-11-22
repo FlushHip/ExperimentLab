@@ -36,6 +36,7 @@ set(header_list
     ${moc_header_list}
 
     items/cell.h
+    items/spreadsheet_compare.h
 
     # other header
     execution/base.h
@@ -54,6 +55,7 @@ set(src_list
     forms/spreadsheet.cpp
 
     items/cell.cpp
+    items/spreadsheet_compare.cpp
 
     execution/dialog_execution.cpp
     execution/mainwindow_execution.cpp
