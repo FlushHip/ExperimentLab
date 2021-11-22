@@ -47,11 +47,12 @@ private:
     void updateRecentFileActions();
 
 private:
+    static QStringList recentFiles_;
+
     Spreadsheet *spreadsheet_;
     FindDialog *findDialog_;
     QLabel *locationLabel_;
     QLabel *formulaLabel_;
-    QStringList recentFiles_;
     QString curFile_;
 
     enum { MaxRecentFiles = 5 };
@@ -72,6 +73,7 @@ private:
     QAction *openAction_;
     QAction *saveAction_;
     QAction *saveAsAction_;
+    QAction *closeAction_;
     QAction *exitAction_;
 
     QAction *cutAction_;

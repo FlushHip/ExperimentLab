@@ -26,10 +26,14 @@ QString strippedName(const QString &fileName)
 }
 }
 
+QStringList MainWindow::recentFiles_;
+
 MainWindow::MainWindow()
     : findDialog_(nullptr)
+    , spreadsheet_(new Spreadsheet(this))
 {
-    spreadsheet_ = new Spreadsheet;
+    setAttribute(Qt::WA_DeleteOnClose);
+
     setCentralWidget(spreadsheet_);
 
     createActions();
@@ -54,7 +58,7 @@ void MainWindow::createActions()
     newAction_->setStatusTip(tr("Create a new spreadsheet file"));
     connect(newAction_, &QAction::triggered, this, &MainWindow::newFile);
 
-    openAction_ =  new QAction(tr("&Open"), this);
+    openAction_ =  new QAction(tr("&Open..."), this);
     openAction_->setIcon(QIcon(":/images/open.png"));
     openAction_->setShortcut(QKeySequence::Open);
     openAction_->setStatusTip(tr("Open a spreadsheet file"));
@@ -66,7 +70,7 @@ void MainWindow::createActions()
     saveAction_->setStatusTip(tr("Save spreadsheet file"));
     connect(saveAction_, &QAction::triggered, this, &MainWindow::save);
 
-    saveAsAction_ = new QAction(tr(("Save &As")), this);
+    saveAsAction_ = new QAction(tr(("Save &As...")), this);
     saveAsAction_->setShortcut(QKeySequence::SaveAs);
     connect(saveAsAction_, &QAction::triggered, this, &MainWindow::saveAs);
 
@@ -76,10 +80,15 @@ void MainWindow::createActions()
         connect(recentFilesActions_[i], &QAction::triggered, this, &MainWindow::openRecentFile);
     }
 
+    closeAction_ = new QAction(tr("&Close"), this);
+    closeAction_->setShortcut(QKeySequence::Close);
+    closeAction_->setToolTip(tr("Close this window"));
+    connect(closeAction_, &QAction::triggered, this, &MainWindow::close);
+
     exitAction_ = new QAction(tr("E&xit"), this);
     exitAction_->setShortcut(tr("Ctrl+Q"));
     exitAction_->setStatusTip(tr("Exit the application"));
-    connect(exitAction_, &QAction::triggered, this, &MainWindow::close);
+    connect(exitAction_, &QAction::triggered, qApp, &QApplication::closeAllWindows);
 
     cutAction_ = new QAction(tr("Cu&t"), this);
     cutAction_->setIcon(QIcon(":/images/cut.png"));
@@ -116,7 +125,7 @@ void MainWindow::createActions()
     findAction_->setShortcut(QKeySequence::Find);
     connect(findAction_, &QAction::triggered, this, &MainWindow::find);
 
-    goToCellAction_ = new QAction(tr("&Go to Cell"), this);
+    goToCellAction_ = new QAction(tr("&Go to Cell..."), this);
     goToCellAction_->setIcon(QIcon(":/images/gotocell.png"));
     goToCellAction_->setShortcut(tr("F5"));
     connect(goToCellAction_, &QAction::triggered, this, &MainWindow::goToCell);
@@ -125,7 +134,7 @@ void MainWindow::createActions()
     recalculateAction_->setShortcut(tr("F9"));
     connect(recalculateAction_, &QAction::triggered, spreadsheet_, &Spreadsheet::recalculate);
 
-    sortAction_ = new QAction(tr("&Sort"), this);
+    sortAction_ = new QAction(tr("&Sort..."), this);
     connect(sortAction_, &QAction::triggered, this, &MainWindow::sort);
 
     showGridAction_ = new QAction(tr("&Show Grid"), this);
@@ -164,6 +173,7 @@ void MainWindow::createMenus()
 
     fileMenu_->addSeparator();
 
+    fileMenu_->addAction(closeAction_);
     fileMenu_->addAction(exitAction_);
 
     // Edit
@@ -270,6 +280,7 @@ void MainWindow::newFile()
         spreadsheet_->clear();
         setCurrentFile("");
     }
+   //(new MainWindow)->show();
 }
 bool MainWindow::okToContinue()
 {
@@ -315,7 +326,7 @@ bool MainWindow::loadFile(const QString &fileName)
 bool MainWindow::save()
 {
     if (curFile_.isEmpty()) {
-        return false;
+        return saveAs();
     }
     return saveFile(curFile_);
 }
