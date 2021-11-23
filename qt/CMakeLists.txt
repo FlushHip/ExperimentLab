@@ -19,6 +19,7 @@ set(moc_header_list
     forms/gotocelldialog.h
     forms/spreadsheet.h
     forms/hexspinbox.h
+    forms/iconeditor.h
 )
 
 qt5_wrap_cpp(moc_list ${moc_header_list})
@@ -56,6 +57,7 @@ set(src_list
     forms/gotocelldialog.cpp
     forms/spreadsheet.cpp
     forms/hexspinbox.cpp
+    forms/iconeditor.cpp
 
     items/cell.cpp
     items/spreadsheet_compare.cpp
