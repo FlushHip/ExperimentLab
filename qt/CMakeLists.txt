@@ -20,6 +20,7 @@ set(moc_header_list
     forms/spreadsheet.h
     forms/hexspinbox.h
     forms/iconeditor.h
+    forms/plotter.h
 )
 
 qt5_wrap_cpp(moc_list ${moc_header_list})
@@ -39,6 +40,7 @@ set(header_list
 
     items/cell.h
     items/spreadsheet_compare.h
+    items/plotsettings.h
 
     # other header
     execution/base.h
@@ -58,9 +60,11 @@ set(src_list
     forms/spreadsheet.cpp
     forms/hexspinbox.cpp
     forms/iconeditor.cpp
+    forms/plotter.cpp
 
     items/cell.cpp
     items/spreadsheet_compare.cpp
+    items/plotsettings.cpp
 
     execution/dialog_execution.cpp
     execution/mainwindow_execution.cpp
