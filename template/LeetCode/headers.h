@@ -12,6 +12,7 @@
 #include <functional>
 #include <random>
 #include <cstring>
+#include <charconv>
 
 #include <vector>
 #include <array>
