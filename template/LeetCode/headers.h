@@ -1,7 +1,9 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <string_view>
 #include <sstream>
+#include <chrono>
 
 #include <utility>
 #include <memory>
@@ -14,6 +16,7 @@
 #include <cstring>
 #include <charconv>
 #include <regex>
+#include <complex>
 
 #include <vector>
 #include <array>
@@ -30,6 +33,10 @@
 #include "prettyprint.hpp"
 
 using namespace std;
+using namespace std::literals::string_literals;
+using namespace std::literals::string_view_literals;
+using namespace std::literals::chrono_literals;
+using namespace std::literals::complex_literals;
 
 template<class T = int>
 using VList = std::vector<T>;
