@@ -13,6 +13,7 @@
 #include <random>
 #include <cstring>
 #include <charconv>
+#include <regex>
 
 #include <vector>
 #include <array>
