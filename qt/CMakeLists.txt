@@ -10,3 +10,4 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # set(CMAKE_AUTOUIC ON)
 
 add_subdirectory(GUI)
+add_subdirectory(games)
