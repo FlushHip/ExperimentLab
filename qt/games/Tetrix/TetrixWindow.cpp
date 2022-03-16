@@ -10,6 +10,10 @@ TetrixWindow::TetrixWindow(QWidget *parent)
 {
     scoreLcd = new QLCDNumber(5);
     scoreLcd->setSegmentStyle(QLCDNumber::Filled);
+    levelLcd = new QLCDNumber(2);
+    levelLcd->setSegmentStyle(QLCDNumber::Filled);
+    linesLcd = new QLCDNumber(5);
+    linesLcd->setSegmentStyle(QLCDNumber::Filled);
 
     startButton = new QPushButton(tr("&Start"));
     startButton->setFocusPolicy(Qt::NoFocus);
@@ -17,6 +21,11 @@ TetrixWindow::TetrixWindow(QWidget *parent)
     quitButton->setFocusPolicy(Qt::NoFocus);
     pauseButton = new QPushButton(tr("&Pause"));
     pauseButton->setFocusPolicy(Qt::NoFocus);
+
+    nextPieceLabel = new QLabel;
+    nextPieceLabel->setFrameStyle(QFrame::Box | QFrame::Raised);
+    nextPieceLabel->setAlignment(Qt::AlignCenter);
+    board->setNextPieceLabel(nextPieceLabel);
 
     connect(startButton, &QPushButton::clicked, board, &TetrixBoard::start);
     connect(quitButton , &QPushButton::clicked, qApp, &QCoreApplication::quit);
