@@ -8,7 +8,7 @@ int main(int argc, char **argv)
     QApplication app(argc, argv);
 
     TetrixWindow window;
-    window->show();
+    window.show();
 
     return app.exec();
 }

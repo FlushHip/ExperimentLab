@@ -3,6 +3,7 @@
 #include <QFrame>
 #include <QBasicTimer>
 #include <QLabel>
+#include <QPointer>
 
 #include "TetrixPiece.h"
 
