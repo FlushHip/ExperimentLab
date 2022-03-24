@@ -1,29 +1,27 @@
 class Solution {
-    inline int get_cnt(int len)
+    inline int get_cnt(int num, int n)
     {
-        static int NUM[] = {1, 11, 111, 1111, 11111, 111111, 1111111, 11111111, 111111111};
-        return NUM[len];
+        int64_t ans = 0;
+        for (int64_t lhs = num, rhs = num; lhs <= n; lhs = lhs * 10, rhs = rhs * 10 + 9) {
+            ans += std::min(static_cast<int64_t>(n), rhs) - lhs + 1;
+        }
+        return static_cast<int>(ans);
     };
 
-    void dfs(int index, int k, int len, int &ans) {
-        if (k == 0) {
-            //ans = ans * 10 + index;
-            return ;
-        }
-        int num = (ans == 0), sum = 0, cnt = get_cnt(len);
-        for ( --k; num < 10; ++num) {
-            if (sum + cnt > k) {
-                break;
-            } else {
-                sum += cnt;
-            }
-        }
-        dfs(num, k - sum, len - 1, ans = ans * 10 + num);
-    }
+
 public:
     int findKthNumber(int n, int k) {
-        int len = static_cast<int>(std::to_string(n).size()), ans = 0;
-        dfs(1, k, len - 1, ans);
+        int ans = 1;
+        while (k != 1) {
+            int cnt = get_cnt(ans, n);
+            if (k > cnt) {
+                k -= cnt;
+                ++ans;
+            } else {
+                ans *= 10;
+                --k;
+            }
+        }
         return ans;
     }
 };
