@@ -42,6 +42,7 @@ foreach(FRIST_SUBDIR ${FRIST_SUBDIRS})
             RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/${FRIST_SUBDIR}
             ${CMAKE_CURRENT_SOURCE_DIR}/${FRIST_SUBDIR}/*)
 
+        set(cnt 0)
         foreach(SECOND_SUBDIR ${SECOND_SUBDIRS})
             if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${FRIST_SUBDIR}/${SECOND_SUBDIR}/A)
                 file(GLOB THIRD_SUBDIRS
@@ -54,6 +55,8 @@ foreach(FRIST_SUBDIR ${FRIST_SUBDIRS})
             else()
                 make_leetcode_target(${FRIST_SUBDIR} ${SECOND_SUBDIR})
             endif()
+            math(EXPR cnt "${cnt} + 1")
         endforeach()
+        message(STATUS "Total \"${CURRENT_FOLDER}/${FRIST_SUBDIR}\" ${cnt} programs generated")
     endif()
 endforeach()
