@@ -11,9 +11,7 @@ private:
     static std::false_type check(...);
 public:
     using type = decltype(check<T>(0));
-    enum : bool {
-        value = std::is_same_v<type, std::true_type>,
-    };
+    inline static constexpr bool value = std::is_same_v<type, std::true_type>;
 };
 
 template<typename T, typename... Args>
