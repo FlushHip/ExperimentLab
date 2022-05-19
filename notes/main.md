@@ -6,4 +6,10 @@
 
 ## 无锁编程
 
+- [awesome-lockfree](https://github.com/rigtorp/awesome-lockfree)
+
 ## 协程
+
+## 设计模式
+
+- [Design Patterns](http://www.vincehuston.org/dp/)
