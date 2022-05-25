@@ -4,6 +4,7 @@ find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
 set(moc_header_list
     MainWindow.h
+    ChessFrame.h
 )
 
 qt5_wrap_cpp(moc_list ${moc_header_list})
@@ -21,7 +22,9 @@ set(header_list
 
 set(src_list
     main.cpp
+
     MainWindow.cpp
+    ChessFrame.cpp
 )
 
 add_executable(${TARGET_NAME}
