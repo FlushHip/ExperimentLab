@@ -9,5 +9,5 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # set(CMAKE_AUTORCC ON)
 # set(CMAKE_AUTOUIC ON)
 
-add_subdirectory(GUI)
+add_subdirectory(gui-tutorial)
 add_subdirectory(games)
