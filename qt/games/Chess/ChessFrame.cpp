@@ -1,4 +1,4 @@
-#include "ChessFrame.h"
+﻿#include "ChessFrame.h"
 
 #include <QPainter>
 
@@ -119,7 +119,7 @@ void ChessFrame::drawBoardLine(QPainter &painter)
 void ChessFrame::drawBoardText(QPainter &painter)
 {
     QFont font;
-    font.setFamily("隶书");
+    font.setFamily(u8"隶书");
     font.setPixelSize(kUnitLength - 5);
     painter.setFont(font);
 
@@ -127,28 +127,28 @@ void ChessFrame::drawBoardText(QPainter &painter)
     painter.rotate(-90);
     painter.drawText(QRect{ { -kUnitLength / 2, -kUnitLength / 2 }
             , QSize{ kUnitLength, kUnitLength } }
-        , Qt::AlignCenter, "7");
+        , Qt::AlignBottom | Qt::AlignHCenter, u8"楚");
     painter.resetTransform();
 
     painter.translate(QPoint{ start.x() + 2 * kUnitLength + kUnitLength / 2, start.y() + 4 * kUnitLength + kUnitLength / 2 });
     painter.rotate(-90);
     painter.drawText(QRect{ { -kUnitLength / 2, -kUnitLength / 2 }
             , QSize{ kUnitLength, kUnitLength } }
-        , Qt::AlignCenter, "7");
+        , Qt::AlignTop | Qt::AlignHCenter, u8"河");
     painter.resetTransform();
 
     painter.translate(QPoint{ start.x() + 5 * kUnitLength + kUnitLength / 2, start.y() + 4 * kUnitLength + kUnitLength / 2 });
     painter.rotate(+90);
     painter.drawText(QRect{ { -kUnitLength / 2, -kUnitLength / 2 }
             , QSize{ kUnitLength, kUnitLength } }
-        , Qt::AlignCenter, "7");
+        , Qt::AlignTop | Qt::AlignHCenter, u8"界");
     painter.resetTransform();
 
     painter.translate(QPoint{ start.x() + 6 * kUnitLength + kUnitLength / 2, start.y() + 4 * kUnitLength + kUnitLength / 2 });
     painter.rotate(+90);
     painter.drawText(QRect{ { -kUnitLength / 2, -kUnitLength / 2 }
             , QSize{ kUnitLength, kUnitLength } }
-        , Qt::AlignCenter, "7");
+        , Qt::AlignBottom | Qt::AlignHCenter, u8"漢");
     painter.resetTransform();
 }
 void ChessFrame::drawPiece(QPainter &painter)
