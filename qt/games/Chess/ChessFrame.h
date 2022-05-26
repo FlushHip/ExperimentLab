@@ -18,6 +18,7 @@ private:
     void drawBoard(QPainter &painter);
     void drawBoardLine(QPainter &painter);
     void drawBoardText(QPainter &patiner);
+    void drawPiece(QPainter &painter);
 
 private:
     const QPoint start{ kUnitLength / 2, kUnitLength / 2 };

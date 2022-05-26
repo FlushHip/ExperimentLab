@@ -138,18 +138,24 @@ void ChessFrame::drawBoardText(QPainter &painter)
     painter.resetTransform();
 
     painter.translate(QPoint{ start.x() + 5 * kUnitLength + kUnitLength / 2, start.y() + 4 * kUnitLength + kUnitLength / 2 });
-    painter.rotate(-90 * 2);
+    painter.rotate(+90);
     painter.drawText(QRect{ { -kUnitLength / 2, -kUnitLength / 2 }
             , QSize{ kUnitLength, kUnitLength } }
         , Qt::AlignCenter, "7");
     painter.resetTransform();
 
     painter.translate(QPoint{ start.x() + 6 * kUnitLength + kUnitLength / 2, start.y() + 4 * kUnitLength + kUnitLength / 2 });
-    painter.rotate(-90 * 2);
+    painter.rotate(+90);
     painter.drawText(QRect{ { -kUnitLength / 2, -kUnitLength / 2 }
             , QSize{ kUnitLength, kUnitLength } }
         , Qt::AlignCenter, "7");
     painter.resetTransform();
+}
+void ChessFrame::drawPiece(QPainter &painter)
+{
+    for (auto && [point, piece] : pieces_) {
+        piece.draw(point, painter);
+    }
 }
 
 void ChessFrame::paintEvent(QPaintEvent *)
@@ -159,8 +165,5 @@ void ChessFrame::paintEvent(QPaintEvent *)
     painter.setRenderHint(QPainter::Antialiasing, true);
 
     drawBoard(painter);
-
-    for (auto && [point, piece] : pieces_) {
-        piece.draw(point, painter);
-    }
+    drawPiece(painter);
 }
