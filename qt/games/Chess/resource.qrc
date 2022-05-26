@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/piece">
+        <file alias="gd">images/50px-Xiangqi_gd1.svg.png</file>
+        <file alias="gl">images/50px-Xiangqi_gl1.svg.png</file>
+        <file alias="al">images/50px-Xiangqi_al1.svg.png</file>
+        <file alias="cd">images/50px-Xiangqi_cd1.svg.png</file>
+        <file alias="cl">images/50px-Xiangqi_cl1.svg.png</file>
+        <file alias="hd">images/50px-Xiangqi_hd1.svg.png</file>
+        <file alias="hl">images/50px-Xiangqi_hl1.svg.png</file>
+        <file alias="rd">images/50px-Xiangqi_rd1.svg.png</file>
+        <file alias="rl">images/50px-Xiangqi_rl1.svg.png</file>
+        <file alias="sd">images/50px-Xiangqi_sd1.svg.png</file>
+        <file alias="sl">images/50px-Xiangqi_sl1.svg.png</file>
+        <file alias="ed">images/50px-Xiangqi_ed1.svg.png</file>
+        <file alias="el">images/50px-Xiangqi_el1.svg.png</file>
+        <file alias="ad">images/50px-Xiangqi_ad1.svg.png</file>
+    </qresource>
+</RCC>

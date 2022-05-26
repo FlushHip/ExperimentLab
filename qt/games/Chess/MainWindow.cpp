@@ -3,14 +3,13 @@
 #include <QGridLayout>
 
 #include "ChessFrame.h"
+#include "common_define.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QWidget(parent) {
+    : QWidget(parent)
+    , chessFrame_(new ChessFrame(this)) {
 
     setParent(parent);
-    this->setFixedSize(500 - 2, 563);
-
-    chessFrame_ = new ChessFrame(this);
 
     auto layout = new QGridLayout;
     layout->addWidget(chessFrame_);
