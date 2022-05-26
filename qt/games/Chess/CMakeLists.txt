@@ -5,6 +5,7 @@ find_package(Qt5 COMPONENTS Widgets REQUIRED)
 set(moc_header_list
     MainWindow.h
     ChessFrame.h
+    TimeFrame.h
 )
 
 qt5_wrap_cpp(moc_list ${moc_header_list})
@@ -29,6 +30,7 @@ set(src_list
 
     MainWindow.cpp
     ChessFrame.cpp
+    TimeFrame.cpp
 )
 
 add_executable(${TARGET_NAME}
