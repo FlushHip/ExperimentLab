@@ -19,7 +19,7 @@ public slots:
     void addPiece(Piece piece);
 
 private:
-    static const int kDiamter = kUnitLength - 10;
+    static const int kDiamter = kUnitLength - 15;
     PieceBi flag_;
     std::vector<Piece> pieces_;
 };

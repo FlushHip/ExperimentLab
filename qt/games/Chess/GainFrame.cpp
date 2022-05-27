@@ -33,7 +33,7 @@ void GainFrame::paintEvent(QPaintEvent *)
 
     const QPoint start{ 6, 6 };
 
-    QPen penDash(Qt::black, 1);
+    QPen penDash(flag_  == PieceBi::kBlack ? Qt::black : Qt::red, 1);
     penDash.setStyle(Qt::PenStyle::DotLine);
     painter.setPen(penDash);
 

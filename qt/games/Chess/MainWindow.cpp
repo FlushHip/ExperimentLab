@@ -31,8 +31,8 @@ MainWindow::MainWindow(QWidget *parent)
     rightLayout->addWidget(timeFrame_);
     rightLayout->addStretch();
 
-    leftLayout->addWidget(gainFrame_[0]);
-    leftLayout->addWidget(gainFrame_[1]);
+    leftLayout->addWidget(gainFrame_[0], 0, Qt::AlignTop);
+    leftLayout->addWidget(gainFrame_[1], 0, Qt::AlignBottom);
 
     mainLayout->setSizeConstraint(QLayout::SetFixedSize);
 
