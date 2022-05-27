@@ -67,5 +67,7 @@ std::map<Point, Piece> Piece::GetInitStatusPieces()
 
 void Piece::draw(const Point &point, QPainter &painter)
 {
-    painter.drawPixmap(point.first * kUnitLength, point.second * kUnitLength, pixmap());
+    if (!choosed()) {
+        painter.drawPixmap(point.first * kUnitLength, point.second * kUnitLength, pixmap());
+    }
 }

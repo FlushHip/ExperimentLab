@@ -23,11 +23,14 @@ using Point = std::pair<int, int>;
 
 class Piece {
 public:
+    Piece() = default;
     Piece(PieceBi bi, PieceType type)
-        : bi_(bi), type_(type) {}
+        : bi_(bi), type_(type), choosed_(false) {}
 
     PieceBi bi() const { return bi_; };
     PieceType type() const { return type_; };
+    bool choosed() const { return choosed_; };
+    void setChoosed(bool choosed = false) { choosed_ = choosed; };
     const QPixmap & pixmap() const { return GetPieceToPixmapMap()[{ type_, bi_ }]; };
 
     void draw(const Point &point, QPainter &painter);
@@ -39,4 +42,6 @@ private:
 
     PieceBi bi_;
     PieceType type_;
+
+    bool choosed_;
 };
