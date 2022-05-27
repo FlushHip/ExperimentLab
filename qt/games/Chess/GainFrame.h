@@ -3,8 +3,9 @@
 #include <QFrame>
 
 #include "Piece.h"
+#include "common_define.h"
 
-class GainFrame : QFrame
+class GainFrame : public QFrame
 {
     Q_OBJECT
 public:
@@ -18,6 +19,7 @@ public slots:
     void addPiece(Piece piece);
 
 private:
+    static const int kDiamter = kUnitLength - 10;
     PieceBi flag_;
     std::vector<Piece> pieces_;
 };

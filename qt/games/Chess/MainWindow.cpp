@@ -6,6 +6,7 @@
 
 #include "ChessFrame.h"
 #include "TimeFrame.h"
+#include "GainFrame.h"
 #include "common_define.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -13,18 +14,25 @@ MainWindow::MainWindow(QWidget *parent)
     , chessFrame_(new ChessFrame(this))
     , timeFrame_(new TimeFrame(this))
 {
+    gainFrame_[0] = new GainFrame(PieceBi::kRed, this);
+    gainFrame_[1] = new GainFrame(PieceBi::kBlack, this);
 
     setParent(parent);
 
     auto mainLayout = new QGridLayout;
     auto gameLayout = new QGridLayout;
     auto rightLayout = new QVBoxLayout;
-    mainLayout->addLayout(gameLayout, 0, 0);
-    mainLayout->addLayout(rightLayout, 0, 1);
+    auto leftLayout = new QVBoxLayout;
+    mainLayout->addLayout(leftLayout, 0, 0);
+    mainLayout->addLayout(gameLayout, 0, 1);
+    mainLayout->addLayout(rightLayout, 0, 2);
 
     gameLayout->addWidget(chessFrame_);
     rightLayout->addWidget(timeFrame_);
     rightLayout->addStretch();
+
+    leftLayout->addWidget(gainFrame_[0]);
+    leftLayout->addWidget(gainFrame_[1]);
 
     mainLayout->setSizeConstraint(QLayout::SetFixedSize);
 
@@ -33,6 +41,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(chessFrame_, &ChessFrame::turnChanged
             , timeFrame_, &TimeFrame::changeBackgroundColor);
     chessFrame_->startFrame();
+
+    connect(chessFrame_, &ChessFrame::pieceEated
+        , gainFrame_[0], &GainFrame::addPiece);
+    connect(chessFrame_, &ChessFrame::pieceEated
+        , gainFrame_[1], &GainFrame::addPiece);
 }
 
 MainWindow::~MainWindow() = default;

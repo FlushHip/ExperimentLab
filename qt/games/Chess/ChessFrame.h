@@ -34,6 +34,7 @@ private:
 
 signals:
     void turnChanged(PieceBi turn);
+    void pieceEated(Piece piece);
 
 private:
     enum class Status{

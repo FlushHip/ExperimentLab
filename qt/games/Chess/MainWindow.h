@@ -4,6 +4,7 @@
 
 class ChessFrame;
 class TimeFrame;
+class GainFrame;
 
 class MainWindow : public QWidget {
     Q_OBJECT
@@ -15,4 +16,5 @@ public:
 private:
     ChessFrame *chessFrame_;
     TimeFrame *timeFrame_;
+    GainFrame *gainFrame_[2];
 };

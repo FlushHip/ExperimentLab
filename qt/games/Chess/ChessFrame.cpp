@@ -231,6 +231,8 @@ void ChessFrame::mouseReleaseEvent(QMouseEvent *event)
         if (tryMove(curPoint)) {
             auto prePiece = pieces_[choosePiecePoint_];
             if (auto it = pieces_.find(curPoint); it != pieces_.end() && it->second.bi() != prePiece.bi()) {
+                emit pieceEated(it->second);
+
                 pieces_.erase(it);
             }
             pieces_.erase(choosePiecePoint_);
