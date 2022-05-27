@@ -11,7 +11,7 @@ ChessFrame::ChessFrame(QWidget *parent)
     setParent(parent);
 
     setFixedSize(9 * kUnitLength + 2, 10 * kUnitLength + 2);
-    setStyleSheet("background-color:Moccasin");
+    setStyleSheet("background-color:SandyBrown");
 }
 
 ChessFrame::~ChessFrame() = default;

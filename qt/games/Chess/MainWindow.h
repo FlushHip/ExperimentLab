@@ -3,6 +3,7 @@
 #include <QWidget>
 
 class ChessFrame;
+class TimeFrame;
 
 class MainWindow : public QWidget {
     Q_OBJECT
@@ -13,4 +14,5 @@ public:
 
 private:
     ChessFrame *chessFrame_;
+    TimeFrame *timeFrame_;
 };
