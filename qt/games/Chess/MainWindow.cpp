@@ -29,6 +29,10 @@ MainWindow::MainWindow(QWidget *parent)
     mainLayout->setSizeConstraint(QLayout::SetFixedSize);
 
     setLayout(mainLayout);
+
+    connect(chessFrame_, &ChessFrame::turnChanged
+            , timeFrame_, &TimeFrame::changeBackgroundColor);
+    chessFrame_->startFrame();
 }
 
 MainWindow::~MainWindow() = default;

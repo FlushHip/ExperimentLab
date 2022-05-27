@@ -12,7 +12,7 @@ ChessFrame::ChessFrame(QWidget *parent)
     : QFrame(parent)
     , pieces_(Piece::GetInitStatusPieces())
     , status_(Status::None)
-    , turn_(static_cast<PieceBi>(QRandomGenerator::global()->bounded(1)))
+    , turn_(static_cast<PieceBi>(QRandomGenerator::global()->bounded(2)))
 {
     setParent(parent);
 
@@ -22,6 +22,11 @@ ChessFrame::ChessFrame(QWidget *parent)
 }
 
 ChessFrame::~ChessFrame() = default;
+
+void ChessFrame::startFrame()
+{
+    emit turnChanged(turn_);
+}
 
 void ChessFrame::drawBoard(QPainter &painter)
 {
@@ -232,6 +237,7 @@ void ChessFrame::mouseReleaseEvent(QMouseEvent *event)
             pieces_.emplace(std::move(curPoint), std::move(prePiece));
 
             turn_ = turn_ == PieceBi::kBlack ? PieceBi::kRed : PieceBi::kBlack;
+            emit turnChanged(turn_);
         }
 
         update();

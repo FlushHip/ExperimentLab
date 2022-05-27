@@ -11,6 +11,9 @@ public:
     explicit ChessFrame(QWidget *parent = nullptr);
     ~ChessFrame() override;
 
+public:
+    void startFrame();
+
 protected:
     void paintEvent(QPaintEvent *) override;
     void mousePressEvent(QMouseEvent *event) override;
@@ -28,6 +31,9 @@ private:
     int transformX(int x);
     int transformY(int y);
     Point transformPoint(const Point &point);
+
+signals:
+    void turnChanged(PieceBi turn);
 
 private:
     enum class Status{

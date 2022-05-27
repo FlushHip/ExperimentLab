@@ -13,7 +13,7 @@ TimeFrame::TimeFrame(QWidget *parent)
 {
     setParent(parent);
     setDigitCount(5);
-    setSegmentStyle(QLCDNumber::Flat);
+    setSegmentStyle(QLCDNumber::Filled);
 
     auto timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &TimeFrame::showTime);
@@ -21,6 +21,8 @@ TimeFrame::TimeFrame(QWidget *parent)
     timer->start(1000ms);
 
     showTime();
+
+    setStyleSheet("background-color:SandyBrown");
 }
 
 TimeFrame::~TimeFrame() = default;
@@ -37,4 +39,12 @@ void TimeFrame::showTime()
     };
     auto str =  fn(second / 60) + ":" + fn(second % 60);
     display(QString::fromStdString(str));
+}
+void TimeFrame::changeBackgroundColor(PieceBi turn)
+{
+    if (turn == PieceBi::kBlack) {
+        setStyleSheet("background-color:black");
+    } else {
+        setStyleSheet("background-color:red");
+    }
 }
