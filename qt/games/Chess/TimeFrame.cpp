@@ -12,7 +12,7 @@ TimeFrame::TimeFrame(QWidget *parent)
     , begin_(std::chrono::steady_clock::now())
 {
     setParent(parent);
-    setDigitCount(5);
+    setDigitCount(8);
     setSegmentStyle(QLCDNumber::Filled);
 
     auto timer = new QTimer(this);
@@ -37,7 +37,7 @@ void TimeFrame::showTime()
         sin << std::setw(2) << std::setfill('0') << digits;
         return sin.str();
     };
-    auto str =  fn(second / 60) + ":" + fn(second % 60);
+    auto str =  fn(second / 60 / 60) + ":" + fn(second / 60 % 60) + ":" + fn(second % 60);
     display(QString::fromStdString(str));
 }
 void TimeFrame::changeBackgroundColor(PieceBi turn)

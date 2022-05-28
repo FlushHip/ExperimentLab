@@ -15,4 +15,7 @@
         <file alias="el">images/50px-Xiangqi_el1.svg.png</file>
         <file alias="ad">images/50px-Xiangqi_ad1.svg.png</file>
     </qresource>
+    <qresource prefix="/resource">
+        <file alias="icon">images/icon.ico</file>
+    </qresource>
 </RCC>

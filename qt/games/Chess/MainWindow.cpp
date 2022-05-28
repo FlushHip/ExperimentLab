@@ -13,11 +13,11 @@ MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
     , chessFrame_(new ChessFrame(this))
     , timeFrame_(new TimeFrame(this))
+    , gainFrame_{ new GainFrame(PieceBi::kRed, this)
+        , new GainFrame(PieceBi::kBlack, this) }
 {
-    gainFrame_[0] = new GainFrame(PieceBi::kRed, this);
-    gainFrame_[1] = new GainFrame(PieceBi::kBlack, this);
-
     setParent(parent);
+    setWindowTitle("Chinese Chess");
 
     auto mainLayout = new QGridLayout;
     auto gameLayout = new QGridLayout;
