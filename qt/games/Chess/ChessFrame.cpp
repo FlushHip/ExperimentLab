@@ -163,10 +163,18 @@ void ChessFrame::drawBoardText(QPainter &painter)
         , Qt::AlignBottom | Qt::AlignHCenter, u8"漢");
     painter.resetTransform();
 }
-void ChessFrame::drawPiece(QPainter &painter)
+void ChessFrame::drawPieces(QPainter &painter)
 {
     for (auto && [point, piece] : pieces_) {
         piece.draw(point, painter);
+    }
+}
+
+void ChessFrame::drawMovingPiece(QPainter &painter)
+{
+    if (status_ == Status::Moving) {
+        painter.drawPixmap(curMovingPiecePos_ - QPoint{ kUnitLength / 2, kUnitLength / 2 }
+            , pieces_[choosePiecePoint_].pixmap());
     }
 }
 
@@ -177,11 +185,9 @@ void ChessFrame::paintEvent(QPaintEvent *)
     painter.setRenderHint(QPainter::Antialiasing, true);
 
     drawBoard(painter);
-    drawPiece(painter);
+    drawPieces(painter);
 
-    if (status_ == Status::Moving) {
-        painter.drawPixmap(curMovingPiecePos_ - QPoint{ kUnitLength / 2, kUnitLength / 2 }, pieces_[choosePiecePoint_].pixmap());
-    }
+    drawMovingPiece(painter);
 }
 
 void ChessFrame::mousePressEvent(QMouseEvent *event)

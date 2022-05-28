@@ -24,7 +24,8 @@ private:
     void drawBoard(QPainter &painter);
     void drawBoardLine(QPainter &painter);
     void drawBoardText(QPainter &patiner);
-    void drawPiece(QPainter &painter);
+    void drawPieces(QPainter &painter);
+    void drawMovingPiece(QPainter &painter);
 
     bool tryMove(const Point &targetPoint);
 
