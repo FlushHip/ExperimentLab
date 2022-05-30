@@ -324,7 +324,9 @@ void ChessFrame::mouseReleaseEvent(QMouseEvent *event)
 
             preMovePath_ = { choosePiecePoint_, movedPiecePoint_ };
 
-            qDebug() << (turn_ == PieceBi::kBlack ? "black" : "red") << " : "
+            qDebug() << (turn_ == PieceBi::kBlack
+                    ? QT_STRINGIFY(PieceBi::kBlack)
+                    : QT_STRINGIFY(PieceBi::kRed)) << " : "
                 << preMovePath_->first << " -> " << preMovePath_->second;
 
             choosePiecePoint_ = { std::numeric_limits<char>::max(), std::numeric_limits<char>::max() };
