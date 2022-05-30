@@ -2,6 +2,8 @@
 
 #include <QFrame>
 
+#include <optional>
+
 #include "Piece.h"
 #include "common_define.h"
 
@@ -27,6 +29,8 @@ private:
     void drawPieces(QPainter &painter);
     void drawMovingPiece(QPainter &painter);
 
+    void drawPieceRect(QPainter &patiner, Point point, Qt::GlobalColor color);
+
     bool tryMove(const Point &targetPoint);
 
     int transformX(int x);
@@ -46,6 +50,8 @@ private:
     const QPoint start{ kUnitLength / 2, kUnitLength / 2 };
     std::map<Point, Piece> pieces_;
     Point choosePiecePoint_;
+    Point movedPiecePoint_;
+    std::optional<std::pair<Point, Point>> preMovePath_;
     QPoint curMovingPiecePos_;
     Status status_;
     PieceBi turn_;

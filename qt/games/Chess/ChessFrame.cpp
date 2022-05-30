@@ -7,10 +7,12 @@
 #include <QRandomGenerator>
 
 #include <map>
+#include <numeric>
 
 ChessFrame::ChessFrame(QWidget *parent)
     : QFrame(parent)
     , pieces_(Piece::GetInitStatusPieces())
+    , choosePiecePoint_(std::numeric_limits<char>::max(), std::numeric_limits<char>::max())
     , status_(Status::None)
     , turn_(static_cast<PieceBi>(QRandomGenerator::global()->bounded(2)))
 {
@@ -178,6 +180,28 @@ void ChessFrame::drawMovingPiece(QPainter &painter)
     }
 }
 
+void ChessFrame::drawPieceRect(QPainter &painter, Point point, Qt::GlobalColor color)
+{
+    painter.setPen(QPen(color, 2));
+    painter.drawLine(start.x() + point.first * kUnitLength - kUnitLength / 2, start.y() + point.second * kUnitLength  - kUnitLength / 2
+        , start.x() + point.first * kUnitLength - kUnitLength / 2 + 4, start.y() + point.second * kUnitLength  - kUnitLength / 2);
+    painter.drawLine(start.x() + point.first * kUnitLength + kUnitLength / 2, start.y() + point.second * kUnitLength  - kUnitLength / 2
+        , start.x() + point.first * kUnitLength + kUnitLength / 2 - 4, start.y() + point.second * kUnitLength  - kUnitLength / 2);
+    painter.drawLine(start.x() + point.first * kUnitLength - kUnitLength / 2, start.y() + point.second * kUnitLength  + kUnitLength / 2
+        , start.x() + point.first * kUnitLength - kUnitLength / 2 + 4, start.y() + point.second * kUnitLength  + kUnitLength / 2);
+    painter.drawLine(start.x() + point.first * kUnitLength + kUnitLength / 2, start.y() + point.second * kUnitLength  + kUnitLength / 2
+        , start.x() + point.first * kUnitLength + kUnitLength / 2 - 4, start.y() + point.second * kUnitLength  + kUnitLength / 2);
+
+    painter.drawLine(start.x() + point.first * kUnitLength - kUnitLength / 2, start.y() + point.second * kUnitLength  - kUnitLength / 2
+        , start.x() + point.first * kUnitLength - kUnitLength / 2, start.y() + point.second * kUnitLength  - kUnitLength / 2 + 4);
+    painter.drawLine(start.x() + point.first * kUnitLength - kUnitLength / 2, start.y() + point.second * kUnitLength  + kUnitLength / 2
+        , start.x() + point.first * kUnitLength - kUnitLength / 2, start.y() + point.second * kUnitLength  + kUnitLength / 2 - 4);
+    painter.drawLine(start.x() + point.first * kUnitLength + kUnitLength / 2, start.y() + point.second * kUnitLength  - kUnitLength / 2
+        , start.x() + point.first * kUnitLength + kUnitLength / 2, start.y() + point.second * kUnitLength  - kUnitLength / 2 + 4);
+    painter.drawLine(start.x() + point.first * kUnitLength + kUnitLength / 2, start.y() + point.second * kUnitLength  + kUnitLength / 2
+        , start.x() + point.first * kUnitLength + kUnitLength / 2, start.y() + point.second * kUnitLength  + kUnitLength / 2 - 4);
+}
+
 void ChessFrame::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
@@ -188,6 +212,18 @@ void ChessFrame::paintEvent(QPaintEvent *)
     drawPieces(painter);
 
     drawMovingPiece(painter);
+
+    if (preMovePath_) {
+        // drawPieceRect(painter, preMovePath_->first, Qt::blue);
+        drawPieceRect(painter, preMovePath_->second, Qt::blue);
+    }
+    drawPieceRect(painter, choosePiecePoint_, Qt::yellow);
+    if (status_ == Status::Moving) {
+        drawPieceRect(painter
+            , { (curMovingPiecePos_.x() - start.x() + kUnitLength / 2) / kUnitLength
+                , (curMovingPiecePos_.y() - start.y() + kUnitLength / 2) / kUnitLength }
+            , Qt::yellow);
+    }
 }
 
 void ChessFrame::mousePressEvent(QMouseEvent *event)
@@ -200,7 +236,6 @@ void ChessFrame::mousePressEvent(QMouseEvent *event)
         switch (status_)
         {
         case Status::None:
-            qDebug() << static_cast<int>(turn_);
             if (auto it = pieces_.find(curPoint)
                 ; it != pieces_.end() && it->second.bi() == turn_) {
                 status_ = Status::ClickedPiece;
@@ -243,6 +278,12 @@ void ChessFrame::mouseReleaseEvent(QMouseEvent *event)
             }
             pieces_.erase(choosePiecePoint_);
             pieces_.emplace(std::move(curPoint), std::move(prePiece));
+
+            movedPiecePoint_ = curPoint;
+
+            preMovePath_ = { choosePiecePoint_, movedPiecePoint_ };
+
+            choosePiecePoint_ = { std::numeric_limits<char>::max(), std::numeric_limits<char>::max() };
 
             turn_ = turn_ == PieceBi::kBlack ? PieceBi::kRed : PieceBi::kBlack;
             emit turnChanged(turn_);

@@ -18,6 +18,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     setParent(parent);
     setWindowTitle("Chinese Chess");
+    setWindowFlag(Qt::WindowStaysOnTopHint);
+    setWindowFlag(Qt::WindowMaximizeButtonHint, false);
 
     auto mainLayout = new QGridLayout;
     auto gameLayout = new QGridLayout;
