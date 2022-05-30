@@ -24,10 +24,12 @@ protected:
 
 private:
     void drawBoard(QPainter &painter);
+    void drawBoardBackground(QPainter &painter);
     void drawBoardLine(QPainter &painter);
     void drawBoardText(QPainter &patiner);
     void drawPieces(QPainter &painter);
     void drawMovingPiece(QPainter &painter);
+    void drawPiecePath(QPainter &painter);
 
     void drawPieceRect(QPainter &patiner, Point point, QColor color, int height);
 

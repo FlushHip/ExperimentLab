@@ -32,12 +32,16 @@ void ChessFrame::startFrame()
 
 void ChessFrame::drawBoard(QPainter &painter)
 {
+    drawBoardBackground(painter);
+    drawBoardLine(painter);
+    drawBoardText(painter);
+}
+
+void ChessFrame::drawBoardBackground(QPainter &painter)
+{
     QBrush brush(qRgb(244, 164, 96), Qt::Dense1Pattern);
     painter.fillRect(0, kUnitLength / 2,  9 * kUnitLength, 10 * kUnitLength
         , brush);
-
-    drawBoardLine(painter);
-    drawBoardText(painter);
 }
 
 void ChessFrame::drawBoardLine(QPainter &painter)
@@ -244,6 +248,11 @@ void ChessFrame::paintEvent(QPaintEvent *)
 
     drawMovingPiece(painter);
 
+    drawPiecePath(painter);
+}
+
+void ChessFrame::drawPiecePath(QPainter &painter)
+{
     if (preMovePath_) {
         drawPieceRect(painter, preMovePath_->first, Qt::blue, 2);
         drawPieceRect(painter, preMovePath_->second, Qt::blue, 2);
