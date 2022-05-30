@@ -64,10 +64,3 @@ std::map<Point, Piece> Piece::GetInitStatusPieces()
     };
     return sPieces;
 }
-
-void Piece::draw(const Point &point, QPainter &painter)
-{
-    if (!choosed()) {
-        painter.drawPixmap(point.first * kUnitLength, point.second * kUnitLength, pixmap());
-    }
-}

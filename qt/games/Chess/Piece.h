@@ -33,8 +33,6 @@ public:
     void setChoosed(bool choosed = false) { choosed_ = choosed; };
     const QPixmap & pixmap() const { return GetPieceToPixmapMap()[{ type_, bi_ }]; };
 
-    void draw(const Point &point, QPainter &painter);
-
     static std::map<Point, Piece> GetInitStatusPieces();
 
 private:

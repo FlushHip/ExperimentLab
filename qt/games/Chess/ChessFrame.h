@@ -47,7 +47,7 @@ private:
         ClickedPiece,
         Moving,
     };
-    const QPoint start{ kUnitLength / 2, kUnitLength / 2 };
+    const QPoint start{ kUnitLength / 2, kUnitLength };
     std::map<Point, Piece> pieces_;
     Point choosePiecePoint_;
     Point movedPiecePoint_;

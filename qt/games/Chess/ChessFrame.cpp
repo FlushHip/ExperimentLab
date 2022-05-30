@@ -18,8 +18,8 @@ ChessFrame::ChessFrame(QWidget *parent)
 {
     setParent(parent);
 
-    setFixedSize(9 * kUnitLength + 2, 10 * kUnitLength + 2);
-    setStyleSheet("background-color:SandyBrown");
+    setFixedSize(9 * kUnitLength + 2, 11 * kUnitLength + 2);
+    //setStyleSheet("background-color:SandyBrown");
     setCursor(Qt::OpenHandCursor);
 }
 
@@ -32,6 +32,9 @@ void ChessFrame::startFrame()
 
 void ChessFrame::drawBoard(QPainter &painter)
 {
+    painter.fillRect(0, kUnitLength / 2,  9 * kUnitLength, 10 * kUnitLength
+        , qRgb(244, 164, 96));
+
     drawBoardLine(painter);
     drawBoardText(painter);
 }
@@ -52,9 +55,9 @@ void ChessFrame::drawBoardLine(QPainter &painter)
     QVector<QLine> linesOfVertical;
     for (int i = 0; i < 7; ++i) {
         linesOfVertical.push_back(QLine{ start.x() + (i + 1) * kUnitLength, start.y() + 0
-            , start.x() + (i + 1) * kUnitLength, start.x() + 4 * kUnitLength});
+            , start.x() + (i + 1) * kUnitLength, start.y() + 4 * kUnitLength});
         linesOfVertical.push_back(QLine{ start.x() + (i + 1) * kUnitLength, start.y() + 5 * kUnitLength
-            , start.x() + (i + 1) * kUnitLength, start.x() + (4 + 5) * kUnitLength});
+            , start.x() + (i + 1) * kUnitLength, start.y() + (4 + 5) * kUnitLength});
     }
 
     QVector<QLine> linesOfHorizontal;
@@ -164,11 +167,38 @@ void ChessFrame::drawBoardText(QPainter &painter)
             , QSize{ kUnitLength, kUnitLength } }
         , Qt::AlignBottom | Qt::AlignHCenter, u8"漢");
     painter.resetTransform();
+
+
+    static const QString sPiecePointDigit[][9] = {
+        { u8"一", u8"二", u8"三", u8"四", u8"五", u8"六", u8"七", u8"八", u8"九" },
+        { u8"1", u8"2", u8"3", u8"4", u8"5", u8"6", u8"7", u8"8", u8"9" },
+    };
+
+    font.setFamily(u8"Lucida Console");
+    font.setPixelSize(kUnitLength / 2 - 8);
+    painter.setFont(font);
+    for (int i = 0; i < 9; ++i) {
+        painter.drawText(QRect{ { start.x() + i * kUnitLength - kUnitLength / 4, 0 }
+                , QSize{ kUnitLength / 2, kUnitLength / 2 } }
+            , Qt::AlignCenter, sPiecePointDigit[static_cast<int>(PieceBi::kBlack)][i]);
+    }
+
+    font.setFamily(u8"隶书");
+    font.setPixelSize(kUnitLength / 2 - 5);
+    painter.setFont(font);
+    for (int i = 8; i >= 0; --i) {
+        painter.drawText(QRect{ { start.x() + i * kUnitLength - kUnitLength / 4, start.y() + 9 * kUnitLength + kUnitLength / 2 }
+                , QSize{ kUnitLength / 2, kUnitLength / 2 } }
+            , Qt::AlignCenter, sPiecePointDigit[static_cast<int>(PieceBi::kRed)][8 - i]);
+    }
 }
 void ChessFrame::drawPieces(QPainter &painter)
 {
     for (auto && [point, piece] : pieces_) {
-        piece.draw(point, painter);
+        if (!piece.choosed()) {
+            painter.drawPixmap(start.x() + point.first * kUnitLength - kUnitLength / 2
+                        , start.y() + point.second * kUnitLength - kUnitLength / 2, piece.pixmap());
+        }
     }
 }
 
@@ -214,8 +244,8 @@ void ChessFrame::paintEvent(QPaintEvent *)
     drawMovingPiece(painter);
 
     if (preMovePath_) {
-        drawPieceRect(painter, preMovePath_->first, Qt::blue, 4);
-        drawPieceRect(painter, preMovePath_->second, Qt::blue, 4);
+        drawPieceRect(painter, preMovePath_->first, Qt::blue, 2);
+        drawPieceRect(painter, preMovePath_->second, Qt::blue, 2);
     }
     drawPieceRect(painter, choosePiecePoint_, Qt::yellow, 2);
     if (status_ == Status::Moving) {
