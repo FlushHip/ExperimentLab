@@ -40,7 +40,7 @@ void ChessFrame::drawBoard(QPainter &painter)
 void ChessFrame::drawBoardBackground(QPainter &painter)
 {
     QBrush brush(qRgb(244, 164, 96), Qt::Dense1Pattern);
-    painter.fillRect(0, kUnitLength / 2,  9 * kUnitLength, 10 * kUnitLength
+    painter.fillRect(start.x() - start.x(), kUnitLength / 2,  9 * kUnitLength, 10 * kUnitLength
         , brush);
 }
 
@@ -215,9 +215,9 @@ void ChessFrame::drawMovingPiece(QPainter &painter)
     }
 }
 
-void ChessFrame::drawPieceRect(QPainter &painter, Point point, QColor color, int hegith)
+void ChessFrame::drawPieceRect(QPainter &painter, Point point, const QColor& color, int width)
 {
-    painter.setPen(QPen(color, hegith));
+    painter.setPen(QPen(color, width));
     painter.drawLine(start.x() + point.first * kUnitLength - kUnitLength / 2, start.y() + point.second * kUnitLength  - kUnitLength / 2
         , start.x() + point.first * kUnitLength - kUnitLength / 2 + 4, start.y() + point.second * kUnitLength  - kUnitLength / 2);
     painter.drawLine(start.x() + point.first * kUnitLength + kUnitLength / 2, start.y() + point.second * kUnitLength  - kUnitLength / 2
@@ -317,10 +317,10 @@ void ChessFrame::mouseReleaseEvent(QMouseEvent *event)
 
                 pieces_.erase(it);
             }
-            pieces_.erase(choosePiecePoint_);
-            pieces_.emplace(std::move(curPoint), std::move(prePiece));
-
             movedPiecePoint_ = curPoint;
+
+            pieces_.erase(choosePiecePoint_);
+            pieces_.emplace(std::move(curPoint), prePiece);
 
             preMovePath_ = { choosePiecePoint_, movedPiecePoint_ };
 

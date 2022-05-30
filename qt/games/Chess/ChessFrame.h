@@ -26,12 +26,12 @@ private:
     void drawBoard(QPainter &painter);
     void drawBoardBackground(QPainter &painter);
     void drawBoardLine(QPainter &painter);
-    void drawBoardText(QPainter &patiner);
+    void drawBoardText(QPainter &painter);
     void drawPieces(QPainter &painter);
     void drawMovingPiece(QPainter &painter);
     void drawPiecePath(QPainter &painter);
 
-    void drawPieceRect(QPainter &patiner, Point point, QColor color, int height);
+    void drawPieceRect(QPainter &painter, Point point, const QColor& color, int width);
 
     bool tryMove(const Point &targetPoint);
 
