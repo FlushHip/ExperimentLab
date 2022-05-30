@@ -180,9 +180,9 @@ void ChessFrame::drawMovingPiece(QPainter &painter)
     }
 }
 
-void ChessFrame::drawPieceRect(QPainter &painter, Point point, Qt::GlobalColor color)
+void ChessFrame::drawPieceRect(QPainter &painter, Point point, Qt::GlobalColor color, int hegith)
 {
-    painter.setPen(QPen(color, 2));
+    painter.setPen(QPen(color, hegith));
     painter.drawLine(start.x() + point.first * kUnitLength - kUnitLength / 2, start.y() + point.second * kUnitLength  - kUnitLength / 2
         , start.x() + point.first * kUnitLength - kUnitLength / 2 + 4, start.y() + point.second * kUnitLength  - kUnitLength / 2);
     painter.drawLine(start.x() + point.first * kUnitLength + kUnitLength / 2, start.y() + point.second * kUnitLength  - kUnitLength / 2
@@ -214,15 +214,16 @@ void ChessFrame::paintEvent(QPaintEvent *)
     drawMovingPiece(painter);
 
     if (preMovePath_) {
-        // drawPieceRect(painter, preMovePath_->first, Qt::blue);
-        drawPieceRect(painter, preMovePath_->second, Qt::blue);
+        drawPieceRect(painter, preMovePath_->first, Qt::blue, 4);
+        drawPieceRect(painter, preMovePath_->second, Qt::blue, 4);
     }
-    drawPieceRect(painter, choosePiecePoint_, Qt::yellow);
+    drawPieceRect(painter, choosePiecePoint_, Qt::yellow, 2);
     if (status_ == Status::Moving) {
         drawPieceRect(painter
             , { (curMovingPiecePos_.x() - start.x() + kUnitLength / 2) / kUnitLength
                 , (curMovingPiecePos_.y() - start.y() + kUnitLength / 2) / kUnitLength }
-            , Qt::yellow);
+            , Qt::yellow
+            , 2);
     }
 }
 

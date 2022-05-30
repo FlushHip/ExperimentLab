@@ -29,7 +29,7 @@ private:
     void drawPieces(QPainter &painter);
     void drawMovingPiece(QPainter &painter);
 
-    void drawPieceRect(QPainter &patiner, Point point, Qt::GlobalColor color);
+    void drawPieceRect(QPainter &patiner, Point point, Qt::GlobalColor color, int height);
 
     bool tryMove(const Point &targetPoint);
 
