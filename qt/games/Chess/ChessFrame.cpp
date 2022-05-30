@@ -379,8 +379,8 @@ bool ChessFrame::tryMove(const Point &targetPoint)
             , Point{ 2, 1 }, Point{ 2, -1 }
             , Point{ -1, 2}, Point{ -1, -2 }
             , Point{ -2, 1 }, Point{ -2, -1 } }) {
-            if (auto obstaclePoint = Point{ srcPoint.first + (std::abs(dir_x) == 2)
-                                            , srcPoint.second + (std::abs(dir_y) == 2) }
+            if (auto obstaclePoint = Point{ srcPoint.first + (std::abs(dir_x) == 2 ? dir_x / 2 : 0)
+                                            , srcPoint.second + (std::abs(dir_y) == 2 ? dir_y / 2 : 0) }
                 , toPoint = Point{ srcPoint.first + dir_x, srcPoint.second + dir_y }
                 ; toPoint == desPoint && pieces_.end() == pieces_.find(obstaclePoint)) {
                 return true;
