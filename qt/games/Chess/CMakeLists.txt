@@ -18,6 +18,9 @@ qt5_add_resources(qrc_list
     resource.qrc
 )
 
+# https://doc.qt.io/qt-5/appicon.html
+set(app_rc_list app.rc)
+
 set(header_list
     ${moc_header_list}
 
@@ -41,6 +44,7 @@ add_executable(${TARGET_NAME}
     ${moc_list}
     ${src_list}
     ${qrc_list}
+    ${app_rc_list}
 )
 
 set_target_properties(${TARGET_NAME}
