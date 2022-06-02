@@ -179,8 +179,8 @@ void ChessFrame::drawBoardText(QPainter &painter)
         { u8"1", u8"2", u8"3", u8"4", u8"5", u8"6", u8"7", u8"8", u8"9" },
     };
 
-    font.setFamily(u8"Lucida Console");
     font.setPixelSize(kUnitLength / 2 - 8);
+    font.setBold(true);
     painter.setFont(font);
     for (int i = 0; i < 9; ++i) {
         painter.drawText(QRect{ { start.x() + i * kUnitLength - kUnitLength / 4, 0 }
@@ -190,6 +190,7 @@ void ChessFrame::drawBoardText(QPainter &painter)
 
     font.setFamily(u8"隶书");
     font.setPixelSize(kUnitLength / 2 - 5);
+    font.setBold(false);
     painter.setFont(font);
     for (int i = 8; i >= 0; --i) {
         painter.drawText(QRect{ { start.x() + i * kUnitLength - kUnitLength / 4, start.y() + 9 * kUnitLength + kUnitLength / 2 }
