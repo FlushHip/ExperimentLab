@@ -34,7 +34,7 @@ private:
                 SPDLOG_ERROR(ec.message());
                 return ;
             }
-            auto data_length = std::stoul(std::string(buffer_.data(), 4));
+            uint32_t data_length = *reinterpret_cast<const uint32_t *>(buffer_.data());
             boost::asio::async_read(socket_, boost::asio::buffer(buffer_), boost::asio::transfer_exactly(data_length - size + 4)
                 , [this, self = shared_from_this()](const boost::system::error_code &ec, size_t size)
             {
@@ -42,10 +42,15 @@ private:
                     SPDLOG_ERROR(ec.message());
                     return ;
                 }
-                SPDLOG_INFO("receive msg [{}]", std::string(buffer_.data(), size));
+                SPDLOG_INFO("recv msg [{}]", std::string(buffer_.data(), size));
                 boost::asio::post(pool_, std::bind([this, self = shared_from_this(), size]
                 {
+                    uint32_t len = size;
+                    std::copy(buffer_.data(), buffer_.data() + size, buffer_.data() + 4);
+                    std::copy(reinterpret_cast<const char *>(&len), reinterpret_cast<const char *>(&len + 1), buffer_.data());
                     boost::asio::write(socket_, boost::asio::buffer(buffer_.data(), size));
+
+                    SPDLOG_INFO("write msg [{}]", std::string(buffer_.data(), size + 4));
                 }));
 
                 do_read();
@@ -97,9 +102,13 @@ int main(int argc, char *argv[]) {
     spdlog::set_level(spdlog::level::trace);
     spdlog::set_pattern("[%Y-%m-%d %T.%e][%-5t][%^%l%$][%s.%!:%#] %v");
 
-    boost::asio::io_context io;
-    TcpServer server(io);
-    server.start();
+    try {
+        boost::asio::io_context io;
+        TcpServer server(io);
+        server.start();
+    } catch (std::exception &e) {
+        SPDLOG_ERROR(e.what());
+    }
 
     return 0;
 }
