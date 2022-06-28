@@ -1,4 +1,5 @@
 #include <iostream>
+#include <charconv>
 
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
@@ -9,6 +10,8 @@
 
 std::string random_string()
 {
+    srand(time(nullptr));
+
     auto length = rand() % 48 + 1;
     auto randchar = []() -> char
     {
@@ -41,16 +44,23 @@ int main(int argc, char *argv[]) {
             boost::system::error_code ec;
 
             auto str = random_string();
-            size_t len = str.size();
-            std::copy(reinterpret_cast<const char *>(&len), reinterpret_cast<const char *>(&len + 1), buff.data());
-            std::copy(str.begin(), str.end(), buff.data() + 4);
 
-            boost::asio::write(socket, boost::asio::buffer(buff));
+            // len + body
+            uint32_t len = str.size();
+            //   len
+            std::fill_n(buff.data(), 4, 0);
+            std::to_chars(buff.data(), buff.data() + 4, len);
+            boost::asio::write(socket, boost::asio::buffer(buff), boost::asio::transfer_exactly(4));
+            //   body
+            boost::asio::write(socket, boost::asio::buffer(str), boost::asio::transfer_exactly(len));
             SPDLOG_INFO("send msg : [{}]", str);
 
+            //   len
             boost::asio::read(socket, boost::asio::buffer(buff), boost::asio::transfer_exactly(4));
-            uint32_t recv_len = *(reinterpret_cast<const uint32_t *>(buff.data()));
+            uint32_t recv_len = 0;
+            std::from_chars(buff.data(), buff.data() + 4, recv_len);
             SPDLOG_TRACE("recv msg len is <{}>", recv_len);
+            //   body
             boost::asio::read(socket, boost::asio::buffer(buff), boost::asio::transfer_exactly(recv_len));
             SPDLOG_INFO("recv msg : [{}]", std::string(buff.data(), recv_len));
 

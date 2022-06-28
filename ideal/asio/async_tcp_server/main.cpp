@@ -1,4 +1,5 @@
 #include <iostream>
+#include <charconv>
 
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
@@ -27,6 +28,7 @@ public:
 private:
     void do_read()
     {
+        // len
         boost::asio::async_read(socket_, boost::asio::buffer(buffer_), boost::asio::transfer_exactly(4)
             , [this, self = shared_from_this()](const boost::system::error_code &ec, size_t size)
         {
@@ -34,8 +36,12 @@ private:
                 SPDLOG_ERROR(ec.message());
                 return ;
             }
-            uint32_t data_length = *reinterpret_cast<const uint32_t *>(buffer_.data());
-            boost::asio::async_read(socket_, boost::asio::buffer(buffer_), boost::asio::transfer_exactly(data_length - size + 4)
+            uint32_t data_length = 0;
+            std::from_chars(buffer_.data(), buffer_.data() + 4, data_length);
+            SPDLOG_TRACE("recv msg len is <{}>", data_length);
+
+            // body
+            boost::asio::async_read(socket_, boost::asio::buffer(buffer_), boost::asio::transfer_exactly(data_length)
                 , [this, self = shared_from_this()](const boost::system::error_code &ec, size_t size)
             {
                 if (ec) {
@@ -45,12 +51,12 @@ private:
                 SPDLOG_INFO("recv msg [{}]", std::string(buffer_.data(), size));
                 boost::asio::post(pool_, std::bind([this, self = shared_from_this(), size]
                 {
-                    uint32_t len = size;
-                    std::copy(buffer_.data(), buffer_.data() + size, buffer_.data() + 4);
-                    std::copy(reinterpret_cast<const char *>(&len), reinterpret_cast<const char *>(&len + 1), buffer_.data());
-                    boost::asio::write(socket_, boost::asio::buffer(buffer_.data(), size));
+                    std::array<char, 4> size_buff { 0 };
+                    std::to_chars(size_buff.data(), size_buff.data() + 4, (uint32_t)size);
+                    boost::asio::write(socket_, boost::asio::buffer(size_buff), boost::asio::transfer_exactly(4));
+                    boost::asio::write(socket_, boost::asio::buffer(buffer_), boost::asio::transfer_exactly(size));
 
-                    SPDLOG_INFO("write msg [{}]", std::string(buffer_.data(), size + 4));
+                    SPDLOG_INFO("write msg [{}]", std::string(buffer_.data(), size));
                 }));
 
                 do_read();
