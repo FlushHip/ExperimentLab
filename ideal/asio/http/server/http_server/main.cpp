@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
     using namespace std::literals::string_view_literals;
     constexpr auto address = "127.0.0.1"sv;
     constexpr auto port = "80"sv;
-    constexpr auto doc_root = R"(D:\)"sv;
+    constexpr auto doc_root = R"(D:)"sv;
 
     try {
         http::server::HttpServer server(address, port, doc_root);
