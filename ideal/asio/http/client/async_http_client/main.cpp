@@ -12,6 +12,7 @@ class HttpClient
 public:
     HttpClient(boost::asio::io_context &io_context, std::string_view http_root, std::string_view http_path)
         : io_context_(io_context)
+        , resolver_(io_context)
         , socket_(io_context)
     {
         std::ostream request_stream(&request_);
@@ -21,9 +22,8 @@ public:
         request_stream << "Accept: */*\r\n";
         request_stream << "Connection: close\r\n\r\n";
 
-        boost::asio::ip::tcp::resolver resolver(io_context_);
-        auto endpoints = resolver.resolve(http_root, "http");
-        resolver.async_resolve(http_root, "http", std::bind(&HttpClient::handle_resolve, this
+        auto endpoints = resolver_.resolve(http_root, "http");
+        resolver_.async_resolve(http_root, "http", std::bind(&HttpClient::handle_resolve, this
             , std::placeholders::_1, std::placeholders::_2));
     }
 private:
@@ -121,6 +121,7 @@ private:
 
 private:
     boost::asio::io_context &io_context_;
+    boost::asio::ip::tcp::resolver resolver_;
     boost::asio::ip::tcp::socket socket_;
     boost::asio::streambuf request_;
     boost::asio::streambuf response_;
