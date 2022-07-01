@@ -28,6 +28,8 @@ HttpServer::HttpServer(std::string_view address, std::string_view port, std::str
     acceptor_.bind(endpoint);
     acceptor_.listen();
 
+    SPDLOG_INFO("Server ip : {}, port : {}, doc_root : {}", endpoint.address().to_string(), endpoint.port(), doc_root);
+
     do_accept();
 }
 
@@ -48,6 +50,8 @@ void HttpServer::do_accept()
         }
 
         if (!ec) {
+            auto remote_endpoint = connection->socket().remote_endpoint();
+            SPDLOG_INFO("new connection, ip : {}, port : {}", remote_endpoint.address().to_string(), remote_endpoint.port());
             connection->start();
         } else {
             spdlog::critical(ec.message());

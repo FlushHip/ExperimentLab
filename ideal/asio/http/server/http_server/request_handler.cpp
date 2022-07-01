@@ -4,6 +4,8 @@
 #include <fstream>
 #include <filesystem>
 
+#include <spdlog/spdlog.h>
+
 #include "request.hpp"
 #include "reply.hpp"
 #include "mime_types.hpp"
@@ -24,6 +26,8 @@ void RequestHandler::handle_request(const Request & request, Reply &reply)
         reply = Reply::stock_reply(Reply::status_type::bad_request);
         return;
     }
+
+    SPDLOG_INFO("request path : {}", request_path);
 
     if (request_path.empty() || request_path[0] != '/' || request_path.find("..") != std::string::npos) {
         reply = Reply::stock_reply(Reply::status_type::bad_request);
@@ -53,7 +57,7 @@ void RequestHandler::handle_request(const Request & request, Reply &reply)
     }
 
     reply.status = Reply::status_type::ok;
-    reply.headers.reserve(2);
+    reply.headers.resize(2);
     reply.headers[0].name = "Content-Length";
     reply.headers[0].value = std::to_string(reply.content.size());
     reply.headers[1].name = "Content-Type";

@@ -1,8 +1,9 @@
 #include "connection.hpp"
 
+#include <spdlog/spdlog.h>
+
 #include "connection_manager.hpp"
 #include "request_handler.hpp"
-
 namespace http {
 namespace server {
 
@@ -33,10 +34,12 @@ void Connection::handle_read(const boost::system::error_code &ec, std::size_t si
     if (!ec) {
         auto [result, _] = requset_parser_.parse(request_, buffer_.data(), buffer_.data() + size);
         if (result) {
+            SPDLOG_DEBUG("request header : {}", requset_parser_.raw_string());
             request_handler_.handle_request(request_, reply_);
             boost::asio::async_write(socket_, reply_.to_buffers(), std::bind(&Connection::handle_write, shared_from_this()
                 , std::placeholders::_1));
         } else if (!result) {
+            SPDLOG_DEBUG("request header : {}", requset_parser_.raw_string());
             reply_ = Reply::stock_reply(Reply::bad_request);
             boost::asio::async_write(socket_, reply_.to_buffers(), std::bind(&Connection::handle_write, shared_from_this()
                 , std::placeholders::_1));

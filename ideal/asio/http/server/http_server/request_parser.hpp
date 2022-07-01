@@ -14,11 +14,14 @@ public:
 
     void reset();
 
+    std::string_view raw_string() { return raw_string_; };
+
     template<typename InputIterator>
     std::tuple<boost::tribool, InputIterator>
         parse(Request &request, InputIterator begin, InputIterator end)
     {
         while (begin != end) {
+            raw_string_.push_back(static_cast<char>(*begin));
             auto result = consume(request, *begin++);
             if (result || !result) {
                 return { result, begin };
@@ -58,6 +61,8 @@ private:
         expecting_newline_2,
         expecting_newline_3
     } state_;
+
+    std::string raw_string_;
 };
 
 }
