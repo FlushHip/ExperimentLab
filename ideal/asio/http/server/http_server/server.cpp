@@ -9,8 +9,8 @@ namespace server {
 
 HttpServer::HttpServer(std::string_view address, std::string_view port, std::string_view doc_root)
     : io_context_(1)
-    , acceptor_(io_context_)
     , signals_(io_context_)
+    , acceptor_(io_context_)
     , request_handler_(doc_root)
 {
     signals_.add(SIGINT);
