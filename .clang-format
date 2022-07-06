@@ -1,0 +1,15 @@
+---
+Language:        Cpp
+BasedOnStyle: Chromium
+IndentWidth: 4
+ContinuationIndentWidth: 4
+ColumnLimit: 80
+AccessModifierOffset: -4
+AlignAfterOpenBracket: DontAlign
+BreakConstructorInitializers: BeforeComma
+BreakInheritanceList: BeforeComma
+IndentPPDirectives : AfterHash
+PPIndentWidth : 2
+AlignOperands : DontAlign
+# SeparateDefinitionBlocks : Always
+...
