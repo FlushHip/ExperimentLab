@@ -17,7 +17,8 @@ int main(int argc, char** argv) {
         auto ans = 0;
 
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
-            std::chrono::steady_clock::now() - start_epoch);
+                            std::chrono::steady_clock::now() - start_epoch) *
+            100000;
 
         std::cout << "  |-   \x1b[31mans -> \x1b[0m" << std::boolalpha << ans
                   << std::endl
