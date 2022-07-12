@@ -27,7 +27,7 @@ void do_read(boost::asio::ip::tcp::socket& socket, Buffer& buffer) {
         });
 }
 
-int main(int argc, char* argv[]) {
+int main(int /*argc*/, char* /*argv*/[]) {
     try {
         boost::asio::io_context io_context(1);
         boost::asio::ip::tcp::resolver resolver(io_context);
@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
         logger.log(ss.str());
 
         boost::asio::ip::tcp::socket socket(io_context);
-        std::array<char, 1024> buffer;
+        std::array<char, 1024> buffer = {0};
         socket.async_connect(
             endpoint, [&socket, &buffer](const boost::system::error_code& ec) {
                 services::logger logger(
