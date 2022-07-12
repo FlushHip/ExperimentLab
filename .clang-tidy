@@ -1,5 +1,15 @@
-Checks: '*,
+Checks: >
+    *,
     -llvmlibc-*,
     -readability-identifier-length,
+    -readability-redundant-access-specifiers,
     -fuchsia-default-arguments-calls,
-    -modernize-use-trailing-return-type'
+    -modernize-use-trailing-return-type,
+
+CheckOptions:
+    -
+        key : readability-identifier-naming.PrivateMemberCase
+        value : lower_case
+    -
+        key : readability-identifier-naming.PrivateMemberSuffix
+        value : _
