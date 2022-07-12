@@ -5,6 +5,8 @@ Checks: >
     -readability-redundant-access-specifiers,
     -fuchsia-default-arguments-calls,
     -modernize-use-trailing-return-type,
+    -hicpp-no-array-decay,
+    -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
 
 CheckOptions:
     -
