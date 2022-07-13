@@ -7,7 +7,7 @@ int main(int argc, char** argv) {
 
     VList<> v{};
 
-    for (auto L = 0u; L < v.size(); ++L) {
+    for (auto L = 0U; L < v.size(); ++L) {
         std::cout << "\x1b[32mExample " << L + 1 << " :\x1b[0m" << std::endl;
 
         std::cout << "  |-   \x1b[33mdata-> \x1b[0m" << v[L] << std::endl;
