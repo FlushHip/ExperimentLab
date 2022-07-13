@@ -1,5 +1,7 @@
 #include "lib.h"
 
+#include <iostream>
+
 namespace lib_static {
 namespace a {
 
@@ -11,6 +13,11 @@ int& static_var() {
 
 int& global_var() {
     return global_i;
+}
+
+void print() {
+    std::cout << &global_i << std::endl;
+    std::cout << &static_var() << std::endl;
 }
 
 }  // namespace a
