@@ -3,8 +3,12 @@ Checks: >
     -llvmlibc-*,
     -readability-identifier-length,
     -readability-redundant-access-specifiers,
+    -readability-magic-numbers,
+    -readability-convert-member-functions-to-static,
     -fuchsia-default-arguments-calls,
     -modernize-use-trailing-return-type,
+    -altera-unroll-loops,
+    -cppcoreguidelines-avoid-magic-numbers,
 
 CheckOptions:
     -
