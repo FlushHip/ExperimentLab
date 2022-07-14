@@ -1,6 +1,7 @@
-#include <exception>
 #include "logger.hpp"
 #include "rpc_client.hpp"
+
+#include <exception>
 
 int main(int /*argc*/, char** /*argv*/) {
     rpc::logger::init();

@@ -12,7 +12,11 @@ Checks: >
     -modernize-loop-convert,
     -modernize-pass-by-value,
     -hicpp-no-array-decay,
+    -hicpp-special-member-functions,
+    -hicpp-signed-bitwise,
     -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+    -cppcoreguidelines-special-member-functions,
+    -cppcoreguidelines-pro-bounds-pointer-arithmetic,
     -altera-unroll-loops,
     -altera-struct-pack-align,
     -cppcoreguidelines-avoid-magic-numbers,
@@ -24,3 +28,9 @@ CheckOptions:
     -
         key : readability-identifier-naming.PrivateMemberSuffix
         value : _
+    -
+        key : readability-identifier-naming.GlobalConstantPrefix
+        value : k
+    -
+        key : readability-identifier-naming.StaticVariablePrefix
+        value : s

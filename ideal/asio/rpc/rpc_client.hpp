@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/asio/buffer.hpp>
+#include <boost/asio/error.hpp>
 #include <boost/asio/executor_work_guard.hpp>
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/address_v4.hpp>
@@ -8,10 +9,12 @@
 #include <boost/asio/read.hpp>
 #include <boost/system/error_code.hpp>
 
+#include <charconv>
 #include <condition_variable>
 #include <cstddef>
 #include <memory>
 #include <mutex>
+#include <sstream>
 #include <thread>
 
 #include "logger.hpp"
@@ -71,13 +74,41 @@ private:
         boost::asio::async_read(socket_,
             boost::asio::buffer(buffer_, detail::khead_length),
             [this](const boost::system::error_code& ec,
-                std::size_t bytes_transfered) {
+                std::size_t /*bytes_transfered*/) {
                 if (!ec) {
+                    int size = 0;
+                    std::from_chars(buffer_.data(),
+                        buffer_.data() + detail::khead_length, size);
+                    if (size > 0 &&
+                        size < detail::kbuffer_size - detail::khead_length) {
+                        boost::asio::async_read(socket_,
+                            boost::asio::buffer(buffer_, size),
+                            [this](const boost::system::error_code& ec,
+                                std::size_t bytes_transfered) {
+                                if (!ec) {
+                                    deal_data(buffer_, bytes_transfered);
+
+                                    do_read();
+                                } else if (ec != boost::asio::error::eof) {
+                                    LOG_ERROR << ec.message();
+                                } else {
+                                    LOG_ERROR << ec.message();
+                                    close();
+                                }
+                            });
+                    } else {
+                        LOG_ERROR << "invalid data length " << size;
+                        close();
+                    }
                 } else {
                     LOG_ERROR << ec.message();
+                    close();
                 }
             });
     }
+
+    template <typename Buffer>
+    void deal_data(Buffer& buffer, std::size_t size) {}
 
 private:
     boost::asio::io_context io_context_{1};
@@ -94,7 +125,7 @@ private:
     std::condition_variable cv_async_connect_;
     std::atomic_bool has_connected_{false};
 
-    std::array<char, detail::kbuffer_size> buffer_;
+    std::array<char, detail::kbuffer_size> buffer_{0};
 };
 
 }  // namespace rpc
