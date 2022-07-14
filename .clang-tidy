@@ -6,10 +6,15 @@ Checks: >
     -readability-magic-numbers,
     -readability-convert-member-functions-to-static,
     -fuchsia-default-arguments-calls,
+    -fuchsia-multiple-inheritance,
     -modernize-use-trailing-return-type,
+    -modernize-concat-nested-namespaces,
+    -modernize-loop-convert,
+    -modernize-pass-by-value,
     -hicpp-no-array-decay,
     -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
     -altera-unroll-loops,
+    -altera-struct-pack-align,
     -cppcoreguidelines-avoid-magic-numbers,
 
 CheckOptions:
