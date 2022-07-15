@@ -1,12 +1,16 @@
+#include <exception>
+
+#include <doctest/doctest.h>
+
 #include "logger.hpp"
 #include "rpc_client.hpp"
 
-#include <exception>
-
-int main(int /*argc*/, char** /*argv*/) {
-    rpc::logger::init();
-
+TEST_CASE("test logger") {
     LOG_INFO << "hello rpc";
+}
+
+int main(int argc, char** argv) {
+    rpc::logger::init();
 
     try {
         rpc::client client("127.0.0.1", 10010);
@@ -14,5 +18,6 @@ int main(int /*argc*/, char** /*argv*/) {
     } catch (std::exception& e) {
         LOG_ERROR << e.what();
     }
-    return 0;
+
+    return doctest::Context(argc, argv).run();
 }

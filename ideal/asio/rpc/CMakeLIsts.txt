@@ -11,5 +11,7 @@ find_package(Boost 1.70.0 REQUIRED)
 target_compile_features(rpc_client PRIVATE cxx_std_17)
 target_link_libraries(rpc_client
     PRIVATE spdlog::spdlog_header_only
+    nlohmann_json::nlohmann_json
+    doctest::doctest
     Boost::headers
     Boost::disable_autolinking)
