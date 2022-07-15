@@ -200,16 +200,19 @@ private:
 
         // TODO(FlushHip) : buffers's data need restore
         std::vector<boost::asio::const_buffer> buffers;
+
         uint32_t data_size = detail::krequest_id_length + body_str.size();
         std::array<char, detail::khead_length> head_length_buff{0};
         std::to_chars(head_length_buff.data(),
             head_length_buff.data() + detail::khead_length, data_size);
         buffers.emplace_back(head_length_buff);
+
         std::array<char, detail::krequest_id_length> request_id_length_buff{0};
         std::to_chars(request_id_length_buff.data(),
             request_id_length_buff.data() + detail::krequest_id_length,
             request_id);
         buffers.emplace_back(request_id_length_buff);
+
         buffers.emplace_back(body_str);
 
         boost::asio::async_write(socket_, buffers,

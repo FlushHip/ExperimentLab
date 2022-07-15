@@ -15,3 +15,4 @@ target_link_libraries(rpc_client
     doctest::doctest
     Boost::headers
     Boost::disable_autolinking)
+target_compile_definitions(rpc_client PRIVATE DOCTEST_CONFIG_IMPLEMENT)
