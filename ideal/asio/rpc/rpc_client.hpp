@@ -6,6 +6,7 @@
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/address_v4.hpp>
 #include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/post.hpp>
 #include <boost/asio/read.hpp>
 #include <boost/asio/steady_timer.hpp>
 #include <boost/asio/write.hpp>
@@ -29,7 +30,6 @@
 #include <unordered_map>
 #include <utility>
 
-#include "boost/asio/post.hpp"
 #include "logger.hpp"
 
 namespace rpc {
@@ -112,6 +112,7 @@ public:
         } else if (!has_connected_) {
             handler(boost::asio::error::not_connected, {});
         } else {
+            ++request_next_id_;
             auto call_ctx =
                 std::make_shared<call_context>(io_context_, std::move(handler));
             std::unique_lock<std::mutex> lock(mutex_context_);
@@ -119,8 +120,6 @@ public:
             lock.unlock();
 
             do_send(request_next_id_, method, std::forward(args)...);
-
-            ++request_next_id_;
         }
     }
 

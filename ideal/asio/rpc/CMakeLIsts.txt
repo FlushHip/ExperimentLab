@@ -1,18 +1,18 @@
 cmake_minimum_required(VERSION 3.20)
 
-add_executable(rpc_client
+add_executable(rpc_unittest
     logger.hpp
-    rpc_client.hpp
+    rpc_unittest.hpp
 
     main.cpp)
 
 find_package(Boost 1.70.0 REQUIRED)
 
-target_compile_features(rpc_client PRIVATE cxx_std_17)
-target_link_libraries(rpc_client
+target_compile_features(rpc_unittest PRIVATE cxx_std_17)
+target_link_libraries(rpc_unittest
     PRIVATE spdlog::spdlog_header_only
     nlohmann_json::nlohmann_json
     doctest::doctest
     Boost::headers
     Boost::disable_autolinking)
-target_compile_definitions(rpc_client PRIVATE DOCTEST_CONFIG_IMPLEMENT)
+target_compile_definitions(rpc_unittest PRIVATE DOCTEST_CONFIG_IMPLEMENT)
