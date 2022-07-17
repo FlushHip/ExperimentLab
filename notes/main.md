@@ -17,6 +17,7 @@
 - [asio](https://think-async.com/Asio/)
 - [cinatra](https://github.com/qicosmos/cinatra)
 - [websocketpp](https://github.com/zaphoyd/websocketpp)
+- [rest_rpc](https://github.com/qicosmos/rest_rpc)
 
 ## 设计模式
 
