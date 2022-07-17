@@ -20,6 +20,7 @@
 #include <functional>
 #include <memory>
 #include <mutex>
+#include <queue>
 #include <sstream>
 #include <string_view>
 #include <system_error>
@@ -28,6 +29,7 @@
 #include <unordered_map>
 #include <utility>
 
+#include "boost/asio/post.hpp"
 #include "logger.hpp"
 
 namespace rpc {
@@ -55,12 +57,15 @@ public:
     }
 
     void close() {
-        if (has_connected_) {
-            // http://www.purecpp.org/detail?id=2303
+        boost::asio::post(io_context_, [this] {
+            if (!socket_.is_open()) {
+                return;
+            }
             socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
             socket_.close();
             has_connected_ = false;
-        }
+        });
+        clear_cache();
     }
 
     void stop() {
@@ -71,6 +76,8 @@ public:
     }
 
     bool connect() {
+        LOG_INFO << "begin connect ip : " << ip_ << ", port : " << port_;
+
         async_connect();
 
         std::unique_lock<std::mutex> lock(mutex_async_connect_);
@@ -111,7 +118,7 @@ public:
             call_context_map_[request_next_id_] = std::move(call_ctx);
             lock.unlock();
 
-            do_write(request_next_id_, method, std::forward(args)...);
+            do_send(request_next_id_, method, std::forward(args)...);
 
             ++request_next_id_;
         }
@@ -190,7 +197,7 @@ private:
     }
 
     template <typename... Args>
-    void do_write(std::uint64_t request_id,
+    void do_send(std::uint64_t request_id,
         const std::string& method,
         Args&&... args) {
         std::pair<std::string, std::tuple<Args...>> body_struct{
@@ -198,35 +205,61 @@ private:
         nlohmann::json body_json = body_struct;
         std::string body_str = body_json;
 
-        // TODO(FlushHip) : buffers's data need restore
-        std::vector<boost::asio::const_buffer> buffers;
+        auto cache_ctx = std::make_unique<cache_context>();
 
         uint32_t data_size = detail::krequest_id_length + body_str.size();
-        std::array<char, detail::khead_length> head_length_buff{0};
-        std::to_chars(head_length_buff.data(),
-            head_length_buff.data() + detail::khead_length, data_size);
-        buffers.emplace_back(head_length_buff);
+        std::to_chars(cache_ctx->head_length_buff.data(),
+            cache_ctx->head_length_buff.data() + detail::khead_length,
+            data_size);
 
-        std::array<char, detail::krequest_id_length> request_id_length_buff{0};
-        std::to_chars(request_id_length_buff.data(),
-            request_id_length_buff.data() + detail::krequest_id_length,
+        std::to_chars(cache_ctx->request_id_length_buff.data(),
+            cache_ctx->request_id_length_buff.data() +
+                detail::krequest_id_length,
             request_id);
-        buffers.emplace_back(request_id_length_buff);
 
-        buffers.emplace_back(body_str);
+        cache_ctx->body_str = std::move(body_str);
 
-        boost::asio::async_write(socket_, buffers,
-            [this, request_id](const boost::system::error_code& ec,
-                std::size_t bytes_transfered) {
-                if (!ec) {
-                    LOG_TRACE << "request id " << request_id
-                              << ", send success, size bytes "
-                              << bytes_transfered;
-                } else {
-                    LOG_ERROR << ec.message();
-                    has_connected_ = false;
-                }
-            });
+        {
+            std::lock_guard<std::mutex> lock(mutex_cache_);
+            cache_messages_.push(std::move(cache_ctx));
+            LOG_TRACE << "request id " << request_id
+                      << ", cache success, size bytes " << data_size;
+        }
+        do_write();
+    }
+
+    void do_write() {
+        std::lock_guard<std::mutex> lock(mutex_cache_);
+        if (!cache_messages_.empty()) {
+            std::vector<boost::asio::const_buffer> buffers{
+                boost::asio::buffer(cache_messages_.front()->head_length_buff),
+                boost::asio::buffer(
+                    cache_messages_.front()->request_id_length_buff),
+                boost::asio::buffer(cache_messages_.front()->body_str),
+            };
+
+            boost::asio::async_write(socket_, buffers,
+                [this](const boost::system::error_code& ec,
+                    std::size_t /*bytes_transfered*/) {
+                    if (!ec) {
+                        {
+                            std::lock_guard<std::mutex> lock(mutex_cache_);
+                            cache_messages_.pop();
+                        }
+                        do_write();
+                    } else {
+                        LOG_ERROR << ec.message();
+                        has_connected_ = false;
+                    }
+                });
+        }
+    }
+
+    void clear_cache() {
+        std::lock_guard<std::mutex> lock(mutex_cache_);
+        while (!cache_messages_.empty()) {
+            cache_messages_.pop();
+        }
     }
 
 private:
@@ -260,6 +293,12 @@ private:
         bool timeouted_ = false;
     };
 
+    struct cache_context {
+        std::array<char, detail::khead_length> head_length_buff{0};
+        std::array<char, detail::krequest_id_length> request_id_length_buff{0};
+        std::string body_str;
+    };
+
 private:
     boost::asio::io_context io_context_{1};
     boost::asio::executor_work_guard<boost::asio::io_context::executor_type>
@@ -282,6 +321,9 @@ private:
         call_context_map_;
 
     std::atomic<std::uint64_t> request_next_id_{0};
+
+    std::mutex mutex_cache_;
+    std::queue<std::unique_ptr<cache_context>> cache_messages_;
 };
 
 }  // namespace rpc
