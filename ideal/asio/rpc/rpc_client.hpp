@@ -30,17 +30,10 @@
 #include <unordered_map>
 #include <utility>
 
+#include "com_define.hpp"
 #include "logger.hpp"
 
 namespace rpc {
-
-namespace detail {
-
-constexpr int kbuffer_size = 1 << 13;
-constexpr int khead_length = 4;
-constexpr int krequest_id_length = 8;
-
-}  // namespace detail
 
 using handler =
     std::function<void(const boost::system::error_code& ec, std::string_view)>;
@@ -94,6 +87,7 @@ public:
                 if (!ec) {
                     do_read();
 
+                    has_connected_ = true;
                     cv_async_connect_.notify_all();
                 } else {
                     LOG_ERROR << ec.message();
@@ -105,8 +99,8 @@ public:
 
     template <typename... Args>
     void async_call(const std::string& method,
-        Args&&... args,
-        handler handler) {
+        handler handler,
+        Args&&... args) {
         if (!handler) {
             LOG_ERROR << "handler is nullptr";
         } else if (!has_connected_) {
@@ -115,11 +109,13 @@ public:
             ++request_next_id_;
             auto call_ctx =
                 std::make_shared<call_context>(io_context_, std::move(handler));
+            call_ctx->start();
             std::unique_lock<std::mutex> lock(mutex_context_);
             call_context_map_[request_next_id_] = std::move(call_ctx);
             lock.unlock();
 
-            do_send(request_next_id_, method, std::forward(args)...);
+            do_send(
+                request_next_id_.load(), method, std::forward<Args>(args)...);
         }
     }
 
@@ -153,7 +149,7 @@ private:
                         LOG_ERROR << "invalid data length " << size;
                         close();
                     }
-                } else {
+                } else if (ec != boost::asio::error::eof) {
                     LOG_ERROR << ec.message();
                     close();
                 }
@@ -200,13 +196,15 @@ private:
         const std::string& method,
         Args&&... args) {
         std::pair<std::string, std::tuple<Args...>> body_struct{
-            method, std::forward_as_tuple(std::forward(args)...)};
+            method, std::forward_as_tuple(std::forward<Args>(args)...)};
         nlohmann::json body_json = body_struct;
-        std::string body_str = body_json;
+        std::string body_str = body_json.dump();
+        LOG_TRACE << "write body : " << body_str;
 
-        auto cache_ctx = std::make_unique<cache_context>();
+        auto cache_ctx = std::make_unique<detail::cache_context>();
 
-        uint32_t data_size = detail::krequest_id_length + body_str.size();
+        auto data_size = static_cast<std::uint32_t>(
+            detail::krequest_id_length + body_str.size());
         std::to_chars(cache_ctx->head_length_buff.data(),
             cache_ctx->head_length_buff.data() + detail::khead_length,
             data_size);
@@ -266,7 +264,9 @@ private:
     public:
         call_context(boost::asio::io_context& io_context, handler handler)
             : timer_(io_context, std::chrono::seconds(3))
-            , handler_(std::move(handler)) {
+            , handler_(std::move(handler)) {}
+
+        void start() {
             timer_.async_wait([this, self = shared_from_this()](
                                   const boost::system::error_code& ec) {
                 if (!ec) {
@@ -290,12 +290,6 @@ private:
         boost::asio::steady_timer timer_;
         handler handler_;
         bool timeouted_ = false;
-    };
-
-    struct cache_context {
-        std::array<char, detail::khead_length> head_length_buff{0};
-        std::array<char, detail::krequest_id_length> request_id_length_buff{0};
-        std::string body_str;
     };
 
 private:
@@ -322,7 +316,7 @@ private:
     std::atomic<std::uint64_t> request_next_id_{0};
 
     std::mutex mutex_cache_;
-    std::queue<std::unique_ptr<cache_context>> cache_messages_;
+    std::queue<std::unique_ptr<detail::cache_context>> cache_messages_;
 };
 
 }  // namespace rpc

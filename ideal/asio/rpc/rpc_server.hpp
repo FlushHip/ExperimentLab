@@ -30,7 +30,7 @@ public:
         io_context_pool_.run();
     }
 
-    void stop() {}
+    void stop() { io_context_pool_.stop(); }
 
     void close() { stop(); }
 
