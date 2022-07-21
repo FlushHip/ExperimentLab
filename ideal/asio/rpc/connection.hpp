@@ -8,6 +8,7 @@
 
 #include <charconv>
 #include <memory>
+#include <mutex>
 #include <queue>
 #include <unordered_map>
 
@@ -80,6 +81,7 @@ private:
     }
 
     void clear_cache() {
+        std::lock_guard<std::mutex> lock(mutex_cache_);
         while (!cache_messages_.empty()) {
             cache_messages_.pop();
         }
@@ -91,6 +93,7 @@ private:
 
     std::array<char, detail::kbuffer_size> buffer_{0};
 
+    std::mutex mutex_cache_;
     std::queue<std::unique_ptr<detail::cache_context>> cache_messages_;
 };
 
