@@ -1,15 +1,58 @@
 #include <boost/system/error_code.hpp>
 #include <exception>
+#include <memory>
 #include <thread>
 
 #include <doctest/doctest.h>
 
+#include "connection.hpp"
 #include "logger.hpp"
+#include "router.hpp"
 #include "rpc_client.hpp"
 #include "rpc_server.hpp"
 
 TEST_CASE("test logger") {
     LOG_INFO << "hello rpc";
+}
+
+void fun_void(std::weak_ptr<rpc::detail::connection>,
+    int i,
+    std::string s,
+    float f) {
+    LOG_INFO << i << " " << s << " " << f;
+}
+
+int fun_int(std::weak_ptr<rpc::detail::connection>,
+    int i,
+    std::string s,
+    float f) {
+    LOG_INFO << i << " " << s << " " << f;
+    return 1314;
+}
+
+TEST_CASE("test router") {
+    rpc::detail::router router;
+    router.rigister("flushhip_void", fun_void);
+    router.rigister("flushhip_int", fun_int);
+    router.rigister("lambda",
+        [](std::weak_ptr<rpc::detail::connection>, int i, std::string s,
+            float f) { LOG_INFO << "lambda"; });
+    struct dummy {
+        int fun(std::weak_ptr<rpc::detail::connection>,
+            int i,
+            std::string s,
+            float f) {
+            LOG_INFO << "member func";
+        }
+    } d;
+    router.rigister("mem_fun",
+        std::bind(&dummy::fun, &d, std::placeholders::_1, std::placeholders::_2,
+            std::placeholders::_3));
+
+    router.route("flushhip_void");
+    router.route("flushhip_int");
+    router.route("lambda");
+    router.route("mem_fun");
 }
 
 TEST_CASE("run rpc client and server") {

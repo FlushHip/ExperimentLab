@@ -5,6 +5,7 @@ add_executable(rpc_unittest
     io_context_pool.hpp
     com_define.hpp
     connection.hpp
+    router.hpp
     rpc_client.hpp
     rpc_server.hpp
 
