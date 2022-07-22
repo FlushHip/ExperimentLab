@@ -2,10 +2,15 @@
 #include <iterator>
 #include <limits>
 #include <memory>
+#include <mutex>
 #include <string_view>
 #include <thread>
 
 #include <boost/algorithm/hex.hpp>
+#include <boost/program_options.hpp>
+#include <boost/program_options/options_description.hpp>
+#include <boost/program_options/parsers.hpp>
+#include <boost/program_options/variables_map.hpp>
 
 #include <cinatra/define.h>
 #include <cinatra/connection.hpp>
@@ -20,12 +25,22 @@
 #include "logger.hpp"
 #include "usb_cap/usb_cap.h"
 
+namespace {
+
+std::string ip = "0.0.0.0";
+std::string port = "8081";
+
+std::mutex mutex_connections;
 std::vector<std::weak_ptr<cinatra::connection<cinatra::NonSSL>>> connections;
+
+}  // namespace
 
 void handle_capture(char* data, int len) {
     std::string str;
     boost::algorithm::hex(data, data + len, std::back_inserter(str));
     FMT_LOG_TRACE("raw data:{}", spdlog::to_hex(str));
+
+    std::lock_guard<std::mutex> lock(mutex_connections);
     for (auto& conn : connections) {
         if (!conn.expired()) {
             conn.lock()->send_ws_string(str);
@@ -41,9 +56,6 @@ void do_websocket_server() {
 
     server.set_http_handler<cinatra::GET, cinatra::POST>("/usb_capture",
         [](cinatra::request& request, cinatra::response& /*response*/) {
-            // assert(
-            //     request.get_content_type() ==
-            //     cinatra::content_type::websocket);
             if (request.get_content_type() !=
                 cinatra::content_type::websocket) {
                 LOG_WARN << "someone use other protocol for websocket, type : "
@@ -52,7 +64,10 @@ void do_websocket_server() {
 
             request.on(cinatra::ws_open, [](cinatra::request& request) {
                 auto conn = request.get_conn<cinatra::NonSSL>();
-                connections.push_back(conn);
+                {
+                    std::lock_guard<std::mutex> lock(mutex_connections);
+                    connections.push_back(conn);
+                }
 
                 auto [ip, port] = conn->remote_ip_port();
                 LOG_INFO << "websocket client ip : " << ip
@@ -88,8 +103,38 @@ void do_usb_capture() {
     LOG_INFO << "end usb capture";
 }
 
+void rigister_service() {}
+
+int init_options(int argc, char** argv) {
+    boost::program_options::options_description desc("Allowed options");
+    desc.add_options()("help", "options")("rig", "register windows service")(
+        "unrig", "unregister windows service")("ip",
+        boost::program_options::value<std::string>(&ip),
+        "websocket listen ip")("port",
+        boost::program_options::value<std::string>(&port), "websocket port");
+
+    boost::program_options::variables_map vm;
+    boost::program_options::store(
+        boost::program_options::parse_command_line(argc, argv, desc), vm);
+    boost::program_options::notify(vm);
+
+    if (vm.count("help") != 0U) {
+        std::cout << desc << std::endl;
+        return 0;
+    }
+    if (vm.count("rig") != 0U) {
+        rigister_service();
+        return 0;
+    }
+    return 1;
+}
+
 int main(int argc, char** argv) {
     detail::logger::init();
+
+    if (init_options(argc, argv) == 0) {
+        return 0;
+    }
 
     LOG_INFO << argv[0] << " start.";
 
