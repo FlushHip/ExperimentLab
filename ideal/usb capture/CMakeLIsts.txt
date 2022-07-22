@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 
 add_executable(usb_capture
-
+    logger.hpp
     main.cpp)
 
 find_package(Boost 1.70.0 REQUIRED)
@@ -10,8 +10,8 @@ target_compile_features(usb_capture PRIVATE cxx_std_17)
 target_link_directories(usb_capture PRIVATE "C:\\Users\\FlushHip\\Desktop\\USB")
 target_link_libraries(usb_capture
     PRIVATE spdlog::spdlog_header_only
-    nlohmann_json::nlohmann_json
-    doctest::doctest
     Boost::headers
     Boost::disable_autolinking
+    cinatra::cinatra
+    prettyprint::prettyprint
     USBCap)
