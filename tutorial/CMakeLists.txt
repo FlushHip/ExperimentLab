@@ -16,8 +16,8 @@ if (WIN32)
         COMMENT "copy dynamic lib to workdir to run")
 endif ()
 
-install(TARGETS tutorial_main DESTINATION bin)
-install(FILES $<$<PLATFORM_ID:Windows>:$<TARGET_PDB_FILE:tutorial_main>> DESTINATION bin OPTIONAL)
+#install(TARGETS tutorial_main DESTINATION bin)
+#install(FILES $<$<PLATFORM_ID:Windows>:$<TARGET_PDB_FILE:tutorial_main>> DESTINATION bin OPTIONAL)
 
 add_test(NAME Runs COMMAND tutorial_main 25)
 

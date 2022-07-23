@@ -1,5 +1,5 @@
 
-add_executable(tutorial_math_make_sqrt_table 
+add_executable(tutorial_math_make_sqrt_table
     table_sqrt_10_make.cpp)
 set_target_properties(tutorial_math_make_sqrt_table PROPERTIES
     FOLDER "tutorial/math"
@@ -26,5 +26,5 @@ if(HAVE_LOG AND HAVE_EXP)
     target_compile_definitions(tutorial_math_sqrt PRIVATE HAVE_LOG HAVE_EXP)
 endif()
 
-install(TARGETS tutorial_math_sqrt DESTINATION lib/static)
-install(FILES sqrt.h DESTINATION include/math/sqrt)
+#install(TARGETS tutorial_math_sqrt DESTINATION lib/static)
+#install(FILES sqrt.h DESTINATION include/math/sqrt)
