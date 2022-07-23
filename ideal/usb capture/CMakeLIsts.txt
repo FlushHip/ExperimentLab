@@ -1,9 +1,20 @@
 cmake_minimum_required(VERSION 3.20)
 
 add_executable(usb_capture
+    logger.hpp
     utils.h
     utils.cpp
-    logger.hpp
+    win_service.h
+    win_service.cpp
+    sample_bus.h
+    sample_bus.cpp
+    thread_controller.hpp
+    usb_cap.h
+    usb_cap.cpp
+    websocket_server.h
+    websocket_server.cpp
+    app.h
+    app.cpp
     main.cpp)
 
 find_package(Boost 1.70.0 REQUIRED)

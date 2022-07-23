@@ -15,6 +15,7 @@
 
 #include "utils.h"
 
+namespace hestina {
 namespace detail {
 
 class logger : public std::ostringstream {
@@ -75,35 +76,42 @@ private:
 };
 
 }  // namespace detail
+}  // namespace hestina
 
-#define LOG_TRACE \
-  detail::logger({__FILE__, __LINE__, __FUNCTION__}, spdlog::level::trace)
-#define LOG_DEBUG \
-  detail::logger({__FILE__, __LINE__, __FUNCTION__}, spdlog::level::debug)
-#define LOG_INFO \
-  detail::logger({__FILE__, __LINE__, __FUNCTION__}, spdlog::level::info)
-#define LOG_WARN \
-  detail::logger({__FILE__, __LINE__, __FUNCTION__}, spdlog::level::warn)
-#define LOG_ERROR \
-  detail::logger({__FILE__, __LINE__, __FUNCTION__}, spdlog::level::err)
-#define LOG_FATAL \
-  detail::logger({__FILE__, __LINE__, __FUNCTION__}, spdlog::level::critical)
+#define LOG_TRACE          \
+  hestina::detail::logger( \
+      {__FILE__, __LINE__, __FUNCTION__}, spdlog::level::trace)
+#define LOG_DEBUG          \
+  hestina::detail::logger( \
+      {__FILE__, __LINE__, __FUNCTION__}, spdlog::level::debug)
+#define LOG_INFO           \
+  hestina::detail::logger( \
+      {__FILE__, __LINE__, __FUNCTION__}, spdlog::level::info)
+#define LOG_WARN           \
+  hestina::detail::logger( \
+      {__FILE__, __LINE__, __FUNCTION__}, spdlog::level::warn)
+#define LOG_ERROR          \
+  hestina::detail::logger( \
+      {__FILE__, __LINE__, __FUNCTION__}, spdlog::level::err)
+#define LOG_FATAL          \
+  hestina::detail::logger( \
+      {__FILE__, __LINE__, __FUNCTION__}, spdlog::level::critical)
 
-#define FMT_LOG_TRACE(msg, ...)                           \
-  detail::logger::log({__FILE__, __LINE__, __FUNCTION__}, \
+#define FMT_LOG_TRACE(msg, ...)                                    \
+  hestina::detail::logger::log({__FILE__, __LINE__, __FUNCTION__}, \
       spdlog::level::trace, msg, ##__VA_ARGS__);
-#define FMT_LOG_DEBUG(msg, ...)                           \
-  detail::logger::log({__FILE__, __LINE__, __FUNCTION__}, \
+#define FMT_LOG_DEBUG(msg, ...)                                    \
+  hestina::detail::logger::log({__FILE__, __LINE__, __FUNCTION__}, \
       spdlog::level::debug, msg, ##__VA_ARGS__);
-#define FMT_LOG_INFO(msg, ...)                                                 \
-  detail::logger::log({__FILE__, __LINE__, __FUNCTION__}, spdlog::level::info, \
-      msg, ##__VA_ARGS__);
-#define FMT_LOG_WARN(msg, ...)                                                 \
-  detail::logger::log({__FILE__, __LINE__, __FUNCTION__}, spdlog::level::warn, \
-      msg, ##__VA_ARGS__);
-#define FMT_LOG_ERROR(msg, ...)                                               \
-  detail::logger::log({__FILE__, __LINE__, __FUNCTION__}, spdlog::level::err, \
-      msg, ##__VA_ARGS__);
-#define FMT_LOG_FATAL(msg, ...)                           \
-  detail::logger::log({__FILE__, __LINE__, __FUNCTION__}, \
+#define FMT_LOG_INFO(msg, ...)                                     \
+  hestina::detail::logger::log({__FILE__, __LINE__, __FUNCTION__}, \
+      spdlog::level::info, msg, ##__VA_ARGS__);
+#define FMT_LOG_WARN(msg, ...)                                     \
+  hestina::detail::logger::log({__FILE__, __LINE__, __FUNCTION__}, \
+      spdlog::level::warn, msg, ##__VA_ARGS__);
+#define FMT_LOG_ERROR(msg, ...)                                    \
+  hestina::detail::logger::log({__FILE__, __LINE__, __FUNCTION__}, \
+      spdlog::level::err, msg, ##__VA_ARGS__);
+#define FMT_LOG_FATAL(msg, ...)                                    \
+  hestina::detail::logger::log({__FILE__, __LINE__, __FUNCTION__}, \
       spdlog::level::critical, ##__VA_ARGS__);
