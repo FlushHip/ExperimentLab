@@ -5,6 +5,7 @@ Checks: >
     -readability-redundant-access-specifiers,
     -readability-magic-numbers,
     -readability-convert-member-functions-to-static,
+    -readability-implicit-bool-conversion,
     -fuchsia-default-arguments-calls,
     -fuchsia-multiple-inheritance,
     -modernize-use-trailing-return-type,

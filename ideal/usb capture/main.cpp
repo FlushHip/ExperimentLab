@@ -1,3 +1,4 @@
+#include <exception>
 #include <iostream>
 #include <iterator>
 #include <limits>
@@ -7,10 +8,7 @@
 #include <thread>
 
 #include <boost/algorithm/hex.hpp>
-#include <boost/program_options.hpp>
-#include <boost/program_options/options_description.hpp>
-#include <boost/program_options/parsers.hpp>
-#include <boost/program_options/variables_map.hpp>
+#include <boost/process.hpp>
 
 #include <cinatra/define.h>
 #include <cinatra/connection.hpp>
@@ -18,17 +16,21 @@
 #include <cinatra/request.hpp>
 #include <cinatra/response.hpp>
 
+#include <argagg/argagg.hpp>
 #include <prettyprint.hpp>
 
 #include <spdlog/fmt/bin_to_hex.h>
 
 #include "logger.hpp"
 #include "usb_cap/usb_cap.h"
+#include "utils.h"
 
 namespace {
 
-std::string ip = "0.0.0.0";
-std::string port = "8081";
+std::string ip = "127.0.0.1";
+std::string port = "28168";
+int filter = 1;
+bool is_service = false;
 
 std::mutex mutex_connections;
 std::vector<std::weak_ptr<cinatra::connection<cinatra::NonSSL>>> connections;
@@ -52,7 +54,7 @@ void do_websocket_server() {
     cinatra::http_server server(std::thread::hardware_concurrency());
     server.enable_timeout(false);
     server.set_keep_alive_timeout(std::numeric_limits<long>::max());
-    server.listen("0.0.0.0", "8081");
+    server.listen(ip, port);
 
     server.set_http_handler<cinatra::GET, cinatra::POST>("/usb_capture",
         [](cinatra::request& request, cinatra::response& /*response*/) {
@@ -89,12 +91,14 @@ void do_websocket_server() {
             });
         });
 
+    LOG_INFO << "websocket server start, ip : " << ip << ", port : " << port;
+
     server.run();
 }
 
 void do_usb_capture() {
     Init();
-    if (SetFilter(1) < 0) {
+    if (SetFilter(filter) < 0) {
         LOG_ERROR << "set filter fail" << std::endl;
         return;
     }
@@ -103,40 +107,67 @@ void do_usb_capture() {
     LOG_INFO << "end usb capture";
 }
 
-void rigister_service() {}
+int rigister_service() {
+    auto result = tool::rigister_service();
+    (result == 0 ? LOG_INFO : LOG_ERROR)
+        << "resister service " << (result == 0 ? "success" : "fail");
+    return result;
+}
+
+int unrigister_service() {
+    auto result = tool::unrigister_service();
+    (result == 0 ? LOG_INFO : LOG_ERROR)
+        << "unresister service " << (result == 0 ? "success" : "fail");
+    return result;
+}
 
 int init_options(int argc, char** argv) {
-    boost::program_options::options_description desc("Allowed options");
-    desc.add_options()("help", "options")("rig", "register windows service")(
-        "unrig", "unregister windows service")("ip",
-        boost::program_options::value<std::string>(&ip),
-        "websocket listen ip")("port",
-        boost::program_options::value<std::string>(&port), "websocket port");
-
-    boost::program_options::variables_map vm;
-    boost::program_options::store(
-        boost::program_options::parse_command_line(argc, argv, desc), vm);
-    boost::program_options::notify(vm);
-
-    if (vm.count("help") != 0U) {
-        std::cout << desc << std::endl;
+    argagg::parser argparser{{
+        {"help", {"-h", "--help"}, "shows this help message", 0},
+        {"rigister", {"-r", "--rigister"}, "register windows service", 0},
+        {"unrigister", {"-u", "--unrigister"}, "unregister windows service", 0},
+        {"ip", {"-i", "--ip"}, "ip[x.x.x.x], default: " + ip, 1},
+        {"port", {"-p", "--port"}, "port, default: " + port, 1},
+        {"filter", {"-f", "--filter"}, "USBCap filter", 1},
+        {"service", {"-s", "--service"},
+            "run as service(only for sc, don't use this option in dos cmd)", 0},
+    }};
+    argagg::parser_results args;
+    try {
+        args = argparser.parse(argc, argv);
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << std::endl;
         return 0;
     }
-    if (vm.count("rig") != 0U) {
-        rigister_service();
+    if (args["help"]) {
+        std::cerr << "Usage: " << tool::process_name() << " [options]"
+                  << std::endl
+                  << argparser;
         return 0;
+    }
+    if (args["rigister"]) {
+        return rigister_service();
+    }
+    if (args["unrigister"]) {
+        return unrigister_service();
+    }
+    if (args["ip"]) {
+        ip = args["ip"].as<std::string>();
+    }
+    if (args["port"]) {
+        port = args["port"].as<std::string>();
+    }
+    if (args["filter"]) {
+        filter = args["filter"].as<int>();
+    }
+    if (args["service"]) {
+        is_service = true;
     }
     return 1;
 }
 
-int main(int argc, char** argv) {
-    detail::logger::init();
-
-    if (init_options(argc, argv) == 0) {
-        return 0;
-    }
-
-    LOG_INFO << argv[0] << " start.";
+int common_main() {
+    LOG_INFO << tool::process_name() << " start. ---------";
 
     std::vector<std::shared_ptr<std::thread>> threads{
         std::make_shared<std::thread>(do_usb_capture),
@@ -148,5 +179,24 @@ int main(int argc, char** argv) {
             threads[i]->join();
         }
     }
+    return 0;
+}
+
+int main(int argc, char** argv) {
+    detail::logger::init();
+
+    int result = init_options(argc, argv);
+    if (result == 0 || result == -1) {
+        return 0;
+    }
+
+    if (is_service) {
+        LOG_INFO << "run as service";
+        tool::run_service(common_main);
+    } else {
+        LOG_INFO << "run as normal process";
+        common_main();
+    }
+
     return 0;
 }

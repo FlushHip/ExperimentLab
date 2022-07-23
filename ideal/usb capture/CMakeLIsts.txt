@@ -1,11 +1,17 @@
 cmake_minimum_required(VERSION 3.20)
 
 add_executable(usb_capture
+    utils.h
+    utils.cpp
     logger.hpp
     main.cpp)
 
 find_package(Boost 1.70.0 REQUIRED)
 
+set_target_properties(usb_capture PROPERTIES LINK_FLAGS
+        "/MANIFESTUAC:\"level='requireAdministrator' uiAccess='false'\"")
+
+target_compile_definitions(usb_capture PRIVATE _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS _CRT_SECURE_NO_WARNINGS)
 target_compile_features(usb_capture PRIVATE cxx_std_17)
 target_link_directories(usb_capture PRIVATE "C:\\Users\\FlushHip\\Desktop\\USB")
 target_link_libraries(usb_capture
@@ -14,4 +20,11 @@ target_link_libraries(usb_capture
     Boost::disable_autolinking
     cinatra::cinatra
     prettyprint::prettyprint
+    argagg::argagg
     USBCap)
+
+install(TARGETS usb_capture
+    CONFIGURATIONS Debug Release
+    RUNTIME DESTINATION bin)
+install(FILES "C:\\\\Users\\\\FlushHip\\\\Desktop\\\\USB\\\\USBCap.dll"
+    TYPE BIN)

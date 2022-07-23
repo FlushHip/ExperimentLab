@@ -8,10 +8,12 @@
 
 #include <spdlog/common.h>
 #include <spdlog/logger.h>
-#include <spdlog/sinks/daily_file_sink.h>
+#include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
+
+#include "utils.h"
 
 namespace detail {
 
@@ -34,11 +36,14 @@ public:
         static auto sconsole_sink =
             std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
         static auto sfile_info_sink =
-            std::make_shared<spdlog::sinks::daily_file_format_sink_mt>(
-                "logs.txt", 0, 0);
+            std::make_shared<spdlog::sinks::basic_file_sink_mt>(
+                tool::programdata() + "\\" + tool::process_name() +
+                "\\logs.txt");
         static auto sfile_dump_sink =
             std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
-                "dump_data.txt", 1024 * 1024 * 1, 3);
+                tool::programdata() + "\\" + tool::process_name() +
+                    "\\dump_data.txt",
+                1024 * 1024 * 1, 3);
         return {sconsole_sink, sfile_info_sink, sfile_dump_sink};
     }
 
@@ -56,6 +61,7 @@ public:
         internal_logger().set_level(spdlog::level::trace);
         internal_logger().set_pattern(
             "[%Y-%m-%d %T.%e][%-5t][%^%l%$][%s:%# %!] %v");
+        internal_logger().flush_on(spdlog::level::info);
     }
 
     explicit logger(spdlog::source_loc&& loc, spdlog::level::level_enum level)
