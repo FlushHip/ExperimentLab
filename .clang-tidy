@@ -21,6 +21,19 @@ Checks: >
     -altera-unroll-loops,
     -altera-struct-pack-align,
     -cppcoreguidelines-avoid-magic-numbers,
+    -google-explicit-constructor,
+    -hicpp-explicit-conversions,
+    -cppcoreguidelines-pro-type-const-cast,
+    -altera-id-dependent-backward-branch,
+    -hicpp-avoid-c-arrays,
+    -modernize-avoid-c-arrays,
+    -cppcoreguidelines-avoid-c-arrays,
+    -readability-named-parameter,
+    -hicpp-named-parameter,
+    -fuchsia-statically-constructed-objects,
+    -cppcoreguidelines-avoid-non-const-global-variables,
+    -bugprone-easily-swappable-parameters,
+    -google-runtime-int,
 
 CheckOptions:
     -
