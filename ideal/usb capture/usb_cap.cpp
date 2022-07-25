@@ -4,11 +4,12 @@
 #include <thread>
 
 #include <spdlog/fmt/bin_to_hex.h>
+#include <usb_cap/usb_cap.h>
 #include <boost/algorithm/hex.hpp>
+
 
 #include "logger.hpp"
 #include "sample_bus.h"
-#include "usb_cap/usb_cap.h"
 
 namespace hestina {
 namespace detail {
