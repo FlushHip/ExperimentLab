@@ -10,6 +10,7 @@ public:
     usb_cap(int filter) : filter_(filter) {}
 
     void start() override;
+    void stop() override;
 
 private:
     void main() const;

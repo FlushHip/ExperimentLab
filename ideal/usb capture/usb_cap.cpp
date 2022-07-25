@@ -1,13 +1,15 @@
 #include "usb_cap.h"
 
 #include <memory>
+#include <thread>
 
 #include <spdlog/fmt/bin_to_hex.h>
+#include <usb_cap/usb_cap.h>
 #include <boost/algorithm/hex.hpp>
+
 
 #include "logger.hpp"
 #include "sample_bus.h"
-#include "usb_cap/usb_cap.h"
 
 namespace hestina {
 namespace detail {
@@ -17,6 +19,11 @@ void usb_cap::start() {
     thread_ = std::make_unique<std::thread>([this] { main(); });
 }
 
+void usb_cap::stop() {
+    LOG_INFO << "stop usb capture";
+    StopCapture();
+}
+
 void usb_cap::main() const {
     Init();
     if (SetFilter(filter_) < 0) {
@@ -24,6 +31,8 @@ void usb_cap::main() const {
         return;
     }
 
+    using namespace std::literals::chrono_literals;
+    std::this_thread::sleep_for(100ms);
     StartCapture(handle_capture);
     LOG_INFO << "end usb capture";
 }

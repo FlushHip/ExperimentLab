@@ -14,6 +14,7 @@ public:
         }
     }
     virtual void start() = 0;
+    virtual void stop() = 0;
 
 protected:
     std::unique_ptr<std::thread> thread_{nullptr};
