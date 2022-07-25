@@ -21,6 +21,7 @@ public:
     websocket_server(std::string_view ip, std::string_view port);
 
     void start() override;
+    void stop() override;
 
 private:
     void main();

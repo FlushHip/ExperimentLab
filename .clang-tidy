@@ -34,6 +34,8 @@ Checks: >
     -cppcoreguidelines-avoid-non-const-global-variables,
     -bugprone-easily-swappable-parameters,
     -google-runtime-int,
+    -cppcoreguidelines-non-private-member-variables-in-classes,
+    -misc-non-private-member-variables-in-classes,
 
 CheckOptions:
     -

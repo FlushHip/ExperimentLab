@@ -20,9 +20,9 @@ add_executable(usb_capture
 find_package(Boost 1.70.0 REQUIRED)
 
 set_target_properties(usb_capture PROPERTIES LINK_FLAGS
-        "/MANIFESTUAC:\"level='requireAdministrator' uiAccess='false'\"")
+    "/MANIFESTUAC:\"level='requireAdministrator' uiAccess='false'\"")
 
-target_compile_definitions(usb_capture PRIVATE _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS _CRT_SECURE_NO_WARNINGS)
+target_compile_definitions(usb_capture PRIVATE _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS _CRT_SECURE_NO_WARNINGS _WIN32_WINNT=0x0601)
 target_compile_features(usb_capture PRIVATE cxx_std_17)
 target_link_directories(usb_capture PRIVATE "C:\\Users\\FlushHip\\Desktop\\USB")
 target_link_libraries(usb_capture

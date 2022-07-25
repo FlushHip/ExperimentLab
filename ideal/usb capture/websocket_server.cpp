@@ -54,6 +54,11 @@ void websocket_server::start() {
     thread_ = std::make_unique<std::thread>([this] { main(); });
 }
 
+void websocket_server::stop() {
+    LOG_INFO << "stop websocket server";
+    server_.stop();
+}
+
 void websocket_server::ws_connect_handler(cinatra::request& request) {
     auto conn = request.get_conn<cinatra::NonSSL>();
     {

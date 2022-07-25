@@ -30,7 +30,12 @@ struct app::context {
 
 app::app() : context_(std::make_unique<context>()) {}
 
-app::~app() = default;
+app::~app() {
+    std::for_each(context_->controllers.begin(), context_->controllers.end(),
+        [](std::shared_ptr<detail::thread_controller> controller) {
+            controller->stop();
+        });
+}
 
 int app::main() {
     LOG_INFO << tool::process_name() << " start. ---------";
