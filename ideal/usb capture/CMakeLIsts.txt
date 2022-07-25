@@ -47,4 +47,5 @@ add_custom_command(TARGET usb_capture POST_BUILD COMMAND ${CMAKE_COMMAND}
 
 install(TARGETS usb_capture
     CONFIGURATIONS Debug Release
-    RUNTIME DESTINATION bin)
+    RUNTIME DESTINATION bin
+    ARCHIVE DESTINATION bin)
