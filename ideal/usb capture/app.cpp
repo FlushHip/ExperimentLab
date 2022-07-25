@@ -3,12 +3,12 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <thread>
 
 #pragma warning(push)
 #pragma warning(disable : 4101)
 #include <argagg/argagg.hpp>
 #pragma warning(pop)
-#include <thread>
 
 #include "logger.hpp"
 #include "usb_cap.h"
@@ -64,7 +64,8 @@ int app::init_options(int argc, char** argv) {
         {"unrigister", {"-u", "--unrigister"}, "unregister windows service", 0},
         {"ip", {"-i", "--ip"}, "ip[x.x.x.x], default: " + context_->ip, 1},
         {"port", {"-p", "--port"}, "port, default: " + context_->port, 1},
-        {"filter", {"-f", "--filter"}, "USBCap filter", 1},
+        {"filter", {"-f", "--filter"},
+            "USBCap filter, default: " + std::to_string(context_->filter), 1},
         {"service", {"-s", "--service"},
             "run as service(only for sc, don't use this option in dos cmd)", 0},
     }};

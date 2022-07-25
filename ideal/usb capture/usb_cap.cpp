@@ -1,10 +1,10 @@
 #include "usb_cap.h"
 
 #include <memory>
+#include <thread>
 
 #include <spdlog/fmt/bin_to_hex.h>
 #include <boost/algorithm/hex.hpp>
-#include <thread>
 
 #include "logger.hpp"
 #include "sample_bus.h"
