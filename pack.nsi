@@ -1,6 +1,6 @@
 Name "usb_capture"
 
-OutFile "usb_capture_setup_1.0.5.exe"
+OutFile "usb_capture_setup_1.0.6.exe"
 
 RequestExecutionLevel admin
 
@@ -22,5 +22,7 @@ Section "Install"
     File /r "build\install\bin\*"
 
     ExecWait "$INSTDIR\usb_capture.exe -r"
+
+    ExecWait "net start usb_capture"
 
 SectionEnd
