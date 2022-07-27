@@ -4,7 +4,7 @@ if not defined DevEnvDir (
 )
 if %errorlevel% neq 0 (goto finish)
 
-cmake -DCMAKE_BUILD_TYPE:STRING=Debug -S. -Bbuild -G Ninja
+cmake -DCMAKE_BUILD_TYPE:STRING=Release -S. -Bbuild -G Ninja
 if %errorlevel% neq 0 (goto finish)
 
 cmake --build build --target clean
@@ -12,7 +12,7 @@ if %errorlevel% neq 0 (goto finish)
 if exist "build/install" (rd /S /Q "build/install")
 if %errorlevel% neq 0 (goto finish)
 
-cmake --build build --config Debug --target usb_capture --
+cmake --build build --config Release --target usb_capture --
 if %errorlevel% neq 0 (goto finish)
 cmake --install build
 if %errorlevel% neq 0 (goto finish)
