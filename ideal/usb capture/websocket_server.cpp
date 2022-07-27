@@ -6,6 +6,8 @@
 #include <boost/algorithm/hex.hpp>
 #include <prettyprint.hpp>
 
+#include "cinatra/connection.hpp"
+#include "cinatra/request.hpp"
 #include "logger.hpp"
 #include "sample_bus.h"
 
@@ -21,35 +23,6 @@ void websocket_server::start() {
     server_.enable_timeout(false);
     server_.set_keep_alive_timeout(std::numeric_limits<long>::max());
     server_.listen(ip_, port_);
-
-    std::string uri{"/usb_capture"};
-    server_.set_http_handler<cinatra::GET, cinatra::POST>(uri,
-        [this](cinatra::request& request, cinatra::response& /*response*/) {
-            if (request.get_content_type() !=
-                cinatra::content_type::websocket) {
-                LOG_WARN << "someone use other protocol for websocket, type "
-                            ": "
-                         << static_cast<int>(request.get_content_type());
-            }
-
-            request.on(cinatra::ws_open, [this](cinatra::request& request) {
-                ws_connect_handler(request);
-            });
-
-            request.on(cinatra::ws_message, [this](cinatra::request& request) {
-                ws_message_handler(request);
-            });
-
-            request.on(cinatra::ws_close, [this](cinatra::request& request) {
-                ws_close_handler(request);
-            });
-
-            request.on(cinatra::ws_error, [this](cinatra::request& request) {
-                ws_error_handler(request);
-            });
-        });
-
-    LOG_INFO << "start url ws://" << ip_ << ":" << port_ << uri;
 
     thread_ = std::make_unique<std::thread>([this] { main(); });
 }
@@ -83,6 +56,35 @@ void websocket_server::ws_close_handler(cinatra::request& request) {
 void websocket_server::ws_error_handler(cinatra::request& request) {}
 
 void websocket_server::main() {
+    std::string uri{"/usb_capture"};
+    server_.set_http_handler<cinatra::GET, cinatra::POST>(uri,
+        [this](cinatra::request& request, cinatra::response& /*response*/) {
+            if (request.get_content_type() !=
+                cinatra::content_type::websocket) {
+                LOG_WARN << "someone use other protocol for websocket, type "
+                            ": "
+                         << static_cast<int>(request.get_content_type());
+            }
+
+            request.on(cinatra::ws_open, [this](cinatra::request& request) {
+                ws_connect_handler(request);
+            });
+
+            request.on(cinatra::ws_message, [this](cinatra::request& request) {
+                ws_message_handler(request);
+            });
+
+            request.on(cinatra::ws_close, [this](cinatra::request& request) {
+                ws_close_handler(request);
+            });
+
+            request.on(cinatra::ws_error, [this](cinatra::request& request) {
+                ws_error_handler(request);
+            });
+        });
+
+    LOG_INFO << "start url ws://" << ip_ << ":" << port_ << uri;
+
     server_.run();
 }
 
