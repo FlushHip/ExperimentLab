@@ -1,0 +1,53 @@
+Checks: >
+    *,
+    -llvmlibc-*,
+    -readability-identifier-length,
+    -readability-redundant-access-specifiers,
+    -readability-magic-numbers,
+    -readability-convert-member-functions-to-static,
+    -readability-implicit-bool-conversion,
+    -fuchsia-default-arguments-calls,
+    -fuchsia-multiple-inheritance,
+    -modernize-use-trailing-return-type,
+    -modernize-concat-nested-namespaces,
+    -modernize-loop-convert,
+    -modernize-pass-by-value,
+    -hicpp-no-array-decay,
+    -hicpp-special-member-functions,
+    -hicpp-signed-bitwise,
+    -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+    -cppcoreguidelines-special-member-functions,
+    -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+    -altera-unroll-loops,
+    -altera-struct-pack-align,
+    -cppcoreguidelines-avoid-magic-numbers,
+    -google-explicit-constructor,
+    -hicpp-explicit-conversions,
+    -cppcoreguidelines-pro-type-const-cast,
+    -altera-id-dependent-backward-branch,
+    -hicpp-avoid-c-arrays,
+    -modernize-avoid-c-arrays,
+    -cppcoreguidelines-avoid-c-arrays,
+    -readability-named-parameter,
+    -hicpp-named-parameter,
+    -fuchsia-statically-constructed-objects,
+    -cppcoreguidelines-avoid-non-const-global-variables,
+    -bugprone-easily-swappable-parameters,
+    -google-runtime-int,
+    -cppcoreguidelines-non-private-member-variables-in-classes,
+    -misc-non-private-member-variables-in-classes,
+    -fuchsia-trailing-return,
+
+CheckOptions:
+    -
+        key : readability-identifier-naming.PrivateMemberCase
+        value : lower_case
+    -
+        key : readability-identifier-naming.PrivateMemberSuffix
+        value : _
+    -
+        key : readability-identifier-naming.GlobalConstantPrefix
+        value : k
+    -
+        key : readability-identifier-naming.StaticVariablePrefix
+        value : s
