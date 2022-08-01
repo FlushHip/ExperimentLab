@@ -1,34 +1,36 @@
-#include <iostream>
+#pragma once
+
+#include <chrono>
 #include <iomanip>
+#include <iostream>
+#include <sstream>
 #include <string>
 #include <string_view>
-#include <sstream>
-#include <chrono>
 
-#include <utility>
-#include <memory>
-#include <limits>
 #include <algorithm>
-#include <numeric>
 #include <bitset>
-#include <functional>
-#include <random>
-#include <cstring>
 #include <charconv>
-#include <regex>
 #include <complex>
+#include <cstring>
+#include <functional>
+#include <limits>
+#include <memory>
+#include <numeric>
+#include <random>
+#include <regex>
+#include <utility>
 
-#include <vector>
 #include <array>
 #include <deque>
-#include <list>
 #include <forward_list>
-#include <set>
+#include <list>
 #include <map>
-#include <unordered_set>
-#include <unordered_map>
-#include <stack>
 #include <queue>
+#include <set>
+#include <stack>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
 
 #include "prettyprint.hpp"
 
@@ -38,5 +40,5 @@ using namespace std::literals::string_view_literals;
 using namespace std::literals::chrono_literals;
 using namespace std::literals::complex_literals;
 
-template<class T = int>
+template <class T = int>
 using VList = std::vector<T>;

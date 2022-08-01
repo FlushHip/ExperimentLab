@@ -5,7 +5,9 @@
 int main(int argc, char** argv) {
     auto sol = std::make_unique<Solution>();
 
-    VList<> v{};
+    VList<std::vector<int>> v{
+        {5, 4, 0, 3, 1, 6, 2},
+    };
 
     for (auto L = 0U; L < v.size(); ++L) {
         std::cout << "\x1b[32mExample " << L + 1 << " :\x1b[0m" << std::endl;
@@ -14,7 +16,7 @@ int main(int argc, char** argv) {
 
         auto start_epoch = std::chrono::steady_clock::now();
 
-        auto ans = 0;
+        auto ans = sol->arrayNesting(v[L]);
 
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
             (std::chrono::steady_clock::now() - start_epoch) * 1000);

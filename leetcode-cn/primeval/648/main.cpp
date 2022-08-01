@@ -5,19 +5,24 @@
 int main(int argc, char** argv) {
     auto sol = std::make_unique<Solution>();
 
-    VList<> v{};
+    VList<std::pair<std::vector<std::string>, std::string>> v{
+        {{"cat", "bat", "rat"}, "the cattle was rattled by the battery"},
+        {{"a", "b", "c"}, "aadsfasf absbs bbab cadsfafs"},
+        {{"aad", "bb", "c"}, "aadsfasf absbs bbab cadsfafs"},
+        {{"a", "bb", "ccc"}, "aadsfasf absbs bbab cadsfafs"},
+    };
 
-    for (auto L = 0U; L < v.size(); ++L) {
+    for (auto L = 0u; L < v.size(); ++L) {
         std::cout << "\x1b[32mExample " << L + 1 << " :\x1b[0m" << std::endl;
 
         std::cout << "  |-   \x1b[33mdata-> \x1b[0m" << v[L] << std::endl;
 
         auto start_epoch = std::chrono::steady_clock::now();
 
-        auto ans = 0;
+        auto ans = sol->replaceWords(v[L].first, v[L].second);
 
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
-            (std::chrono::steady_clock::now() - start_epoch) * 1000);
+            std::chrono::steady_clock::now() - start_epoch);
 
         std::cout << "  |-   \x1b[31mans -> \x1b[0m" << std::boolalpha << ans
                   << std::endl
