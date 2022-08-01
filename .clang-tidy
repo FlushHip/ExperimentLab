@@ -10,6 +10,7 @@ Checks: >
     -altera-unroll-loops,
     -cppcoreguidelines-avoid-magic-numbers,
     -altera-id-dependent-backward-branch,
+    -readability-isolate-declaration,
 
 CheckOptions:
     -
