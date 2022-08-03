@@ -25,3 +25,7 @@
 ## 设计模式
 
 - [Design Patterns](http://www.vincehuston.org/dp/)
+
+## 算法
+
+- [OI-wiki](https://oi-wiki.org/)
