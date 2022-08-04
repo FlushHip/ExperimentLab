@@ -9,6 +9,7 @@ function(make_leetcode_target)
     foreach(ARG IN LISTS ARGN)
         set(FILE_PATH_TMP ${FILE_PATH_TMP}/${ARG})
     endforeach()
+
     string(REGEX REPLACE "^/" "" FILE_PATH_TMP ${FILE_PATH_TMP})
 
     file(GLOB_RECURSE FILES
@@ -19,7 +20,7 @@ function(make_leetcode_target)
     source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/${FILE_PATH_TMP}
         FILES ${FILES})
 
-    set(TARGET_NAME LeetCode_${ARGV0}.${ARGV1}_${ARGV2})
+    set(TARGET_NAME leetcode-cn_${ARGV0}.${ARGV1}_${ARGV2})
     string(REGEX REPLACE "_$" "" TARGET_NAME ${TARGET_NAME})
 
     add_executable(${TARGET_NAME} ${FILES})
@@ -35,7 +36,6 @@ function(make_leetcode_target)
     endif()
 endfunction()
 
-
 foreach(FRIST_SUBDIR ${FRIST_SUBDIRS})
     if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${FRIST_SUBDIR})
         file(GLOB SECOND_SUBDIRS
@@ -44,6 +44,7 @@ foreach(FRIST_SUBDIR ${FRIST_SUBDIRS})
 
         set(programs_cnt 0)
         set(targets_cnt 0)
+
         foreach(SECOND_SUBDIR ${SECOND_SUBDIRS})
             if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${FRIST_SUBDIR}/${SECOND_SUBDIR}/A)
                 file(GLOB THIRD_SUBDIRS
@@ -58,8 +59,10 @@ foreach(FRIST_SUBDIR ${FRIST_SUBDIRS})
                 math(EXPR targets_cnt "${targets_cnt} + 1")
                 make_leetcode_target(${FRIST_SUBDIR} ${SECOND_SUBDIR})
             endif()
+
             math(EXPR programs_cnt "${programs_cnt} + 1")
         endforeach()
+
         message(STATUS "Total \"${CURRENT_FOLDER}/${FRIST_SUBDIR}\" <${programs_cnt} programs, ${targets_cnt} targets> generated")
     endif()
 endforeach()
