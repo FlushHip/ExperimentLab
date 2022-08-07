@@ -11,6 +11,8 @@ Checks: >
     -cppcoreguidelines-avoid-magic-numbers,
     -altera-id-dependent-backward-branch,
     -readability-isolate-declaration,
+    -performance-inefficient-vector-operation,
+    -altera-struct-pack-align,
 
 CheckOptions:
     -
