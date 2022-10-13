@@ -42,3 +42,6 @@ using namespace std::literals::complex_literals;
 
 template <class T = int>
 using VList = std::vector<T>;
+
+template <class... Args>
+using VTList = std::vector<std::tuple<Args...>>;
