@@ -37,6 +37,9 @@ Checks: >
     -cppcoreguidelines-non-private-member-variables-in-classes,
     -misc-non-private-member-variables-in-classes,
     -fuchsia-trailing-return,
+    -readability-isolate-declaration,
+    -performance-inefficient-vector-operation,
+    -altera-struct-pack-align,
 
 CheckOptions:
     -
