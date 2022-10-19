@@ -38,11 +38,12 @@ include(CPack)
 enable_testing()
 
 # Add sub module
-include_subdirs("effective-cpp")
-add_subdirectory(yz)
-include_subdirs(compiling)
-add_subdirectory(tutorial)
+# include_subdirs("effective-cpp")
+# add_subdirectory(yz)
+# include_subdirs(compiling)
+# add_subdirectory(tutorial)
 include_subdirs(ideal)
-add_subdirectory(leetcode-cn)
-add_subdirectory(qt)
+
+# add_subdirectory(leetcode-cn)
+# add_subdirectory(qt)
 add_subdirectory(3rd-party)
