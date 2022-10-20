@@ -43,6 +43,7 @@ Checks: >
     -misc-const-correctness,
     -readability-static-accessed-through-instance,
     -fuchsia-default-arguments-declarations,
+    -misc-unused-parameters,
 
 CheckOptions:
     -

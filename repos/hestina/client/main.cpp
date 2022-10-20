@@ -4,7 +4,6 @@
 
 #include <lib/logger.hpp>
 
-#include "client/login_main_dlg.h"
 #include "login_main_dlg.h"
 
 int main(int argc, char* argv[]) {

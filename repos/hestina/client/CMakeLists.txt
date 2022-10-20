@@ -13,8 +13,7 @@ qt5_wrap_ui(ui_list
 )
 
 qt5_add_resources(qrc_list
-
-    # resource.qrc
+    resource.qrc
 )
 
 set(app_rc_list
