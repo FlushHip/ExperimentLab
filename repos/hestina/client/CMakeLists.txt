@@ -1,6 +1,6 @@
 set(TARGET_NAME hestina-client)
 
-find_package(Qt5 COMPONENTS Widgets REQUIRED)
+find_package(Qt5 COMPONENTS Widgets LinguistTools REQUIRED)
 
 set(moc_header_list
     login_main_dlg.h
@@ -31,6 +31,15 @@ set(src_list
     login_main_dlg.cpp
 )
 
+set(ts_list
+    i18n/lang_zh_CN.ts
+)
+
+set_source_files_properties(${ts_list} PROPERTIES OUTPUT_LOCATION "i18n")
+
+qt5_create_translation(qm_list ${ui_list} ${src_list} ${ts_list})
+
+# qt5_add_translation(qm_list lang_zh.ts)
 add_executable(${TARGET_NAME}
     ${ui_list}
     ${header_list}
@@ -38,6 +47,7 @@ add_executable(${TARGET_NAME}
     ${src_list}
     ${qrc_list}
     ${app_rc_list}
+    ${qm_list}
 )
 
 set_target_properties(${TARGET_NAME}
