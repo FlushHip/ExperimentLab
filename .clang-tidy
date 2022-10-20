@@ -40,6 +40,9 @@ Checks: >
     -readability-isolate-declaration,
     -performance-inefficient-vector-operation,
     -altera-struct-pack-align,
+    -misc-const-correctness,
+    -readability-static-accessed-through-instance,
+    -fuchsia-default-arguments-declarations,
 
 CheckOptions:
     -
