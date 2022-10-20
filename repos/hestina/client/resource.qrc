@@ -2,4 +2,7 @@
     <qresource prefix="/login">
         <file>logo_text.png</file>
     </qresource>
+    <qresource prefix="/avatar">
+        <file>default_avatar.png</file>
+    </qresource>
 </RCC>
