@@ -13,8 +13,14 @@ Checks: >
     -readability-isolate-declaration,
     -performance-inefficient-vector-operation,
     -altera-struct-pack-align,
-    -misc-unused-parameters,
     -performance-unnecessary-value-param,
+    -bugprone-narrowing-conversions,
+    -misc-const-correctness,
+    -misc-unused-parameters,
+    -cppcoreguidelines-pro-bounds-constant-array-index,
+    -cppcoreguidelines-narrowing-conversions,
+    -readability-implicit-bool-conversion,
+    -bugprone-easily-swappable-parameters,
 
 CheckOptions:
     -

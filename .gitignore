@@ -3,6 +3,7 @@
 .build
 build
 .build_idea
+.vs
 
 # Prerequisites
 *.d
