@@ -13,6 +13,8 @@ Checks: >
     -readability-isolate-declaration,
     -performance-inefficient-vector-operation,
     -altera-struct-pack-align,
+    -misc-unused-parameters,
+    -performance-unnecessary-value-param,
 
 CheckOptions:
     -
