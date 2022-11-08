@@ -19,6 +19,7 @@ target_compile_features(${TARGET_NAME} PRIVATE cxx_std_17)
 target_link_libraries(${TARGET_NAME}
     PRIVATE cinatra::cinatra
     Boost::headers
+    Boost::disable_autolinking
     OpenSSL::SSL
     nlohmann_json::nlohmann_json
 
