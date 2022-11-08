@@ -29,3 +29,13 @@
 ## 算法
 
 - [OI-wiki](https://oi-wiki.org/)
+
+## 格式化输出
+
+- [cxx-prettyprint](https://github.com/louisdx/cxx-prettyprint)
+- [pprint](https://github.com/p-ranav/pprint)
+
+## 静态反射
+
+- [magic_enum](https://github.com/Neargye/magic_enum)
+- [struck_pack](https://github.com/alibaba/yalantinglibs/tree/main/include/struct_pack)
