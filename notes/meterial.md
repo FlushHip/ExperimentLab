@@ -34,6 +34,7 @@
 
 - [cxx-prettyprint](https://github.com/louisdx/cxx-prettyprint)
 - [pprint](https://github.com/p-ranav/pprint)
+- [dbg-macro](https://github.com/sharkdp/dbg-macro)
 
 ## 静态反射
 
