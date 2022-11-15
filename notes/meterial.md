@@ -21,6 +21,7 @@
 - [cinatra](https://github.com/qicosmos/cinatra)
 - [websocketpp](https://github.com/zaphoyd/websocketpp)
 - [rest_rpc](https://github.com/qicosmos/rest_rpc)
+- [TinyWebServer](https://github.com/qinguoyi/TinyWebServer)
 
 ## 设计模式
 
@@ -29,6 +30,7 @@
 ## 算法
 
 - [OI-wiki](https://oi-wiki.org/)
+- [fucking-algorithm](https://github.com/labuladong/fucking-algorithm)
 
 ## 格式化输出
 
@@ -40,3 +42,8 @@
 
 - [magic_enum](https://github.com/Neargye/magic_enum)
 - [struck_pack](https://github.com/alibaba/yalantinglibs/tree/main/include/struct_pack)
+
+## 一些工具
+
+- [FileCentipede](https://github.com/filecxx/FileCentipede)
+- [Qv2ray](https://github.com/Qv2ray/Qv2ray)
