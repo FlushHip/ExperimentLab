@@ -23,9 +23,9 @@ function(make_leetcode_target)
         PROPERTIES FOLDER ${ROOT_FOLDER}/${FRIST_FOLDER}/${ARGV0})
 
     if(AppleClang)
-        set_target_properties(${TARGET_NAME} PROPERTIES CXX_STANDARD 17)
+        set_target_properties(${TARGET_NAME} PROPERTIES CXX_STANDARD 20)
     else()
-        target_compile_features(${TARGET_NAME} PUBLIC cxx_std_17)
+        target_compile_features(${TARGET_NAME} PUBLIC cxx_std_20)
     endif()
 endfunction()
 
