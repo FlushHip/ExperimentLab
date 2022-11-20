@@ -18,6 +18,7 @@
 #include <numeric>
 #include <random>
 #include <regex>
+#include <span>
 #include <tuple>
 #include <type_traits>
 #include <utility>
@@ -60,10 +61,20 @@ constexpr decltype(auto) call(F&& f, T0& ptr, std::tuple<TN...>& arg) {
         std::tuple_cat(std::forward_as_tuple(ptr.get()), std::move(arg)));
 }
 
+}  // namespace aux
+
+template <class T, std::size_t N>
+std::ostream& operator<<(std::ostream& os, std::span<T, N>&& view) {
+    os << "[";
+    for (auto i = 0U; i < view.size(); ++i) {
+        os << (i == 0U ? "" : ", ") << view[i];
+    }
+    os << "]";
+    return os;
+}
+
 #define UNPACK_2(vp) std::get<0>(vp), std::get<1>(vp)
 #define UNPACK_3(vp) UNPACK_2(vp), std::get<2>(vp)
 #define UNPACK_4(vp) UNPACK_3(vp), std::get<3>(vp)
 #define UNPACK_5(vp) UNPACK_4(vp), std::get<4>(vp)
 #define UNPACK_6(vp) UNPACK_5(vp), std::get<5>(vp)
-
-}  // namespace aux
