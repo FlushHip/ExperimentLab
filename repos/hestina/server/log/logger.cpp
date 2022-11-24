@@ -42,6 +42,7 @@ std::string date_time_string() {
 }
 
 std::string thread_id_string() {
+    // FIXME (flushhip): id to long
     std::ostringstream os;
     os << std::this_thread::get_id();
     return os.str();
@@ -91,8 +92,14 @@ void logger::init(level_t level,
         fp_ = stdout;
     } else {
         using namespace std::string_literals;
+
+        // TODO (flushhip): log file name append date
+
         std::string file_path =
             (std::filesystem::path(log_dir) / file_name).string();
+
+        // TODO (flushhip): log file permissions
+
         fp_ = std::fopen(file_path.c_str(), "a+");
         if (fp_ == nullptr) {
             std::cerr << "log path " << file_path << " open fail" << std::endl;
@@ -130,6 +137,7 @@ void logger::run() {
     while (is_running_) {
         std::string msg;
         {
+            // TODO (flushhip): condition_variable
             std::lock_guard<std::mutex> lock(queue_mutex_);
             if (!queue_.empty()) {
                 msg = queue_.front();
