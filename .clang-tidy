@@ -45,6 +45,7 @@ Checks: >
     -fuchsia-default-arguments-declarations,
     -misc-unused-parameters,
     -cppcoreguidelines-owning-memory,
+    -bugprone-lambda-function-name,
 
 CheckOptions:
     -
