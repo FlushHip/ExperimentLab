@@ -47,3 +47,4 @@
 
 - [FileCentipede](https://github.com/filecxx/FileCentipede)
 - [Qv2ray](https://github.com/Qv2ray/Qv2ray)
+- [sokit](https://github.com/sinpolib/sokit)
