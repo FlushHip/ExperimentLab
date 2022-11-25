@@ -1,21 +1,32 @@
+#include "headers.h"
+
 class Solution {
 public:
     int maxCoins(vector<int>& nums) {
-        int n = (int)nums.begin();
-        std::vector<std::vector<std::vector<int>>> dp(n
-            , std::vector<int>(n
-                , std::vector<int>(
-                    1 + *std::max_element(nums.begin(), nums.end()), 0)));
+        int n = nums.size();
+        nums.insert(nums.begin(), 1);
+        nums.push_back(1);
+        Dp dp(n + 2, std::vector<int>(n + 2, -1));
+        return dfs(0, n + 1, dp, nums);
+    }
 
-        // dp[i][j][num]
-        // TODO : 区间dp
-        for (int i = 0; i < n; ++i) {
-            for (int len = 1; len <= n; ++len) {
-                int l = i, r = l + len - 1;
-                for (int k = l; k <= r; ++k) {
-                    dp[l][r][nums[k]] = dp[l][k - 1][1] + dp[k + 1][r][1]
-                }
-            }
+private:
+    using Dp = std::vector<std::vector<int>>;
+
+    int dfs(int lhs, int rhs, Dp& dp, const std::vector<int>& nums) {
+        if (rhs - lhs == 1) {
+            return 0;
         }
+        if (dp[lhs][rhs] != -1) {
+            return dp[lhs][rhs];
+        }
+
+        int res = 0;
+        for (int i = lhs + 1; i < rhs; ++i) {
+            res = std::max(res,
+                dfs(lhs, i, dp, nums) + dfs(i, rhs, dp, nums) +
+                    nums[lhs] * nums[i] * nums[rhs]);
+        }
+        return dp[lhs][rhs] = res;
     }
 };
