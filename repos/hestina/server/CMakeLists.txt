@@ -5,6 +5,8 @@ if(UNIX)
         main.cpp
         log/logger.h
         log/logger.cpp
+        net/tcp_server.h
+        net/tcp_server.cpp
     )
 
     target_compile_features(${TARGET_NAME} PRIVATE cxx_std_20)
