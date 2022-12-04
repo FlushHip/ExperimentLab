@@ -23,6 +23,8 @@ tcp_server::tcp_server(uint16_t port, std::string_view ip)
     listen_channel_->enable_reading();
 }
 
+tcp_server::~tcp_server() = default;
+
 bool tcp_server::start() {
     std::cerr << "server ip : " << ip_ << " port : " << port_ << " running..."
               << std::endl;

@@ -13,6 +13,7 @@ class socket;
 class tcp_server {
 public:
     tcp_server(uint16_t port, std::string_view ip = "localhost");
+    ~tcp_server();
 
     bool start();
     bool stop();

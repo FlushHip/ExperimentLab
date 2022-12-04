@@ -9,6 +9,7 @@ class event_loop;
 class channel {
 public:
     channel(event_loop* loop, int fd);
+    ~channel();
 
     int fd() const;
     uint32_t listen_events() const;

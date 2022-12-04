@@ -9,6 +9,8 @@ namespace hestina {
 channel::channel(event_loop* loop, int fd)
     : loop_(loop), fd_(fd), listen_events_(EPOLLET) {}
 
+channel::~channel() = default;
+
 int channel::fd() const {
     return fd_;
 }
