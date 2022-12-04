@@ -1,8 +1,8 @@
 #include "channel.h"
 
-#include <sys/epoll.h>
-
 #include "event_loop.h"
+
+#include <sys/epoll.h>
 
 namespace hestina {
 

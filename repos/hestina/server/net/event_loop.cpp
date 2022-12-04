@@ -3,8 +3,6 @@
 #include "channel.h"
 #include "poller.h"
 
-#include <atomic>
-#include <memory>
 #include <thread>
 
 namespace hestina {

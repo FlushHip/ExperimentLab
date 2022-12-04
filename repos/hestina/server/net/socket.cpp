@@ -2,7 +2,6 @@
 
 #include "addr.h"
 
-#include <asm-generic/socket.h>
 #include <fcntl.h>
 #include <sys/socket.h>
 
@@ -15,6 +14,8 @@ socket::socket(int fd) : fd_(fd) {
 }
 
 socket::socket() : socket(::socket(AF_INET, SOCK_STREAM, 0)) {}
+
+socket::~socket() = default;
 
 int socket::fd() const {
     return fd_;

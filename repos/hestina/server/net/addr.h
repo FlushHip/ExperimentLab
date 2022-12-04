@@ -1,10 +1,10 @@
 #pragma once
 
-#include <string_view>
-
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <unistd.h>
+
+#include <string_view>
 
 namespace hestina {
 class addr {

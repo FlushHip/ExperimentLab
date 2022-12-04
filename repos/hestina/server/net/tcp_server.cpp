@@ -3,6 +3,7 @@
 #include "addr.h"
 #include "channel.h"
 #include "event_loop.h"
+#include "socket.h"
 
 #include <iostream>
 

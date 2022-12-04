@@ -1,16 +1,15 @@
 #pragma once
 
-#include "channel.h"
-#include "event_loop.h"
-#include "socket.h"
-
 #include <string>
 #include <string_view>
 #include <thread>
 #include <unordered_map>
 
 namespace hestina {
+
 class event_loop;
+class channel;
+class socket;
 class tcp_server {
 public:
     tcp_server(uint16_t port, std::string_view ip = "localhost");

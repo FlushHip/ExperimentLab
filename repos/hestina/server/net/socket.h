@@ -6,6 +6,7 @@ class socket {
 public:
     socket();
     socket(int fd);
+    ~socket();
 
     int fd() const;
 

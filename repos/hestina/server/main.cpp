@@ -1,8 +1,8 @@
-#include <iostream>
-#include <thread>
-
 #include "log/logger.h"
 #include "net/tcp_server.h"
+
+#include <iostream>
+#include <thread>
 
 int main(int argc, char* argv[]) {
     hestina::logger::instance().init(hestina::logger::trace);
