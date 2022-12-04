@@ -57,6 +57,7 @@ void connection::do_read() {
                       << std::endl;
             write(socket_->fd(), buff, n + 4);
         } else if (n == 0) {
+            // TODO (flushhip): close callback
             std::cerr << "recv : EOF" << std::endl;
             close(socket_->fd());
             break;
@@ -64,6 +65,7 @@ void connection::do_read() {
             std::cerr << "continue..." << std::endl;
             continue;
         } else if (n == -1 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
+            // TODO (flushhip): concat buff to callback
             std::cerr << "finish once read" << std::endl;
             break;
         }
