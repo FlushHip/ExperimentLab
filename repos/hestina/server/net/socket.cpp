@@ -50,7 +50,7 @@ void socket::listen() {
 }
 
 int socket::accept(addr& addr) {
-    socklen_t size;
+    socklen_t size = 0;
     int fd =
         ::accept(fd_, const_cast<struct sockaddr*>(addr.sockaddr()), &size);
     assert(fd != -1);

@@ -15,6 +15,6 @@ public:
     const struct sockaddr* sockaddr() const;
 
 private:
-    sockaddr_in sockaddr_;
+    sockaddr_in sockaddr_{0};
 };
 }  // namespace hestina

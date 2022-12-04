@@ -49,6 +49,11 @@ Checks: >
     -modernize-use-nodiscard,
     -cppcoreguidelines-pro-type-reinterpret-cast,
     -cppcoreguidelines-pro-bounds-constant-array-index,
+    -cppcoreguidelines-pro-type-vararg,
+    -hicpp-vararg,
+    -readability-make-member-function-const,
+    -android-*,
+    -performance-trivially-destructible,
 
 CheckOptions:
     -
