@@ -46,6 +46,9 @@ Checks: >
     -misc-unused-parameters,
     -cppcoreguidelines-owning-memory,
     -bugprone-lambda-function-name,
+    -modernize-use-nodiscard,
+    -cppcoreguidelines-pro-type-reinterpret-cast,
+    -cppcoreguidelines-pro-bounds-constant-array-index,
 
 CheckOptions:
     -

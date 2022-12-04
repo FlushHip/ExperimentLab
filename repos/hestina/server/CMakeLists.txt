@@ -7,6 +7,16 @@ if(UNIX)
         log/logger.cpp
         net/tcp_server.h
         net/tcp_server.cpp
+        net/poller.h
+        net/poller.cpp
+        net/event_loop.h
+        net/event_loop.cpp
+        net/channel.h
+        net/channel.cpp
+        net/addr.h
+        net/addr.cpp
+        net/socket.h
+        net/socket.cpp
     )
 
     target_compile_features(${TARGET_NAME} PRIVATE cxx_std_20)
