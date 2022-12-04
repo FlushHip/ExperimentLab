@@ -19,6 +19,9 @@ if(UNIX)
         net/socket.cpp
         net/acceptor.h
         net/acceptor.cpp
+        net/connection.h
+        net/connection.cpp
+        net/callback.h
     )
 
     target_compile_features(${TARGET_NAME} PRIVATE cxx_std_20)

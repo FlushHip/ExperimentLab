@@ -4,7 +4,6 @@
 #include <functional>
 #include <memory>
 #include <string_view>
-#include "event_loop.h"
 
 namespace hestina {
 
