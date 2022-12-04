@@ -1,5 +1,6 @@
 #include "tcp_server.h"
 
+#include "acceptor.h"
 #include "addr.h"
 #include "channel.h"
 #include "event_loop.h"
@@ -9,18 +10,15 @@
 
 namespace hestina {
 tcp_server::tcp_server(uint16_t port, std::string_view ip)
-    : port_(port), ip_(ip), event_loop_(std::make_unique<event_loop>()) {
-    socket_ = std::make_unique<socket>();
-    socket_->reuse_port();
-    socket_->reuse_addr();
-    socket_->bind({ip, port});
-    socket_->listen();
-    socket_->nonblocking();
-
-    listen_channel_ =
-        std::make_unique<channel>(event_loop_.get(), socket_->fd());
-    listen_channel_->set_read_event_callback([this] { new_connection(); });
-    listen_channel_->enable_reading();
+    : port_(port)
+    , ip_(ip)
+    , event_loop_(std::make_unique<event_loop>())
+    , acceptor_(
+          std::make_unique<acceptor>(event_loop_.get(), port, ip, true, true)) {
+    acceptor_->set_new_connection_callback([this](auto&& sock) {
+        new_connection(std::forward<decltype(sock)>(sock));
+    });
+    acceptor_->listen();
 }
 
 tcp_server::~tcp_server() = default;
@@ -31,11 +29,8 @@ bool tcp_server::start() {
     thread_ = std::thread([this] { event_loop_->run(); });
     return true;
 }
-void tcp_server::new_connection() {
+void tcp_server::new_connection(std::unique_ptr<socket>&& sock) {
     std::cerr << "new connection..." << std::endl;
-    addr addr;
-    auto sock = std::make_unique<socket>(socket_->accept(addr));
-    sock->nonblocking();
     auto ch = std::make_unique<channel>(event_loop_.get(), sock->fd());
     ch->set_read_event_callback([this, sock = sock.get()] { do_read(sock); });
     ch->enable_reading();

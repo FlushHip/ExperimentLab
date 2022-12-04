@@ -17,6 +17,8 @@ if(UNIX)
         net/addr.cpp
         net/socket.h
         net/socket.cpp
+        net/acceptor.h
+        net/acceptor.cpp
     )
 
     target_compile_features(${TARGET_NAME} PRIVATE cxx_std_20)
