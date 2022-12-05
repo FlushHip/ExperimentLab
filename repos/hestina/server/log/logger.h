@@ -1,11 +1,7 @@
 #pragma once
 
-#include <atomic>
-#include <deque>
-#include <mutex>
-#include <ostream>
+#include <memory>
 #include <sstream>
-#include <thread>
 
 namespace hestina {
 class logger {
@@ -24,10 +20,7 @@ public:
 
     void uninit();
 
-    static logger& instance() {
-        static logger sinst;
-        return sinst;
-    }
+    static logger& instance();
 
     class stream : public std::ostringstream {
     public:
@@ -53,14 +46,8 @@ private:
     void write(std::string&& msg);
     void flush(std::string&& msg);
 
-    level_t level_{info};
-
-    std::mutex queue_mutex_;
-    std::deque<std::string> queue_;
-    std::thread thread_;
-    std::atomic_bool is_running_{false};
-
-    std::FILE* fp_{nullptr};
+    struct context;
+    std::unique_ptr<context> context_;
 };
 }  // namespace hestina
 

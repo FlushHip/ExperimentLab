@@ -5,8 +5,10 @@
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
+#include <deque>
 #include <filesystem>
 #include <iostream>
+#include <memory>
 #include <mutex>
 #include <sstream>
 #include <string_view>
@@ -50,9 +52,20 @@ std::string thread_id_string() {
 
 }  // namespace
 
+struct logger::context {
+    level_t level_{info};
+
+    std::mutex queue_mutex_;
+    std::deque<std::string> queue_;
+    std::thread thread_;
+    std::atomic_bool is_running_{false};
+
+    std::FILE* fp_{nullptr};
+};
+
 logger::stream::~stream() {
     std::string msg = format();
-    if (i_level_ >= logger::instance().level_) {
+    if (i_level_ >= logger::instance().context_->level_) {
         logger::instance().write(std::move(msg));
     }
 }
@@ -83,13 +96,21 @@ std::string logger::stream::format() {
     return msg;
 }
 
+logger& logger::instance() {
+    static logger sinst;
+    return sinst;
+}
+
 void logger::init(level_t level,
     std::string_view log_dir,
     std::string_view file_name) {
-    level_ = level;
+    assert(context_ == nullptr);
+    context_ = std::make_unique<context>();
+
+    context_->level_ = level;
 
     if (log_dir.empty()) {
-        fp_ = stdout;
+        context_->fp_ = stdout;
     } else {
         using namespace std::string_literals;
 
@@ -100,32 +121,32 @@ void logger::init(level_t level,
 
         // TODO (flushhip): log file permissions
 
-        fp_ = std::fopen(file_path.c_str(), "a+");
-        if (fp_ == nullptr) {
+        context_->fp_ = std::fopen(file_path.c_str(), "a+");
+        if (context_->fp_ == nullptr) {
             std::cerr << "log path " << file_path << " open fail" << std::endl;
             std::exit(-1);
         }
     }
 
-    is_running_ = true;
-    thread_ = std::thread([this] { run(); });
+    context_->is_running_ = true;
+    context_->thread_ = std::thread([this] { run(); });
 }
 
 void logger::uninit() {
-    is_running_ = false;
+    context_->is_running_ = false;
     {
-        std::lock_guard<std::mutex> lock(queue_mutex_);
-        while (!queue_.empty()) {
-            std::string msg = queue_.front();
-            queue_.pop_front();
+        std::lock_guard<std::mutex> lock(context_->queue_mutex_);
+        while (!context_->queue_.empty()) {
+            std::string msg = context_->queue_.front();
+            context_->queue_.pop_front();
             flush(std::move(msg));
         }
     }
-    if (thread_.joinable()) {
-        thread_.join();
+    if (context_->thread_.joinable()) {
+        context_->thread_.join();
     }
-    if (fp_ && fp_ != stdout) {
-        assert(EOF != std::fclose(fp_));
+    if (context_->fp_ && context_->fp_ != stdout) {
+        assert(EOF != std::fclose(context_->fp_));
     }
 }
 
@@ -134,14 +155,14 @@ logger::~logger() {
 }
 
 void logger::run() {
-    while (is_running_) {
+    while (context_->is_running_) {
         std::string msg;
         {
             // TODO (flushhip): condition_variable
-            std::lock_guard<std::mutex> lock(queue_mutex_);
-            if (!queue_.empty()) {
-                msg = queue_.front();
-                queue_.pop_front();
+            std::lock_guard<std::mutex> lock(context_->queue_mutex_);
+            if (!context_->queue_.empty()) {
+                msg = context_->queue_.front();
+                context_->queue_.pop_front();
             }
         }
         if (msg.empty()) {
@@ -153,18 +174,18 @@ void logger::run() {
 }
 
 void logger::flush(std::string&& msg) {
-    if (fp_ != nullptr) {
-        assert(EOF != std::fputs(msg.c_str(), fp_));
+    if (context_->fp_ != nullptr) {
+        assert(EOF != std::fputs(msg.c_str(), context_->fp_));
     }
 }
 
 void logger::write(std::string&& msg) {
-    if (!is_running_) {
+    if (!context_->is_running_) {
         std::cerr << "log thread don't running" << std::endl;
         return;
     }
-    std::lock_guard<std::mutex> lock(queue_mutex_);
-    queue_.emplace_back(std::move(msg));
+    std::lock_guard<std::mutex> lock(context_->queue_mutex_);
+    context_->queue_.emplace_back(std::move(msg));
 }
 
 }  // namespace hestina
