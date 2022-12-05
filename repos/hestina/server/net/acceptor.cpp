@@ -16,7 +16,7 @@ acceptor::acceptor(event_loop* loop,
     socket_->reuse_port(reuse_port);
     socket_->reuse_addr(reuse_addr);
     socket_->bind({ip, port});
-    socket_->nonblocking();
+    // socket_->nonblocking();
 
     listen_channel_->set_read_event_callback([this] { do_read(); });
 }
@@ -36,7 +36,6 @@ void acceptor::listen() {
 void acceptor::do_read() {
     addr addr;
     auto sock = std::make_unique<socket>(socket_->accept(addr));
-    sock->nonblocking();
     if (callback_) {
         callback_(std::move(sock));
     }

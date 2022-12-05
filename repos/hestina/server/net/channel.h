@@ -20,6 +20,9 @@ public:
     void disable_reading();
     void disable_writing();
 
+    void enable_et();
+    void disable_et();
+
     void handle_event();
 
     using event_callback_t = std::function<void()>;

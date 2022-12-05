@@ -7,7 +7,7 @@
 namespace hestina {
 
 channel::channel(event_loop* loop, int fd)
-    : loop_(loop), fd_(fd), listen_events_(EPOLLET) {}
+    : loop_(loop), fd_(fd), listen_events_(0) {}
 
 channel::~channel() = default;
 
@@ -24,7 +24,7 @@ uint32_t channel::ready_events() const {
 }
 
 void channel::enable_reading() {
-    listen_events_ |= EPOLLIN;
+    listen_events_ |= (EPOLLIN | EPOLLPRI);
     update();
 }
 
@@ -34,12 +34,22 @@ void channel::enable_writing() {
 }
 
 void channel::disable_reading() {
-    listen_events_ &= ~EPOLLIN;
+    listen_events_ &= ~(EPOLLIN | EPOLLPRI);
     update();
 }
 
 void channel::disable_writing() {
     listen_events_ &= ~EPOLLOUT;
+    update();
+}
+
+void channel::enable_et() {
+    listen_events_ |= EPOLLET;
+    update();
+}
+
+void channel::disable_et() {
+    listen_events_ &= ~EPOLLET;
     update();
 }
 

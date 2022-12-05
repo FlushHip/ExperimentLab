@@ -1,11 +1,11 @@
 #pragma once
 
 #include "callback.h"
+#include "eloop_thread_pool.h"
 
 #include <memory>
 #include <string>
 #include <string_view>
-#include <thread>
 #include <unordered_set>
 
 namespace hestina {
@@ -15,6 +15,8 @@ class channel;
 class socket;
 class acceptor;
 class connection;
+class event_loop_thread;
+class eloop_thread_pool;
 class tcp_server {
 public:
     tcp_server(uint16_t port, std::string_view ip = "localhost");
@@ -33,8 +35,8 @@ private:
     uint16_t port_;
     std::string ip_;
 
-    std::unique_ptr<event_loop> event_loop_;
-    std::thread thread_;
+    std::unique_ptr<event_loop_thread> main_loop_thread_;
+    std::unique_ptr<eloop_thread_pool> sub_loop_thread_pool_;
 
     std::unique_ptr<acceptor> acceptor_;
     std::unordered_set<std::shared_ptr<connection>> connections_;

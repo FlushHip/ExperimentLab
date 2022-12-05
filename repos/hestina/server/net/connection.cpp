@@ -13,6 +13,9 @@ connection::connection(event_loop* loop, std::unique_ptr<socket>&& sock)
     : socket_(std::move(sock))
     , channel_(std::make_unique<channel>(loop, socket_->fd()))
     , buffer_(std::make_unique<buffer>()) {
+    socket_->nonblocking();
+    channel_->enable_et();
+
     channel_->set_read_event_callback([this] { do_read(); });
     channel_->set_close_event_callback([this] { do_close(); });
     channel_->set_error_event_callback([this] { do_error(); });

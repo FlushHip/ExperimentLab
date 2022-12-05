@@ -24,6 +24,8 @@ if(UNIX)
         net/callback.h
         net/buffer.h
         net/buffer.cpp
+        net/eloop_thread_pool.h
+        net/eloop_thread_pool.cpp
     )
 
     target_compile_features(${TARGET_NAME} PRIVATE cxx_std_20)
