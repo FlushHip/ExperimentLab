@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <chrono>
+#include <condition_variable>
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
@@ -56,6 +57,7 @@ struct logger::context {
     level_t level_{info};
 
     std::mutex queue_mutex_;
+    std::condition_variable queue_con_;
     std::deque<std::string> queue_;
     std::thread thread_;
     std::atomic_bool is_running_{false};
@@ -158,18 +160,13 @@ void logger::run() {
     while (context_->is_running_) {
         std::string msg;
         {
-            // TODO (flushhip): condition_variable
-            std::lock_guard<std::mutex> lock(context_->queue_mutex_);
-            if (!context_->queue_.empty()) {
-                msg = context_->queue_.front();
-                context_->queue_.pop_front();
-            }
+            std::unique_lock<std::mutex> lock(context_->queue_mutex_);
+            context_->queue_con_.wait(
+                lock, [this] { return !context_->queue_.empty(); });
+            msg = context_->queue_.front();
+            context_->queue_.pop_front();
         }
-        if (msg.empty()) {
-            std::this_thread::yield();
-        } else {
-            flush(std::move(msg));
-        }
+        flush(std::move(msg));
     }
 }
 
@@ -184,8 +181,11 @@ void logger::write(std::string&& msg) {
         std::cerr << "log thread don't running" << std::endl;
         return;
     }
-    std::lock_guard<std::mutex> lock(context_->queue_mutex_);
-    context_->queue_.emplace_back(std::move(msg));
+    {
+        std::lock_guard<std::mutex> lock(context_->queue_mutex_);
+        context_->queue_.emplace_back(std::move(msg));
+    }
+    context_->queue_con_.notify_one();
 }
 
 }  // namespace hestina
