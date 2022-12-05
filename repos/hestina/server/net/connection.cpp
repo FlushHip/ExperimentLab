@@ -1,15 +1,18 @@
 #include "connection.h"
 
+#include "buffer.h"
 #include "channel.h"
 #include "socket.h"
 
+#include <cassert>
 #include <iostream>
 
 namespace hestina {
 
 connection::connection(event_loop* loop, std::unique_ptr<socket>&& sock)
     : socket_(std::move(sock))
-    , channel_(std::make_unique<channel>(loop, socket_->fd())) {
+    , channel_(std::make_unique<channel>(loop, socket_->fd()))
+    , buffer_(std::make_unique<buffer>()) {
     channel_->set_read_event_callback([this] { do_read(); });
     channel_->set_close_event_callback([this] { do_close(); });
     channel_->set_error_event_callback([this] { do_error(); });
@@ -42,34 +45,32 @@ void connection::set_connection_close_callback(
 
 void connection::do_read() {
     constexpr int buff_length = 1024;
-    char buff[buff_length + 1 + 4] = {0};
+    thread_local char sbuff[buff_length + 1 + 4] = {0};
     while (true) {
-        auto n = read(socket_->fd(), buff, buff_length);
+        auto n = read(socket_->fd(), sbuff, buff_length);
         if (n > 0) {
-            buff[n] = '_';
-            buff[n + 1] = 'd';
-            buff[n + 2] = 'u';
-            buff[n + 3] = 'p';
-            buff[n + 4] = '\0';
-            std::cerr << "recv : "
-                      << std::string_view{buff,
-                             static_cast<std::string_view::size_type>(n)}
-                      << std::endl;
-            write(socket_->fd(), buff, n + 4);
+            buffer_->append({sbuff, static_cast<size_t>(n)});
         } else if (n == 0) {
-            // TODO (flushhip): close callback
-            std::cerr << "recv : EOF" << std::endl;
             close(socket_->fd());
+            if (connection_close_callback_) {
+                connection_close_callback_(shared_from_this());
+            }
+            buffer_->clear();
             break;
         } else if (n == -1 && errno == EINTR) {
             std::cerr << "continue..." << std::endl;
             continue;
         } else if (n == -1 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
-            // TODO (flushhip): concat buff to callback
-            std::cerr << "finish once read" << std::endl;
+            if (data_arrive_callback_) {
+                data_arrive_callback_(shared_from_this(), buffer_->data());
+            }
+            buffer_->clear();
             break;
         }
     }
+}
+void connection::send(std::string_view data) {
+    write(socket_->fd(), data.data(), data.size());
 }
 
 void connection::do_close() {}

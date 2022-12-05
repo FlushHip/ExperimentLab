@@ -22,6 +22,8 @@ if(UNIX)
         net/connection.h
         net/connection.cpp
         net/callback.h
+        net/buffer.h
+        net/buffer.cpp
     )
 
     target_compile_features(${TARGET_NAME} PRIVATE cxx_std_20)

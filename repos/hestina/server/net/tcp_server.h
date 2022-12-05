@@ -29,7 +29,6 @@ public:
 
 private:
     void new_connection(std::unique_ptr<socket>&& sock);
-    void do_read(socket* sock);
 
     uint16_t port_;
     std::string ip_;
