@@ -1,5 +1,6 @@
 #include "acceptor.h"
 
+#include "../log/logger.h"
 #include "addr.h"
 #include "channel.h"
 #include "socket.h"
@@ -36,6 +37,10 @@ void acceptor::listen() {
 void acceptor::do_read() {
     addr addr;
     auto sock = std::make_unique<socket>(socket_->accept(addr));
+    if (sock->fd() < 0) {
+        log_warn << "some connction accept error";
+        return;
+    }
     if (callback_) {
         callback_(std::move(sock));
     }

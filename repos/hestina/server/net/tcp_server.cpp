@@ -37,12 +37,10 @@ bool tcp_server::start() {
     main_loop_thread_->start();
     sub_loop_thread_pool_->start();
 
-    log_trace << "server ip : " << ip_ << " port : " << port_ << " running...";
+    log_debug << "server ip : " << ip_ << " port : " << port_ << " running...";
     return true;
 }
 void tcp_server::new_connection(std::unique_ptr<socket>&& sock) {
-    log_trace << "new connection...";
-
     auto conn = std::make_shared<connection>(
         sub_loop_thread_pool_->get_eloop(), std::move(sock));
     conn->set_new_connection_callback(new_connection_callback_);

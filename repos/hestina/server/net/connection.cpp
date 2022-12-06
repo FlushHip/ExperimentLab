@@ -1,5 +1,6 @@
 #include "connection.h"
 
+#include "../log/logger.h"
 #include "buffer.h"
 #include "channel.h"
 #include "socket.h"
@@ -26,6 +27,7 @@ connection::~connection() = default;
 void connection::established() {
     channel_->enable_reading();
 
+    log_debug << "new connection established";
     if (new_connection_callback_) {
         new_connection_callback_(shared_from_this());
     }
@@ -55,6 +57,7 @@ void connection::do_read() {
             buffer_->append({sbuff, static_cast<size_t>(n)});
         } else if (n == 0) {
             close(socket_->fd());
+            log_debug << "connection close";
             if (connection_close_callback_) {
                 connection_close_callback_(shared_from_this());
             }
@@ -64,6 +67,7 @@ void connection::do_read() {
             std::cerr << "continue..." << std::endl;
             continue;
         } else if (n == -1 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
+            log_trace << "recv : " << buffer_->data();
             if (data_arrive_callback_) {
                 data_arrive_callback_(shared_from_this(), buffer_->data());
             }
@@ -73,6 +77,7 @@ void connection::do_read() {
     }
 }
 void connection::send(std::string_view data) {
+    log_trace << "send : " << data;
     write(socket_->fd(), data.data(), data.size());
 }
 

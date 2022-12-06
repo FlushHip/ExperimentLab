@@ -17,10 +17,14 @@ int main(int argc, char* argv[]) {
         });
     server.set_data_arrive_callback(
         [](std::weak_ptr<hestina::connection> conn, std::string_view data) {
-            log_trace << "recv : " << data;
+            log_info << "recv : " << data;
             if (!conn.expired()) {
                 conn.lock()->send(data);
             }
+        });
+    server.set_connection_close_callback(
+        [](std::weak_ptr<hestina::connection> conn) {
+            log_info << "connection close";
         });
     server.start();
 
