@@ -166,17 +166,7 @@ void logger::init(level_t level,
 void logger::uninit() {
     if (context_->async_) {
         std::get<context::async_ctx>(context_->ctx_).is_running_ = false;
-        {
-            std::lock_guard<std::mutex> lock(
-                std::get<context::async_ctx>(context_->ctx_).queue_mutex_);
-            while (
-                !std::get<context::async_ctx>(context_->ctx_).queue_.empty()) {
-                std::string msg =
-                    std::get<context::async_ctx>(context_->ctx_).queue_.front();
-                std::get<context::async_ctx>(context_->ctx_).queue_.pop_front();
-                flush(std::move(msg));
-            }
-        }
+        std::get<context::async_ctx>(context_->ctx_).queue_con_.notify_one();
         if (std::get<context::async_ctx>(context_->ctx_).thread_.joinable()) {
             std::get<context::async_ctx>(context_->ctx_).thread_.join();
         }
@@ -191,7 +181,7 @@ logger::~logger() {
 }
 
 void logger::run() {
-    while (std::get<context::async_ctx>(context_->ctx_).is_running_) {
+    while (true) {
         std::string msg;
         {
             std::unique_lock<std::mutex> lock(
@@ -199,8 +189,14 @@ void logger::run() {
             std::get<context::async_ctx>(context_->ctx_)
                 .queue_con_.wait(lock, [this] {
                     return !std::get<context::async_ctx>(context_->ctx_)
-                                .queue_.empty();
+                                .is_running_ ||
+                        !std::get<context::async_ctx>(context_->ctx_)
+                             .queue_.empty();
                 });
+            if (!std::get<context::async_ctx>(context_->ctx_).is_running_ &&
+                std::get<context::async_ctx>(context_->ctx_).queue_.empty()) {
+                break;
+            }
             msg = std::get<context::async_ctx>(context_->ctx_).queue_.front();
             std::get<context::async_ctx>(context_->ctx_).queue_.pop_front();
         }
