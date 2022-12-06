@@ -15,6 +15,7 @@ public:
         fatal,
     };
     void init(level_t level,
+        bool console = true,
         bool async = true,
         std::string_view log_dir = "",
         std::string_view file_name = "");
@@ -44,8 +45,8 @@ private:
 
     void run();
 
-    void write(std::string&& msg);
-    void flush(std::string&& msg);
+    void write(level_t level, std::string&& msg);
+    void flush(level_t level, std::string&& msg);
 
     struct context;
     std::unique_ptr<context> context_;

@@ -56,19 +56,22 @@ std::string thread_id_string() {
 }  // namespace
 
 struct logger::context {
-    context(bool async)
-        : async_(async)
+    context(bool console, bool async, level_t level)
+        : console_(console)
+        , async_(async)
+        , level_(level)
         , ctx_(async ? std::variant<async_ctx,
                            sync_ctx>{std::in_place_type<async_ctx>}
                      : std::variant<async_ctx, sync_ctx>{
                            std::in_place_type<sync_ctx>}) {}
+    bool console_;
     bool async_;
-    level_t level_{info};
+    level_t level_;
 
     struct async_ctx {
         std::mutex queue_mutex_;
         std::condition_variable queue_con_;
-        std::deque<std::string> queue_;
+        std::deque<std::pair<level_t, std::string>> queue_;
         std::thread thread_;
         std::atomic_bool is_running_;
     };
@@ -83,7 +86,7 @@ struct logger::context {
 logger::stream::~stream() {
     std::string msg = format();
     if (i_level_ >= logger::instance().context_->level_) {
-        logger::instance().write(std::move(msg));
+        logger::instance().write(i_level_, std::move(msg));
     }
 }
 
@@ -119,21 +122,17 @@ logger& logger::instance() {
 }
 
 void logger::init(level_t level,
+    bool console,
     bool async,
     std::string_view log_dir,
     std::string_view file_name) {
     assert(context_ == nullptr);
-    context_ = std::make_unique<context>(async);
-
-    context_->async_ = async;
+    context_ = std::make_unique<context>(console, async, level);
     if (context_->async_) {
         std::get<context::async_ctx>(context_->ctx_).is_running_ = false;
     }
-    context_->level_ = level;
 
-    if (log_dir.empty()) {
-        context_->fp_ = stdout;
-    } else {
+    if (!log_dir.empty()) {
         using namespace std::string_literals;
 
         // TODO (flushhip): log file name append date
@@ -171,7 +170,7 @@ void logger::uninit() {
             std::get<context::async_ctx>(context_->ctx_).thread_.join();
         }
     }
-    if (context_->fp_ && context_->fp_ != stdout) {
+    if (context_->fp_) {
         assert(EOF != std::fclose(context_->fp_));
     }
 }
@@ -183,6 +182,7 @@ logger::~logger() {
 void logger::run() {
     while (true) {
         std::string msg;
+        level_t level{};
         {
             std::unique_lock<std::mutex> lock(
                 std::get<context::async_ctx>(context_->ctx_).queue_mutex_);
@@ -197,24 +197,41 @@ void logger::run() {
                 std::get<context::async_ctx>(context_->ctx_).queue_.empty()) {
                 break;
             }
-            msg = std::get<context::async_ctx>(context_->ctx_).queue_.front();
+            level = std::get<context::async_ctx>(context_->ctx_)
+                        .queue_.front()
+                        .first;
+            msg = std::move(std::get<context::async_ctx>(context_->ctx_)
+                                .queue_.front()
+                                .second);
             std::get<context::async_ctx>(context_->ctx_).queue_.pop_front();
         }
-        flush(std::move(msg));
+        flush(level, std::move(msg));
     }
 }
 
-void logger::flush(std::string&& msg) {
+void logger::flush(level_t level, std::string&& msg) {
+    if (context_->console_) {
+        if (level == level_t::error) {
+            std::cerr << msg;
+        } else {
+            std::clog << msg;
+            std::clog.flush();
+        }
+    }
+
     if (context_->fp_ != nullptr) {
         assert(EOF != std::fputs(msg.c_str(), context_->fp_));
+        if (level == level_t::error) {
+            assert(EOF != std::fflush(context_->fp_));
+        }
     }
 }
 
-void logger::write(std::string&& msg) {
+void logger::write(level_t level, std::string&& msg) {
     if (!context_->async_) {
         std::lock_guard<std::mutex> lock(
             std::get<context::sync_ctx>(context_->ctx_).flush_mutex_);
-        flush(std::move(msg));
+        flush(level, std::move(msg));
     } else {
         if (!std::get<context::async_ctx>(context_->ctx_).is_running_) {
             std::cerr << "log thread don't running" << std::endl;
@@ -224,7 +241,7 @@ void logger::write(std::string&& msg) {
             std::lock_guard<std::mutex> lock(
                 std::get<context::async_ctx>(context_->ctx_).queue_mutex_);
             std::get<context::async_ctx>(context_->ctx_)
-                .queue_.emplace_back(std::move(msg));
+                .queue_.emplace_back(level, std::move(msg));
         }
         std::get<context::async_ctx>(context_->ctx_).queue_con_.notify_one();
     }
