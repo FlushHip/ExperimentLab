@@ -65,6 +65,9 @@ private:
 #define log_warn           \
   hestina::logger::stream( \
       __FILE_NAME__, __LINE__, __FUNCTION__, hestina::logger::warn)
+#define log_error          \
+  hestina::logger::stream( \
+      __FILE_NAME__, __LINE__, __FUNCTION__, hestina::logger::error)
 #define log_fatal          \
   hestina::logger::stream( \
       __FILE_NAME__, __LINE__, __FUNCTION__, hestina::logger::fatal)
