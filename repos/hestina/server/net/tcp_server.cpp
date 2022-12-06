@@ -1,5 +1,6 @@
 #include "tcp_server.h"
 
+#include "../log/logger.h"
 #include "acceptor.h"
 #include "addr.h"
 #include "channel.h"
@@ -36,12 +37,11 @@ bool tcp_server::start() {
     main_loop_thread_->start();
     sub_loop_thread_pool_->start();
 
-    std::cerr << "server ip : " << ip_ << " port : " << port_ << " running..."
-              << std::endl;
+    log_trace << "server ip : " << ip_ << " port : " << port_ << " running...";
     return true;
 }
 void tcp_server::new_connection(std::unique_ptr<socket>&& sock) {
-    std::cerr << "new connection..." << std::endl;
+    log_trace << "new connection...";
 
     auto conn = std::make_shared<connection>(
         sub_loop_thread_pool_->get_eloop(), std::move(sock));

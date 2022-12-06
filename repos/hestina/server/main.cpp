@@ -8,12 +8,12 @@
 #include <thread>
 
 int main(int argc, char* argv[]) {
-    hestina::logger::instance().init(hestina::logger::trace);
+    hestina::logger::instance().init(hestina::logger::trace, true);
 
     hestina::tcp_server server(12345, "0.0.0.0");
     server.set_new_connection_callback(
         [](std::weak_ptr<hestina::connection> conn) {
-            log_trace << "new connection";
+            log_info << "new connection";
         });
     server.set_data_arrive_callback(
         [](std::weak_ptr<hestina::connection> conn, std::string_view data) {

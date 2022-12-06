@@ -15,6 +15,7 @@ public:
         fatal,
     };
     void init(level_t level,
+        bool async = true,
         std::string_view log_dir = "",
         std::string_view file_name = "");
 

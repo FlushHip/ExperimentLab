@@ -8,6 +8,7 @@
 #include <ctime>
 #include <deque>
 #include <filesystem>
+#include <future>
 #include <iomanip>
 #include <iostream>
 #include <memory>
@@ -15,6 +16,8 @@
 #include <sstream>
 #include <string_view>
 #include <thread>
+#include <utility>
+#include <variant>
 
 namespace hestina {
 
@@ -53,14 +56,27 @@ std::string thread_id_string() {
 }  // namespace
 
 struct logger::context {
+    context(bool async)
+        : async_(async)
+        , ctx_(async ? std::variant<async_ctx,
+                           sync_ctx>{std::in_place_type<async_ctx>}
+                     : std::variant<async_ctx, sync_ctx>{
+                           std::in_place_type<sync_ctx>}) {}
+    bool async_;
     level_t level_{info};
 
-    std::mutex queue_mutex_;
-    std::condition_variable queue_con_;
-    std::deque<std::string> queue_;
-    std::thread thread_;
-    std::atomic_bool is_running_{false};
+    struct async_ctx {
+        std::mutex queue_mutex_;
+        std::condition_variable queue_con_;
+        std::deque<std::string> queue_;
+        std::thread thread_;
+        std::atomic_bool is_running_;
+    };
 
+    struct sync_ctx {
+        std::mutex flush_mutex_;
+    };
+    std::variant<async_ctx, sync_ctx> ctx_;
     std::FILE* fp_{nullptr};
 };
 
@@ -103,11 +119,16 @@ logger& logger::instance() {
 }
 
 void logger::init(level_t level,
+    bool async,
     std::string_view log_dir,
     std::string_view file_name) {
     assert(context_ == nullptr);
-    context_ = std::make_unique<context>();
+    context_ = std::make_unique<context>(async);
 
+    context_->async_ = async;
+    if (context_->async_) {
+        std::get<context::async_ctx>(context_->ctx_).is_running_ = false;
+    }
     context_->level_ = level;
 
     if (log_dir.empty()) {
@@ -129,22 +150,36 @@ void logger::init(level_t level,
         }
     }
 
-    context_->is_running_ = true;
-    context_->thread_ = std::thread([this] { run(); });
+    if (context_->async_) {
+        std::get<context::async_ctx>(context_->ctx_).is_running_ = true;
+        std::promise<void> pro;
+        auto fu = pro.get_future();
+        std::get<context::async_ctx>(context_->ctx_).thread_ =
+            std::thread([this, pro = std::move(pro)]() mutable {
+                pro.set_value();
+                run();
+            });
+        fu.wait();
+    }
 }
 
 void logger::uninit() {
-    context_->is_running_ = false;
-    {
-        std::lock_guard<std::mutex> lock(context_->queue_mutex_);
-        while (!context_->queue_.empty()) {
-            std::string msg = context_->queue_.front();
-            context_->queue_.pop_front();
-            flush(std::move(msg));
+    if (context_->async_) {
+        std::get<context::async_ctx>(context_->ctx_).is_running_ = false;
+        {
+            std::lock_guard<std::mutex> lock(
+                std::get<context::async_ctx>(context_->ctx_).queue_mutex_);
+            while (
+                !std::get<context::async_ctx>(context_->ctx_).queue_.empty()) {
+                std::string msg =
+                    std::get<context::async_ctx>(context_->ctx_).queue_.front();
+                std::get<context::async_ctx>(context_->ctx_).queue_.pop_front();
+                flush(std::move(msg));
+            }
         }
-    }
-    if (context_->thread_.joinable()) {
-        context_->thread_.join();
+        if (std::get<context::async_ctx>(context_->ctx_).thread_.joinable()) {
+            std::get<context::async_ctx>(context_->ctx_).thread_.join();
+        }
     }
     if (context_->fp_ && context_->fp_ != stdout) {
         assert(EOF != std::fclose(context_->fp_));
@@ -156,14 +191,18 @@ logger::~logger() {
 }
 
 void logger::run() {
-    while (context_->is_running_) {
+    while (std::get<context::async_ctx>(context_->ctx_).is_running_) {
         std::string msg;
         {
-            std::unique_lock<std::mutex> lock(context_->queue_mutex_);
-            context_->queue_con_.wait(
-                lock, [this] { return !context_->queue_.empty(); });
-            msg = context_->queue_.front();
-            context_->queue_.pop_front();
+            std::unique_lock<std::mutex> lock(
+                std::get<context::async_ctx>(context_->ctx_).queue_mutex_);
+            std::get<context::async_ctx>(context_->ctx_)
+                .queue_con_.wait(lock, [this] {
+                    return !std::get<context::async_ctx>(context_->ctx_)
+                                .queue_.empty();
+                });
+            msg = std::get<context::async_ctx>(context_->ctx_).queue_.front();
+            std::get<context::async_ctx>(context_->ctx_).queue_.pop_front();
         }
         flush(std::move(msg));
     }
@@ -176,15 +215,23 @@ void logger::flush(std::string&& msg) {
 }
 
 void logger::write(std::string&& msg) {
-    if (!context_->is_running_) {
-        std::cerr << "log thread don't running" << std::endl;
-        return;
+    if (!context_->async_) {
+        std::lock_guard<std::mutex> lock(
+            std::get<context::sync_ctx>(context_->ctx_).flush_mutex_);
+        flush(std::move(msg));
+    } else {
+        if (!std::get<context::async_ctx>(context_->ctx_).is_running_) {
+            std::cerr << "log thread don't running" << std::endl;
+            return;
+        }
+        {
+            std::lock_guard<std::mutex> lock(
+                std::get<context::async_ctx>(context_->ctx_).queue_mutex_);
+            std::get<context::async_ctx>(context_->ctx_)
+                .queue_.emplace_back(std::move(msg));
+        }
+        std::get<context::async_ctx>(context_->ctx_).queue_con_.notify_one();
     }
-    {
-        std::lock_guard<std::mutex> lock(context_->queue_mutex_);
-        context_->queue_.emplace_back(std::move(msg));
-    }
-    context_->queue_con_.notify_one();
 }
 
 }  // namespace hestina
