@@ -1,5 +1,7 @@
 #include "logger.h"
 
+#include <rang.hpp>
+
 #include <cassert>
 #include <chrono>
 #include <condition_variable>
@@ -33,6 +35,30 @@ std::string_view level_string(logger::level_t level) {
         "fatal",
     };
     return sls[level];
+}
+
+rang::fg level_color(logger::level_t level) {
+    static rang::fg srang_fg[]{
+        rang::fg::gray,
+        rang::fg::cyan,
+        rang::fg::green,
+        rang::fg::yellow,
+        rang::fg::red,
+        rang::fg::magenta,
+    };
+    return srang_fg[level];
+}
+
+rang::style level_text_style(logger::level_t level) {
+    static rang::style srang_style[]{
+        rang::style::dim,
+        rang::style::rblink,
+        rang::style::blink,
+        rang::style::italic,
+        rang::style::bold,
+        rang::style::reversed,
+    };
+    return srang_style[level];
 }
 
 std::string date_time_string() {
@@ -211,17 +237,20 @@ void logger::run() {
 
 void logger::flush(level_t level, std::string&& msg) {
     if (context_->console_) {
-        if (level == level_t::error) {
-            std::cerr << msg;
+        if (level >= level_t::error) {
+            std::cerr << level_color(level) << level_text_style(level)
+                      << rang::style::bold << msg << rang::fg::reset
+                      << rang::style::reset;
         } else {
-            std::clog << msg;
-            std::clog.flush();
+            std::clog << level_color(level) << level_text_style(level) << msg
+                      << rang::fg::reset << rang::style::reset;
+            // std::clog.flush();
         }
     }
 
     if (context_->fp_ != nullptr) {
         assert(EOF != std::fputs(msg.c_str(), context_->fp_));
-        if (level == level_t::error) {
+        if (level >= level_t::error) {
             assert(EOF != std::fflush(context_->fp_));
         }
     }

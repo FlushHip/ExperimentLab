@@ -10,6 +10,13 @@
 int main(int argc, char* argv[]) {
     hestina::logger::instance().init(hestina::logger::trace, true);
 
+    log_trace << "log.....";
+    log_debug << "log.....";
+    log_info << "log.....";
+    log_warn << "log.....";
+    log_error << "log.....";
+    log_fatal << "log.....";
+
     hestina::tcp_server server(12345, "0.0.0.0");
     server.set_new_connection_callback(
         [](std::weak_ptr<hestina::connection> conn) {

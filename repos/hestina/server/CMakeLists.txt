@@ -33,5 +33,5 @@ if(UNIX)
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 
     find_package(Threads REQUIRED)
-    target_link_libraries(${TARGET_NAME} PRIVATE Threads::Threads)
+    target_link_libraries(${TARGET_NAME} PRIVATE Threads::Threads rang)
 endif()
