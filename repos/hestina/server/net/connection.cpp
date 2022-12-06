@@ -1,6 +1,7 @@
 #include "connection.h"
 
-#include "../log/logger.h"
+#include "log/logger.h"
+
 #include "buffer.h"
 #include "channel.h"
 #include "socket.h"

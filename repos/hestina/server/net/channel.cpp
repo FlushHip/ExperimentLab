@@ -1,6 +1,7 @@
 #include "channel.h"
 
-#include "../log/logger.h"
+#include "log/logger.h"
+
 #include "event_loop.h"
 
 #include <sys/epoll.h>

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "callback.h"
-#include "eloop_thread_pool.h"
 
 #include <memory>
 #include <string>

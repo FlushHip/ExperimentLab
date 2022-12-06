@@ -1,7 +1,8 @@
 #include "eloop_thread_pool.h"
-#include <future>
 
-#include "../pool/thread_pool.h"
+#include "pool/thread_pool.h"
+
+#include <future>
 
 namespace hestina {
 
