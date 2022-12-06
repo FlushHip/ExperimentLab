@@ -8,6 +8,7 @@
 #include <ctime>
 #include <deque>
 #include <filesystem>
+#include <iomanip>
 #include <iostream>
 #include <memory>
 #include <mutex>
@@ -35,17 +36,15 @@ std::string date_time_string() {
     auto t_now = std::chrono::system_clock::now();
     std::time_t t = std::chrono::system_clock::to_time_t(t_now);
     auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(
-                            t_now - std::chrono::system_clock::from_time_t(t))
-                            .count() %
-        10000;
+        t_now - std::chrono::system_clock::from_time_t(t))
+                            .count();
     std::ostringstream os;
     os << std::put_time(std::localtime(&t), "%Y-%m-%d %H:%M:%S.")
-       << microseconds;
+       << std::setw(6) << std::setfill('0') << microseconds;
     return os.str();
 }
 
 std::string thread_id_string() {
-    // FIXME (flushhip): id to long
     std::ostringstream os;
     os << std::this_thread::get_id();
     return os.str();
