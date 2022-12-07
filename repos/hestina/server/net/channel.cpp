@@ -25,33 +25,30 @@ uint32_t channel::ready_events() const {
     return ready_events_;
 }
 
-void channel::enable_reading() {
-    listen_events_ |= (EPOLLIN | EPOLLPRI);
+void channel::reading(bool f) {
+    if (f) {
+        listen_events_ |= (EPOLLIN | EPOLLPRI);
+    } else {
+        listen_events_ &= ~(EPOLLIN | EPOLLPRI);
+    }
     update();
 }
 
-void channel::enable_writing() {
-    listen_events_ |= EPOLLOUT;
+void channel::writing(bool f) {
+    if (f) {
+        listen_events_ |= EPOLLOUT;
+    } else {
+        listen_events_ &= ~EPOLLOUT;
+    }
     update();
 }
 
-void channel::disable_reading() {
-    listen_events_ &= ~(EPOLLIN | EPOLLPRI);
-    update();
-}
-
-void channel::disable_writing() {
-    listen_events_ &= ~EPOLLOUT;
-    update();
-}
-
-void channel::enable_et() {
-    listen_events_ |= EPOLLET;
-    update();
-}
-
-void channel::disable_et() {
-    listen_events_ &= ~EPOLLET;
+void channel::et(bool f) {
+    if (f) {
+        listen_events_ |= EPOLLET;
+    } else {
+        listen_events_ &= ~EPOLLET;
+    }
     update();
 }
 

@@ -32,7 +32,7 @@ void acceptor::set_new_connection_callback(
 
 void acceptor::listen() {
     socket_->listen();
-    listen_channel_->enable_reading();
+    listen_channel_->reading();
 }
 
 void acceptor::do_read() {

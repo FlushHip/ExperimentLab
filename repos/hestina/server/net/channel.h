@@ -15,13 +15,9 @@ public:
     uint32_t listen_events() const;
     uint32_t ready_events() const;
 
-    void enable_reading();
-    void enable_writing();
-    void disable_reading();
-    void disable_writing();
-
-    void enable_et();
-    void disable_et();
+    void reading(bool f = true);
+    void writing(bool f = true);
+    void et(bool f = true);
 
     void handle_event();
 

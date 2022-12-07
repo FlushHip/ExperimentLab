@@ -17,7 +17,7 @@ connection::connection(event_loop* loop, std::unique_ptr<socket>&& sock)
     , channel_(std::make_unique<channel>(loop, socket_->fd()))
     , buffer_(std::make_unique<buffer>()) {
     socket_->nonblocking();
-    channel_->enable_et();
+    channel_->et();
 
     channel_->set_read_event_callback([this] { do_read(); });
     channel_->set_close_event_callback([this] { do_close(); });
@@ -27,7 +27,7 @@ connection::connection(event_loop* loop, std::unique_ptr<socket>&& sock)
 connection::~connection() = default;
 
 void connection::established() {
-    channel_->enable_reading();
+    channel_->reading();
 
     log_debug << "new connection established";
     assert(status_ == status::connecting);
@@ -39,7 +39,7 @@ void connection::established() {
 
 void connection::closed() {
     assert(status_ == status::disconnecting);
-    channel_->disable_writing();
+    channel_->writing(false);
 
     channel_->remove();
     status_ = status::disconnected;
@@ -93,7 +93,7 @@ void connection::do_close() {
     assert(status_ == status::connected);
     status_ = status::disconnecting;
 
-    channel_->disable_reading();
+    channel_->reading(false);
     if (connection_close_callback_) {
         connection_close_callback_(shared_from_this());
     }
