@@ -71,3 +71,5 @@ private:
 #define log_fatal          \
   hestina::logger::stream( \
       __FILE_NAME__, __LINE__, __FUNCTION__, hestina::logger::fatal)
+
+#include <prettyprint.hpp>

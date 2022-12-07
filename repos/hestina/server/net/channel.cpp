@@ -87,25 +87,21 @@ void channel::handle_event() {
     }
 
     if (ready_events_ & EPOLLHUP) {
-        log_trace << "fd " << fd_ << " has close signal";
         if (close_event_callback_) {
             close_event_callback_();
         }
     }
     if (ready_events_ & EPOLLERR) {
-        log_trace << "fd " << fd_ << " has error signal";
         if (error_event_callback_) {
             error_event_callback_();
         }
     }
     if (ready_events_ & (EPOLLIN | EPOLLPRI)) {
-        log_trace << "fd " << fd_ << " has read signal";
         if (read_event_callback_) {
             read_event_callback_();
         }
     }
     if (ready_events_ & EPOLLOUT) {
-        log_trace << "fd " << fd_ << " has write signal";
         if (write_event_callback_) {
             write_event_callback_();
         }

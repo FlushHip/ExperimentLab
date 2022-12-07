@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <string_view>
 namespace hestina {
 class addr;
@@ -22,6 +23,9 @@ public:
 
     int read(char* buff, int size);
     int write(const char* buff, int size);
+
+    std::unique_ptr<addr> local_addr();
+    std::unique_ptr<addr> peer_addr();
 
 private:
     int fd_;

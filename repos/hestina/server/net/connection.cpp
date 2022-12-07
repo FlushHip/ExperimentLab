@@ -1,7 +1,9 @@
 #include "connection.h"
+#include <unistd.h>
 
 #include "log/logger.h"
 
+#include "addr.h"
 #include "buffer.h"
 #include "channel.h"
 #include "socket.h"
@@ -15,6 +17,8 @@ namespace hestina {
 connection::connection(event_loop* loop, std::unique_ptr<socket>&& sock)
     : socket_(std::move(sock))
     , channel_(std::make_unique<channel>(loop, socket_->fd()))
+    , local_addr_(socket_->local_addr())
+    , peer_addr_(socket_->peer_addr())
     , buffer_(std::make_unique<buffer>()) {
     socket_->nonblocking();
     channel_->et();
@@ -29,7 +33,8 @@ connection::~connection() = default;
 void connection::established() {
     channel_->reading();
 
-    log_debug << "new connection established";
+    log_debug << "new connection established, " << local_addr_->port() << " <- "
+              << peer_addr_->point();
     assert(status_ == status::connecting);
     status_ = status::connected;
     if (new_connection_callback_) {
@@ -44,7 +49,8 @@ void connection::closed() {
     channel_->remove();
     status_ = status::disconnected;
 
-    log_debug << "connection closed";
+    log_debug << "connection closed, " << local_addr_->port() << " <- "
+              << peer_addr_->point();
 }
 
 void connection::set_new_connection_callback(
@@ -76,18 +82,31 @@ void connection::do_read() {
         } else if (n == -1 && errno == EINTR) {
             continue;
         } else if (n == -1 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
-            log_trace << "recv : " << buffer_->data();
-            if (data_arrive_callback_) {
-                data_arrive_callback_(shared_from_this(), buffer_->data());
-            }
+            read_finished();
             break;
         }
     }
 }
+
+void connection::read_finished() {
+    log_trace << "recv <-- " << peer_addr_->point() << ": " << buffer_->data();
+    if (data_arrive_callback_) {
+        data_arrive_callback_(shared_from_this(), buffer_->data());
+    }
+}
+
 void connection::send(std::string_view data) {
-    log_trace << "send : " << data;
+    log_trace << "send --> " << peer_addr_->point() << ": " << data;
     write(socket_->fd(), data.data(), data.size());
     socket_->write(data.data(), data.size());
+}
+
+const addr& connection::local_addr() const {
+    return *local_addr_;
+}
+
+const addr& connection::peer_addr() const {
+    return *peer_addr_;
 }
 
 void connection::do_close() {

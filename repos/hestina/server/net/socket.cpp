@@ -79,4 +79,24 @@ int socket::write(const char* buff, int size) {
     return ::write(fd_, buff, size);
 }
 
+std::unique_ptr<addr> socket::local_addr() {
+    struct sockaddr_in address {};
+    socklen_t len{static_cast<socklen_t>(sizeof(address))};
+
+    int ret =
+        getsockname(fd_, static_cast<struct sockaddr*>((void*)&address), &len);
+    assert(ret == 0);
+    return std::make_unique<addr>(address);
+}
+
+std::unique_ptr<addr> socket::peer_addr() {
+    struct sockaddr_in address {};
+    socklen_t len{static_cast<socklen_t>(sizeof(address))};
+
+    int ret =
+        getpeername(fd_, static_cast<struct sockaddr*>((void*)&address), &len);
+    assert(ret == 0);
+    return std::make_unique<addr>(address);
+}
+
 }  // namespace hestina
