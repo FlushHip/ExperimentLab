@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string_view>
 namespace hestina {
 class addr;
 class socket {
@@ -19,7 +20,8 @@ public:
     void listen();
     int accept(addr& addr);
 
-    int read(int size);
+    int read(char* buff, int size);
+    int write(const char* buff, int size);
 
 private:
     int fd_;

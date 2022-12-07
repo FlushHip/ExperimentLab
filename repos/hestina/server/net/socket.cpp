@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <openssl/bio.h>
 #include <sys/socket.h>
+#include <unistd.h>
 
 #include <cassert>
 #include <cerrno>
@@ -70,8 +71,12 @@ int socket::accept(addr& addr) {
     return fd;
 }
 
-int socket::read(int size) {
-    return 0;
+int socket::read(char* buff, int size) {
+    return ::read(fd_, buff, size);
+}
+
+int socket::write(const char* buff, int size) {
+    return ::write(fd_, buff, size);
 }
 
 }  // namespace hestina

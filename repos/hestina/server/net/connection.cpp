@@ -67,7 +67,7 @@ void connection::do_read() {
     thread_local char sbuff[buff_length + 1 + 4] = {0};
     buffer_->clear();
     while (true) {
-        auto n = read(socket_->fd(), sbuff, buff_length);
+        int n = socket_->read(sbuff, buff_length);
         if (n > 0) {
             buffer_->append({sbuff, static_cast<size_t>(n)});
         } else if (n == 0) {
@@ -87,6 +87,7 @@ void connection::do_read() {
 void connection::send(std::string_view data) {
     log_trace << "send : " << data;
     write(socket_->fd(), data.data(), data.size());
+    socket_->write(data.data(), data.size());
 }
 
 void connection::do_close() {
