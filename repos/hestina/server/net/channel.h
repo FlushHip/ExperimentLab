@@ -25,6 +25,8 @@ public:
 
     void handle_event();
 
+    void remove();
+
     using event_callback_t = std::function<void()>;
     void set_any_event_callback(event_callback_t&& callback);
     void set_read_event_callback(event_callback_t&& callback);

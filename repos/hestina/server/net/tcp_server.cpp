@@ -46,11 +46,24 @@ void tcp_server::new_connection(std::unique_ptr<socket>&& sock) {
         sub_loop_thread_pool_->get_eloop(), std::move(sock));
     conn->set_new_connection_callback(new_connection_callback_);
     conn->set_data_arrive_callback(data_arrive_callback_);
-    conn->set_connection_close_callback(connection_close_callback_);
+    conn->set_connection_close_callback([this](auto&& conn) {
+        connection_close(std::forward<decltype(conn)>(conn));
+    });
 
     connections_.emplace(conn);
 
     conn->established();
+}
+
+void tcp_server::connection_close(std::weak_ptr<connection>&& conn) {
+    if (connection_close_callback_) {
+        connection_close_callback_(conn);
+    }
+    if (!conn.expired()) {
+        auto con = conn.lock();
+        connections_.erase(con);
+        con->closed();
+    }
 }
 
 bool tcp_server::stop() {

@@ -7,6 +7,7 @@
 #include "socket.h"
 
 #include <cassert>
+#include <cstring>
 #include <iostream>
 
 namespace hestina {
@@ -29,9 +30,21 @@ void connection::established() {
     channel_->enable_reading();
 
     log_debug << "new connection established";
+    assert(status_ == status::connecting);
+    status_ = status::connected;
     if (new_connection_callback_) {
         new_connection_callback_(shared_from_this());
     }
+}
+
+void connection::closed() {
+    assert(status_ == status::disconnecting);
+    channel_->disable_writing();
+
+    channel_->remove();
+    status_ = status::disconnected;
+
+    log_debug << "connection closed";
 }
 
 void connection::set_new_connection_callback(
@@ -52,27 +65,21 @@ void connection::set_connection_close_callback(
 void connection::do_read() {
     constexpr int buff_length = 1024;
     thread_local char sbuff[buff_length + 1 + 4] = {0};
+    buffer_->clear();
     while (true) {
         auto n = read(socket_->fd(), sbuff, buff_length);
         if (n > 0) {
             buffer_->append({sbuff, static_cast<size_t>(n)});
         } else if (n == 0) {
-            close(socket_->fd());
-            log_debug << "connection close";
-            if (connection_close_callback_) {
-                connection_close_callback_(shared_from_this());
-            }
-            buffer_->clear();
+            do_close();
             break;
         } else if (n == -1 && errno == EINTR) {
-            std::cerr << "continue..." << std::endl;
             continue;
         } else if (n == -1 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
             log_trace << "recv : " << buffer_->data();
             if (data_arrive_callback_) {
                 data_arrive_callback_(shared_from_this(), buffer_->data());
             }
-            buffer_->clear();
             break;
         }
     }
@@ -82,8 +89,22 @@ void connection::send(std::string_view data) {
     write(socket_->fd(), data.data(), data.size());
 }
 
-void connection::do_close() {}
+void connection::do_close() {
+    assert(status_ == status::connected);
+    status_ = status::disconnecting;
 
-void connection::do_error() {}
+    channel_->disable_reading();
+    if (connection_close_callback_) {
+        connection_close_callback_(shared_from_this());
+    }
+}
+
+void connection::do_error() {
+    int err = socket_->last_error();
+    if (err != 0) {
+        log_error << "fd " << socket_->fd() << " err " << err
+                  << " msg : " << strerror(err);
+    }
+}
 
 }  // namespace hestina

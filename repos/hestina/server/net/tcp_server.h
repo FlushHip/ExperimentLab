@@ -30,6 +30,7 @@ public:
 
 private:
     void new_connection(std::unique_ptr<socket>&& sock);
+    void connection_close(std::weak_ptr<connection>&& conn);
 
     uint16_t port_;
     std::string ip_;

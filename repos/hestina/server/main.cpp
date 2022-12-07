@@ -19,20 +19,15 @@ int main(int argc, char* argv[]) {
 
     hestina::tcp_server server(12345, "0.0.0.0");
     server.set_new_connection_callback(
-        [](std::weak_ptr<hestina::connection> conn) {
-            log_info << "new connection";
-        });
+        [](std::weak_ptr<hestina::connection> conn) {});
     server.set_data_arrive_callback(
         [](std::weak_ptr<hestina::connection> conn, std::string_view data) {
-            log_info << "recv : " << data;
-            if (!conn.expired()) {
-                conn.lock()->send(data);
-            }
+            // if (!conn.expired()) {
+            //     conn.lock()->send(data);
+            // }
         });
     server.set_connection_close_callback(
-        [](std::weak_ptr<hestina::connection> conn) {
-            log_info << "connection close";
-        });
+        [](std::weak_ptr<hestina::connection> conn) {});
     server.start();
 
     using namespace std::chrono_literals;

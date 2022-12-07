@@ -3,9 +3,11 @@
 #include "addr.h"
 
 #include <fcntl.h>
+#include <openssl/bio.h>
 #include <sys/socket.h>
 
 #include <cassert>
+#include <cerrno>
 
 namespace hestina {
 
@@ -15,10 +17,21 @@ socket::socket(int fd) : fd_(fd) {
 
 socket::socket() : socket(::socket(AF_INET, SOCK_STREAM, 0)) {}
 
-socket::~socket() = default;
+socket::~socket() {
+    if (fd_ != -1) {
+        close(fd_);
+    }
+}
 
 int socket::fd() const {
     return fd_;
+}
+
+int socket::last_error() {
+    int value = 0, len = 0;
+    int ret = getsockopt(
+        fd_, SOL_SOCKET, SO_ERROR, &value, reinterpret_cast<socklen_t*>(&len));
+    return ret == -1 ? errno : value;
 }
 
 void socket::nonblocking(bool f) {

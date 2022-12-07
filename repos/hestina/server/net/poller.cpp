@@ -1,6 +1,7 @@
 #include "poller.h"
 
 #include "channel.h"
+#include "log/logger.h"
 
 #include <sys/epoll.h>
 
@@ -16,9 +17,11 @@ poller::~poller() = default;
 
 std::vector<channel*> poller::poll() {
     int nums = epoll_wait(fd_, events_.data(), max_events_length, -1);
-    assert(nums != -1);
 
     std::vector<channel*> ret;
+    if (nums < 0 && errno == EINTR) {
+        return ret;
+    }
     for (int i = 0; i < nums; ++i) {
         auto* channel = static_cast<class channel*>(events_[i].data.ptr);
         channel->ready_events_ = events_[i].events;
@@ -30,8 +33,8 @@ std::vector<channel*> poller::poll() {
 void poller::update_channel(channel* channel) {
     assert(channel != nullptr);
     if (!channel->is_add_) {
-        channel->is_add_ = true;
         update(EPOLL_CTL_ADD, channel);
+        channel->is_add_ = true;
     } else {
         update(EPOLL_CTL_MOD, channel);
     }
@@ -41,6 +44,7 @@ void poller::remove_channel(channel* channel) {
     assert(channel != nullptr);
     if (channel->is_add_) {
         update(EPOLL_CTL_DEL, channel);
+        channel->is_add_ = false;
     }
 }
 

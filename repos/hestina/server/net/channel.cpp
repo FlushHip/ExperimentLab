@@ -59,6 +59,10 @@ void channel::update() {
     loop_->update_channel(this);
 }
 
+void channel::remove() {
+    loop_->remove_channel(this);
+}
+
 void channel::set_any_event_callback(event_callback_t&& callback) {
     any_event_callback_ = std::move(callback);
 }

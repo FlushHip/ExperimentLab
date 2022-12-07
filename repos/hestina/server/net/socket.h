@@ -9,6 +9,7 @@ public:
     ~socket();
 
     int fd() const;
+    int last_error();
 
     void nonblocking(bool f = true);
     void reuse_port(bool f = true);

@@ -17,6 +17,7 @@ public:
     ~connection();
 
     void established();
+    void closed();
 
     void set_new_connection_callback(const new_connection_callback_t& callback);
     void set_data_arrive_callback(const data_arrive_callback_t& callback);
@@ -38,6 +39,13 @@ private:
     connection_close_callback_t connection_close_callback_;
 
     std::unique_ptr<buffer> buffer_;
+
+    enum class status {
+        connecting,
+        connected,
+        disconnecting,
+        disconnected,
+    } status_{status::connecting};
 };
 
 }  // namespace hestina
