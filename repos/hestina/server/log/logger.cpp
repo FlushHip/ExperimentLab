@@ -27,6 +27,7 @@ namespace {
 
 std::string_view level_string(logger::level_t level) {
     static std::string_view sls[]{
+        "finer",
         "trace",
         "debug",
         " info",
@@ -40,6 +41,7 @@ std::string_view level_string(logger::level_t level) {
 rang::fg level_color(logger::level_t level) {
     static rang::fg srang_fg[]{
         rang::fg::gray,
+        rang::fg::gray,
         rang::fg::cyan,
         rang::fg::green,
         rang::fg::yellow,
@@ -51,6 +53,7 @@ rang::fg level_color(logger::level_t level) {
 
 rang::style level_text_style(logger::level_t level) {
     static rang::style srang_style[]{
+        rang::style::italic,
         rang::style::dim,
         rang::style::rblink,
         rang::style::blink,
@@ -237,7 +240,7 @@ void logger::run() {
 
 void logger::flush(level_t level, std::string&& msg) {
     if (context_->console_) {
-        if (level >= level_t::error) {
+        if (level >= level_t::warn) {
             std::cerr << level_color(level) << level_text_style(level)
                       << rang::style::bold << msg << rang::fg::reset
                       << rang::style::reset;

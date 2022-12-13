@@ -7,6 +7,7 @@ namespace hestina {
 class logger {
 public:
     enum level_t {
+        finer,
         trace,
         debug,
         info,
@@ -53,6 +54,9 @@ private:
 };
 }  // namespace hestina
 
+#define log_finer          \
+  hestina::logger::stream( \
+      __FILE_NAME__, __LINE__, __FUNCTION__, hestina::logger::finer)
 #define log_trace          \
   hestina::logger::stream( \
       __FILE_NAME__, __LINE__, __FUNCTION__, hestina::logger::trace)
