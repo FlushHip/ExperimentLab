@@ -35,26 +35,26 @@ void connection::established() {
 
     log_debug << "new connection established, " << local_addr_->port() << " <- "
               << peer_addr_->point();
-    assert(status_ == status::connecting);
-    status_ = status::connected;
+    assert(status_ == status_t::connecting);
+    status_ = status_t::connected;
     if (new_connection_callback_) {
         new_connection_callback_(shared_from_this());
     }
 }
 
 void connection::closed() {
-    assert(status_ == status::disconnecting);
+    assert(status_ == status_t::disconnecting);
     channel_->writing(false);
 
     channel_->remove();
-    status_ = status::disconnected;
+    status_ = status_t::disconnected;
 
     log_debug << "connection closed, " << local_addr_->port() << " <- "
               << peer_addr_->point();
 }
 
-void connection::set_new_connection_callback(
-    const new_connection_callback_t& callback) {
+void connection::set_connection_establish_callback(
+    const connection_establish_callback_t& callback) {
     new_connection_callback_ = callback;
 }
 
@@ -70,9 +70,10 @@ void connection::set_connection_close_callback(
 
 void connection::do_read() {
     constexpr int buff_length = 1024;
-    thread_local char sbuff[buff_length + 1 + 4] = {0};
+    thread_local char sbuff[buff_length] = {0};
     buffer_->clear();
     while (true) {
+        std::memset(sbuff, 0, sizeof(sbuff));
         int n = socket_->read(sbuff, buff_length);
         if (n > 0) {
             buffer_->append({sbuff, static_cast<size_t>(n)});
@@ -97,7 +98,6 @@ void connection::read_finished() {
 
 void connection::send(std::string_view data) {
     log_trace << "send --> " << peer_addr_->point() << ": " << data;
-    write(socket_->fd(), data.data(), data.size());
     socket_->write(data.data(), data.size());
 }
 
@@ -110,8 +110,8 @@ const addr& connection::peer_addr() const {
 }
 
 void connection::do_close() {
-    assert(status_ == status::connected);
-    status_ = status::disconnecting;
+    assert(status_ == status_t::connected);
+    status_ = status_t::disconnecting;
 
     channel_->reading(false);
     if (connection_close_callback_) {
@@ -125,6 +125,10 @@ void connection::do_error() {
         log_error << "fd " << socket_->fd() << " err " << err
                   << " msg : " << strerror(err);
     }
+}
+
+connection::status_t connection::status() const {
+    return status_;
 }
 
 }  // namespace hestina

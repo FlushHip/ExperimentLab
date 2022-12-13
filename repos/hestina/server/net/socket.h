@@ -21,6 +21,8 @@ public:
     void listen();
     int accept(addr& addr);
 
+    int connect(const addr& addr);
+
     int read(char* buff, int size);
     int write(const char* buff, int size);
 

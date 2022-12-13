@@ -1,7 +1,6 @@
 #pragma once
 
 #include "callback.h"
-#include "net/tcp_server.h"
 
 #include <memory>
 
@@ -15,8 +14,17 @@ class addr;
 
 class connection : public std::enable_shared_from_this<connection> {
 public:
+    enum class status_t {
+        connecting,
+        connected,
+        disconnecting,
+        disconnected,
+    };
+
     connection(event_loop* loop, std::unique_ptr<socket>&& sock);
     ~connection();
+
+    status_t status() const;
 
     void send(std::string_view data);
 
@@ -25,11 +33,13 @@ public:
 
 private:
     friend class tcp_server;
+    friend class tcp_client;
 
     void established();
     void closed();
 
-    void set_new_connection_callback(const new_connection_callback_t& callback);
+    void set_connection_establish_callback(
+        const connection_establish_callback_t& callback);
     void set_data_arrive_callback(const data_arrive_callback_t& callback);
     void set_connection_close_callback(
         const connection_close_callback_t& callback);
@@ -45,18 +55,13 @@ private:
 
     std::unique_ptr<addr> local_addr_, peer_addr_;
 
-    new_connection_callback_t new_connection_callback_;
+    connection_establish_callback_t new_connection_callback_;
     data_arrive_callback_t data_arrive_callback_;
     connection_close_callback_t connection_close_callback_;
 
     std::unique_ptr<buffer> buffer_;
 
-    enum class status {
-        connecting,
-        connected,
-        disconnecting,
-        disconnected,
-    } status_{status::connecting};
+    status_t status_{status_t::connecting};
 };
 
 }  // namespace hestina

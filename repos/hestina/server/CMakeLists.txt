@@ -26,6 +26,10 @@ if(UNIX)
         net/buffer.cpp
         net/eloop_thread_pool.h
         net/eloop_thread_pool.cpp
+        net/tcp_client.h
+        net/tcp_client.cpp
+        net/connector.h
+        net/connector.cpp
     )
 
     target_compile_features(${TARGET_NAME} PRIVATE cxx_std_20)

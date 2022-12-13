@@ -3,7 +3,6 @@
 #include "addr.h"
 
 #include <fcntl.h>
-#include <openssl/bio.h>
 #include <sys/socket.h>
 #include <unistd.h>
 
@@ -69,6 +68,13 @@ int socket::accept(addr& addr) {
         ::accept(fd_, const_cast<struct sockaddr*>(addr.sockaddr()), &size);
     assert(fd != -1);
     return fd;
+}
+
+int socket::connect(const addr& addr) {
+    int ret = ::connect(fd_, addr.sockaddr(), addr.len());
+    assert(ret == 0 ||
+        (errno == EINPROGRESS || errno == EINTR || errno == EISCONN));
+    return ret;
 }
 
 int socket::read(char* buff, int size) {
