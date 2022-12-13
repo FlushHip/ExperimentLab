@@ -30,6 +30,10 @@ if(UNIX)
         net/tcp_client.cpp
         net/connector.h
         net/connector.cpp
+
+        # unittest
+        unittest/logger_unittest.cpp
+        unittest/tcp_unittest.cpp
     )
 
     target_compile_features(${TARGET_NAME} PRIVATE cxx_std_20)
@@ -37,5 +41,7 @@ if(UNIX)
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 
     find_package(Threads REQUIRED)
-    target_link_libraries(${TARGET_NAME} PRIVATE Threads::Threads rang prettyprint::prettyprint)
+    target_link_libraries(${TARGET_NAME} PRIVATE Threads::Threads rang prettyprint::prettyprint doctest::doctest)
+
+    # target_compile_definitions(${TARGET_NAME} PRIVATE DOCTEST_CONFIG_IMPLEMENT)
 endif()
