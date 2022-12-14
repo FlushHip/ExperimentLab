@@ -32,6 +32,7 @@ if(UNIX)
         net/connector.cpp
 
         # unittest
+        unittest/doctest_impl.cpp
         unittest/logger_unittest.cpp
         unittest/tcp_unittest.cpp
     )
