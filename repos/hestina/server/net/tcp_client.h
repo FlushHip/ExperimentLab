@@ -2,6 +2,7 @@
 
 #include "callback.h"
 
+#include <atomic>
 #include <memory>
 
 namespace hestina {
@@ -27,8 +28,9 @@ public:
 
 private:
     void connect_fishsh(std::unique_ptr<socket>&& sock);
+    void connect_close(std::weak_ptr<connection> conn);
 
-    bool async_{true};
+    std::atomic_bool is_connect_{false};
     std::unique_ptr<event_loop_thread> loop_thread_;
 
     std::unique_ptr<connector> connector_;

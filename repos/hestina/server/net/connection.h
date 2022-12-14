@@ -21,7 +21,14 @@ public:
         disconnected,
     };
 
-    connection(event_loop* loop, std::unique_ptr<socket>&& sock);
+    enum class peer_type_t {
+        client,
+        server,
+    };
+
+    connection(event_loop* loop,
+        std::unique_ptr<socket>&& sock,
+        peer_type_t type);
     ~connection();
 
     status_t status() const;
@@ -38,6 +45,8 @@ private:
     void established();
     void closed();
 
+    void shutdown();
+
     void set_connection_establish_callback(
         const connection_establish_callback_t& callback);
     void set_data_arrive_callback(const data_arrive_callback_t& callback);
@@ -49,6 +58,8 @@ private:
     void do_error();
 
     void read_finished();
+
+    peer_type_t peer_type_;
 
     std::unique_ptr<socket> socket_;
     std::unique_ptr<channel> channel_;

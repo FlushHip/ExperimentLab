@@ -42,8 +42,8 @@ bool tcp_server::start() {
     return true;
 }
 void tcp_server::new_connection(std::unique_ptr<socket>&& sock) {
-    auto conn = std::make_shared<connection>(
-        sub_loop_thread_pool_->get_eloop(), std::move(sock));
+    auto conn = std::make_shared<connection>(sub_loop_thread_pool_->get_eloop(),
+        std::move(sock), connection::peer_type_t::client);
     conn->set_connection_establish_callback(new_connection_callback_);
     conn->set_data_arrive_callback(data_arrive_callback_);
     conn->set_connection_close_callback([this](auto&& conn) {

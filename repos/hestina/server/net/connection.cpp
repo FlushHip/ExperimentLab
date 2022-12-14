@@ -14,8 +14,11 @@
 
 namespace hestina {
 
-connection::connection(event_loop* loop, std::unique_ptr<socket>&& sock)
-    : socket_(std::move(sock))
+connection::connection(event_loop* loop,
+    std::unique_ptr<socket>&& sock,
+    peer_type_t type)
+    : peer_type_(type)
+    , socket_(std::move(sock))
     , channel_(std::make_unique<channel>(loop, socket_->fd()))
     , local_addr_(socket_->local_addr())
     , peer_addr_(socket_->peer_addr())
@@ -33,8 +36,13 @@ connection::~connection() = default;
 void connection::established() {
     channel_->reading();
 
-    log_debug << "new connection established, " << local_addr_->port() << " <- "
-              << peer_addr_->point();
+    if (peer_type_ == peer_type_t::client) {
+        log_debug << "new connection established, " << local_addr_->port()
+                  << " <- " << peer_addr_->point();
+    } else {
+        log_debug << "new connection established, " << local_addr_->port()
+                  << " -> " << peer_addr_->point();
+    }
     assert(status_ == status_t::connecting);
     status_ = status_t::connected;
     if (new_connection_callback_) {
@@ -43,14 +51,31 @@ void connection::established() {
 }
 
 void connection::closed() {
-    assert(status_ == status_t::disconnecting);
-    channel_->writing(false);
+    if (status_ == status_t::disconnecting) {
+        channel_->writing(false);
 
-    channel_->remove();
-    status_ = status_t::disconnected;
+        channel_->remove();
+        status_ = status_t::disconnected;
 
-    log_debug << "connection closed, " << local_addr_->port() << " <- "
-              << peer_addr_->point();
+        if (peer_type_ == peer_type_t::client) {
+            log_debug << "connection closed, " << local_addr_->port() << " <- "
+                      << peer_addr_->point();
+        } else {
+            log_debug << "connection closed, " << local_addr_->port() << " -> "
+                      << peer_addr_->point();
+        }
+    }
+}
+
+void connection::shutdown() {
+    if (status_ == status_t::connected) {
+        status_ = status_t::disconnecting;
+
+        channel_->reading(false);
+        if (connection_close_callback_) {
+            connection_close_callback_(shared_from_this());
+        }
+    }
 }
 
 void connection::set_connection_establish_callback(
@@ -110,13 +135,7 @@ const addr& connection::peer_addr() const {
 }
 
 void connection::do_close() {
-    assert(status_ == status_t::connected);
-    status_ = status_t::disconnecting;
-
-    channel_->reading(false);
-    if (connection_close_callback_) {
-        connection_close_callback_(shared_from_this());
-    }
+    shutdown();
 }
 
 void connection::do_error() {

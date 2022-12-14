@@ -32,15 +32,12 @@ TEST_CASE("tcp test, server and client") {
         });
     client.set_data_arrive_callback(
         [](std::weak_ptr<hestina::connection> conn, std::string_view data) {
-            log_info << "something recv";
             if (!conn.expired()) {
                 conn.lock()->send(data);
             }
         });
     client.set_connection_close_callback(
-        [](std::weak_ptr<hestina::connection> conn) {
-            log_info << "connection close";
-        });
+        [](std::weak_ptr<hestina::connection> conn) {});
 
     client.connect("127.0.0.1", 12346);
 
