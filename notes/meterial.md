@@ -55,4 +55,8 @@
 
 - [FileCentipede](https://github.com/filecxx/FileCentipede)
 - [Qv2ray](https://github.com/Qv2ray/Qv2ray)
+
+### 网络调试
+
 - [sokit](https://github.com/sinpolib/sokit)
+- [NetDebugger](https://github.com/Zhou-zhi-peng/NetDebugger)
