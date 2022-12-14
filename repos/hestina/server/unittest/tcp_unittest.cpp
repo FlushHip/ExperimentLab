@@ -34,7 +34,7 @@ TEST_CASE("tcp test, server and client") {
         [](std::weak_ptr<hestina::connection> conn, std::string_view data) {
             log_info << "something recv";
             if (!conn.expired()) {
-                // conn.lock()->send(data);
+                conn.lock()->send(data);
             }
         });
     client.set_connection_close_callback(
