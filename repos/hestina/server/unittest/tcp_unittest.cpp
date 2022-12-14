@@ -22,24 +22,29 @@ TEST_CASE("tcp test, server and client") {
         [](std::weak_ptr<hestina::connection> conn) {});
     server.start();
 
-    hestina::tcp_client client;
-    client.set_connection_establish_callback(
-        [](std::weak_ptr<hestina::connection> conn) {
-            if (!conn.expired()) {
-                auto con = conn.lock();
-                con->send("flushhip");
-            }
-        });
-    client.set_data_arrive_callback(
-        [](std::weak_ptr<hestina::connection> conn, std::string_view data) {
-            if (!conn.expired()) {
-                conn.lock()->send(data);
-            }
-        });
-    client.set_connection_close_callback(
-        [](std::weak_ptr<hestina::connection> conn) {});
+    {
+        hestina::tcp_client client;
+        client.set_connection_establish_callback(
+            [](std::weak_ptr<hestina::connection> conn) {
+                if (!conn.expired()) {
+                    auto con = conn.lock();
+                    con->send("flushhip");
+                }
+            });
+        client.set_data_arrive_callback(
+            [](std::weak_ptr<hestina::connection> conn, std::string_view data) {
+                if (!conn.expired()) {
+                    conn.lock()->send(data);
+                }
+            });
+        client.set_connection_close_callback(
+            [](std::weak_ptr<hestina::connection> conn) {});
 
-    client.connect("127.0.0.1", 12346);
+        bool res = client.connect("127.0.0.1", 12346, false);
+        if (res) {
+            client.conn().lock()->send("----------------");
+        }
+    }
 
     using namespace std::chrono_literals;
     std::this_thread::sleep_for(1h);

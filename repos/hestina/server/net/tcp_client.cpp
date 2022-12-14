@@ -1,5 +1,6 @@
 #include "tcp_client.h"
 
+#include "log/logger.h"
 #include "net/addr.h"
 #include "net/callback.h"
 #include "net/channel.h"
@@ -7,6 +8,9 @@
 #include "net/connector.h"
 #include "net/eloop_thread_pool.h"
 #include "net/socket.h"
+
+#include <future>
+#include <memory>
 
 namespace hestina {
 
@@ -19,13 +23,23 @@ bool tcp_client::connect(std::string_view ip, uint16_t port, bool async) {
         close();
     }
 
+    // std::promise<void> pro;
+    // FIXME (flushhip): lambda capture std::promise use copy ctor,
+    // unbelivable!!!
+    promise_ = std::make_unique<std::promise<void>>();
+    auto fu = promise_->get_future();
     connector_ =
         std::make_unique<connector>(loop_thread_->get_eloop(), ip, port);
     connector_->set_connect_finish_callback([this](auto&& sock) {
         connect_fishsh(std::forward<decltype(sock)>(sock));
+        promise_->set_value();
     });
     connector_->connect();
-    return true;
+    if (async) {
+        return true;
+    }
+    using namespace std::chrono_literals;
+    return fu.wait_for(3s) != std::future_status::timeout;
 }
 
 tcp_client::~tcp_client() {
@@ -80,6 +94,13 @@ void tcp_client::close() {
     }
 
     is_connect_ = false;
+}
+
+std::weak_ptr<connection> tcp_client::conn() const {
+    if (!is_connect_ || connection_ == nullptr) {
+        log_warn << "no connection";
+    }
+    return connection_;
 }
 
 }  // namespace hestina

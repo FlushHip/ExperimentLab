@@ -3,6 +3,7 @@
 #include "callback.h"
 
 #include <atomic>
+#include <future>
 #include <memory>
 
 namespace hestina {
@@ -21,6 +22,8 @@ public:
 
     void close();
 
+    std::weak_ptr<connection> conn() const;
+
     void set_connection_establish_callback(
         connection_establish_callback_t&& callback);
     void set_data_arrive_callback(data_arrive_callback_t&& callback);
@@ -32,6 +35,8 @@ private:
 
     std::atomic_bool is_connect_{false};
     std::unique_ptr<event_loop_thread> loop_thread_;
+
+    std::unique_ptr<std::promise<void>> promise_;
 
     std::unique_ptr<connector> connector_;
     std::shared_ptr<connection> connection_;

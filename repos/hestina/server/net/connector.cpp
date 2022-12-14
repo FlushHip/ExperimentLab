@@ -24,7 +24,7 @@ void connector::set_connect_finish_callback(
 
 void connector::connect() {
     int ret = socket_->connect(*addr_);
-    // channel_->et();
+    channel_->et();
     channel_->writing();
 }
 
