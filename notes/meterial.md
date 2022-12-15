@@ -7,6 +7,8 @@
 ## 无锁编程
 
 - [awesome-lockfree](https://github.com/rigtorp/awesome-lockfree)
+- [readerwriterqueue](https://github.com/cameron314/readerwriterqueue)
+- [concurrentqueue](https://github.com/cameron314/concurrentqueue)
 
 ## 协程
 
