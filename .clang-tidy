@@ -54,6 +54,7 @@ Checks: >
     -readability-make-member-function-const,
     -android-*,
     -performance-trivially-destructible,
+    -fuchsia-overloaded-operator,
 
 CheckOptions:
     -

@@ -44,6 +44,8 @@ TEST_CASE("tcp test, server and client") {
         if (res) {
             client.conn().lock()->send("----------------");
         }
+        using namespace std::chrono_literals;
+        std::this_thread::sleep_for(10s);
     }
 
     using namespace std::chrono_literals;

@@ -30,11 +30,17 @@ if(UNIX)
         net/tcp_client.cpp
         net/connector.h
         net/connector.cpp
+        timer/timer.h
+        timer/timer.cpp
+        timer/timer_queue.h
+        timer/timer_queue.cpp
 
         # unittest
         unittest/doctest_impl.cpp
         unittest/logger_unittest.cpp
-        unittest/tcp_unittest.cpp
+        unittest/timer_unittest.cpp
+
+        # unittest/tcp_unittest.cpp
     )
 
     target_compile_features(${TARGET_NAME} PRIVATE cxx_std_20)
