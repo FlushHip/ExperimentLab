@@ -9,7 +9,9 @@ namespace hestina {
 eloop_thread_pool::eloop_thread_pool(int nums)
     : loops_(nums), thread_pool_(std::make_unique<thread_pool>(nums)) {}
 
-eloop_thread_pool::~eloop_thread_pool() = default;
+eloop_thread_pool::~eloop_thread_pool() {
+    stop();
+}
 
 event_loop* eloop_thread_pool::get_eloop() {
     index_ %= loops_.size();
@@ -25,6 +27,12 @@ void eloop_thread_pool::start() {
             loops_[i].run();
         });
         fu.wait();
+    }
+}
+
+void eloop_thread_pool::stop() {
+    for (auto i = 0U; i < loops_.size(); ++i) {
+        loops_[i].stop();
     }
 }
 

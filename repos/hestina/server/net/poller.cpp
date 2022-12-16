@@ -9,14 +9,21 @@
 
 namespace hestina {
 
+namespace {
+constexpr const int kpoll_wait_ms = 1000;
+}  // namespace
+
 poller::poller() : fd_(epoll_create1(0)) {
     assert(fd_ != -1);
 }
 
-poller::~poller() = default;
+poller::~poller() {
+    close(fd_);
+};
 
 std::vector<channel*> poller::poll() {
-    int nums = epoll_wait(fd_, events_.data(), max_events_length, -1);
+    int nums =
+        epoll_wait(fd_, events_.data(), max_events_length, kpoll_wait_ms);
 
     std::vector<channel*> ret;
     if (nums < 0 && errno == EINTR) {

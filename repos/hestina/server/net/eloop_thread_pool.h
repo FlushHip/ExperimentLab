@@ -15,6 +15,7 @@ public:
     ~eloop_thread_pool();
 
     void start();
+    void stop();
 
     event_loop* get_eloop();
 
