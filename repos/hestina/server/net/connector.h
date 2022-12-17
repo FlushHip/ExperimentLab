@@ -16,7 +16,7 @@ public:
     connector(event_loop* loop, std::string_view ip, uint16_t port);
 
     using connect_finish_callback_t =
-        std::function<void(std::unique_ptr<socket>&&)>;
+        std::function<void(bool result, std::unique_ptr<socket>&&)>;
     void set_connect_finish_callback(connect_finish_callback_t&& callback);
 
     void connect();

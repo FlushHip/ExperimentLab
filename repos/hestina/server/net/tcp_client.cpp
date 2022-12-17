@@ -26,20 +26,22 @@ bool tcp_client::connect(std::string_view ip, uint16_t port, bool async) {
     // std::promise<void> pro;
     // FIXME (flushhip): lambda capture std::promise use copy ctor,
     // unbelivable!!!
-    promise_ = std::make_unique<std::promise<void>>();
+    promise_ = std::make_unique<std::promise<bool>>();
     auto fu = promise_->get_future();
     connector_ =
         std::make_unique<connector>(loop_thread_->get_eloop(), ip, port);
-    connector_->set_connect_finish_callback([this](auto&& sock) {
-        connect_fishsh(std::forward<decltype(sock)>(sock));
-        promise_->set_value();
+    connector_->set_connect_finish_callback([this](bool result, auto&& sock) {
+        if (result) {
+            connect_fishsh(std::forward<decltype(sock)>(sock));
+        }
+        promise_->set_value(result);
     });
     connector_->connect();
     if (async) {
         return true;
     }
     using namespace std::chrono_literals;
-    return fu.wait_for(3s) != std::future_status::timeout;
+    return fu.wait_for(3s) != std::future_status::timeout && fu.get();
 }
 
 tcp_client::~tcp_client() {

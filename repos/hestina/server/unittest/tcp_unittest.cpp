@@ -40,7 +40,7 @@ TEST_CASE("tcp test, server and client") {
         client.set_connection_close_callback(
             [](std::weak_ptr<hestina::connection> conn) {});
 
-        bool res = client.connect("127.0.0.1", 12346, false);
+        bool res = client.connect("127.0.0.1", 12347, false);
         if (res) {
             client.conn().lock()->send("----------------");
         }

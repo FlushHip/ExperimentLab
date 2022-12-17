@@ -40,7 +40,7 @@ if(UNIX)
         unittest/logger_unittest.cpp
         unittest/timer_unittest.cpp
 
-        # unittest/tcp_unittest.cpp
+        unittest/tcp_unittest.cpp
     )
 
     target_compile_features(${TARGET_NAME} PRIVATE cxx_std_20)

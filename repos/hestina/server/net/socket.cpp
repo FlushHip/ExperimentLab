@@ -101,7 +101,9 @@ std::unique_ptr<addr> socket::peer_addr() {
 
     int ret =
         getpeername(fd_, static_cast<struct sockaddr*>((void*)&address), &len);
-    assert(ret == 0);
+    if (ret != 0) {
+        return nullptr;
+    }
     return std::make_unique<addr>(address);
 }
 

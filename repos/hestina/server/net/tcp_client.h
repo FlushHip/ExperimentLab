@@ -36,7 +36,7 @@ private:
     std::atomic_bool is_connect_{false};
     std::unique_ptr<event_loop_thread> loop_thread_;
 
-    std::unique_ptr<std::promise<void>> promise_;
+    std::unique_ptr<std::promise<bool>> promise_;
 
     std::unique_ptr<connector> connector_;
     std::shared_ptr<connection> connection_;

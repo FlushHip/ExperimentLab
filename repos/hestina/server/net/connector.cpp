@@ -1,4 +1,6 @@
 #include "connector.h"
+#include <asm-generic/errno.h>
+#include <cstring>
 
 #include "log/logger.h"
 #include "net/addr.h"
@@ -29,12 +31,24 @@ void connector::connect() {
 }
 
 void connector::do_write() {
-    channel_->writing(false);
-    channel_->reading(false);
-    channel_->remove();
+    // judege real connect to server : https://cr.yp.to/docs/connect.html
+    if (auto addr = socket_->peer_addr(); addr != nullptr) {
+        channel_->writing(false);
+        channel_->reading(false);
+        channel_->remove();
 
-    if (connect_finish_callback_) {
-        connect_finish_callback_(std::move(socket_));
+        if (connect_finish_callback_) {
+            connect_finish_callback_(true, std::move(socket_));
+        }
+    } else if (errno == ENOTCONN) {
+        char c{};
+        socket_->read(&c, 1);
+        log_warn << std::strerror(errno);
+        if (connect_finish_callback_) {
+            connect_finish_callback_(false, std::move(socket_));
+        }
+    } else {
+        log_error << std::strerror(errno);
     }
 }
 }  // namespace hestina
