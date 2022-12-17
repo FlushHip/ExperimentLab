@@ -1,12 +1,13 @@
 #include "connector.h"
-#include <asm-generic/errno.h>
-#include <cstring>
 
 #include "log/logger.h"
 #include "net/addr.h"
 #include "net/channel.h"
 #include "net/event_loop.h"
 #include "net/socket.h"
+
+#include <cerrno>
+#include <cstring>
 
 namespace hestina {
 
