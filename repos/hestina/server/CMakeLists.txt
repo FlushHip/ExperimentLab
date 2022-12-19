@@ -51,4 +51,6 @@ if(UNIX)
     target_link_libraries(${TARGET_NAME} PRIVATE Threads::Threads rang prettyprint::prettyprint doctest::doctest)
 
     # target_compile_definitions(${TARGET_NAME} PRIVATE DOCTEST_CONFIG_IMPLEMENT)
+    include(${DOCTEST_SRCIPTS_CMAKE_DIR}/doctest.cmake)
+    doctest_discover_tests(${TARGET_NAME})
 endif()

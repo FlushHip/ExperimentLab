@@ -4,6 +4,7 @@
 build
 .build_idea
 .vs
+cmake-build
 
 # Prerequisites
 *.d
