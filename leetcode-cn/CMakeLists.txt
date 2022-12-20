@@ -9,12 +9,12 @@ add_library(enable_sanitize INTERFACE)
 target_compile_options(enable_sanitize INTERFACE
     $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:
     -fsanitize=address
-    -fsanitize=undefined>
+    -fsanitize=undefined
 
     -O1
     -fno-omit-frame-pointer
     -fno-optimize-sibling-calls
-    -fno-common
+    -fno-common>
 )
 target_link_libraries(enable_sanitize INTERFACE
     $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:asan ubsan>)
