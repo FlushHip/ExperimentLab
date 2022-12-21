@@ -15,10 +15,13 @@
 
 namespace hestina {
 
+uint64_t connection::sid_index = 0;
+
 connection::connection(event_loop* loop,
     std::unique_ptr<socket>&& sock,
     peer_type_t type)
-    : peer_type_(type)
+    : id_(++sid_index)
+    , peer_type_(type)
     , socket_(std::move(sock))
     , channel_(std::make_unique<channel>(loop, socket_->fd()))
     , local_addr_(socket_->local_addr())
@@ -38,11 +41,11 @@ void connection::established() {
     channel_->reading();
 
     if (peer_type_ == peer_type_t::client) {
-        log_debug << "new connection established, " << local_addr_->port()
-                  << " <- " << peer_addr_->point();
+        log_debug << "new connection " << id_ << ", established, "
+                  << local_addr_->port() << " <- " << peer_addr_->point();
     } else {
-        log_debug << "new connection established, " << local_addr_->port()
-                  << " -> " << peer_addr_->point();
+        log_debug << "new connection " << id_ << ", established, "
+                  << local_addr_->port() << " -> " << peer_addr_->point();
     }
     assert(status_ == status_t::connecting);
     status_ = status_t::connected;
@@ -59,11 +62,11 @@ void connection::closed() {
         status_ = status_t::disconnected;
 
         if (peer_type_ == peer_type_t::client) {
-            log_debug << "connection closed, " << local_addr_->port() << " <- "
-                      << peer_addr_->point();
+            log_debug << "connection " << id_ << ", closed, "
+                      << local_addr_->port() << " <- " << peer_addr_->point();
         } else {
-            log_debug << "connection closed, " << local_addr_->port() << " -> "
-                      << peer_addr_->point();
+            log_debug << "connection " << id_ << ", closed, "
+                      << local_addr_->port() << " -> " << peer_addr_->point();
         }
     }
 }
@@ -116,14 +119,16 @@ void connection::do_read() {
 }
 
 void connection::read_finished() {
-    log_trace << "recv <-- " << peer_addr_->point() << ": " << buffer_->data();
+    log_trace << "conn " << id_ << ", recv <-- " << peer_addr_->point() << ": "
+              << buffer_->data();
     if (data_arrive_callback_) {
         data_arrive_callback_(shared_from_this(), buffer_->data());
     }
 }
 
 void connection::send(std::string_view data) {
-    log_trace << "send --> " << peer_addr_->point() << ": " << data;
+    log_trace << "conn " << id_ << ", send --> " << peer_addr_->point() << ": "
+              << data;
     socket_->write(data.data(), data.size());
 }
 
@@ -142,13 +147,17 @@ void connection::do_close() {
 void connection::do_error() {
     int err = socket_->last_error();
     if (err != 0) {
-        log_error << "fd " << socket_->fd() << " err " << err
-                  << " msg : " << strerror(err);
+        log_error << "connection " << id_ << ", fd " << socket_->fd() << " err "
+                  << err << " msg : " << strerror(err);
     }
 }
 
 connection::status_t connection::status() const {
     return status_;
+}
+
+uint64_t connection::id() const {
+    return id_;
 }
 
 }  // namespace hestina

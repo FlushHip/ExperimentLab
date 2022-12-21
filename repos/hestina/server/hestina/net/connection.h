@@ -31,6 +31,7 @@ public:
         peer_type_t type);
     ~connection();
 
+    uint64_t id() const;
     status_t status() const;
 
     void send(std::string_view data);
@@ -59,6 +60,7 @@ private:
 
     void read_finished();
 
+    uint64_t id_;
     peer_type_t peer_type_;
 
     std::unique_ptr<socket> socket_;
@@ -73,6 +75,8 @@ private:
     std::unique_ptr<buffer> buffer_;
 
     status_t status_{status_t::connecting};
+
+    static uint64_t sid_index;
 };
 
 }  // namespace hestina
