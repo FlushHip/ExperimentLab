@@ -3,7 +3,7 @@
 
 namespace hestina {
 
-timer_id timer::sbegin_id = 0;
+std::atomic<timer_id> timer::sbegin_id = 0;
 
 timer::timer(timer_callback_t&& callback,
     time_point when,

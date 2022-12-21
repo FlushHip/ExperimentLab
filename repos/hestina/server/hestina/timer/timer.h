@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <chrono>
 #include <functional>
 #include <ratio>
@@ -31,7 +32,7 @@ private:
     time_duration interval_;
     bool repeat_;
 
-    static timer_id sbegin_id;
+    static std::atomic<timer_id> sbegin_id;
 };
 
 }  // namespace hestina

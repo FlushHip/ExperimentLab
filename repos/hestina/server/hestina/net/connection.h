@@ -2,6 +2,7 @@
 
 #include "callback.h"
 
+#include <atomic>
 #include <memory>
 
 namespace hestina {
@@ -76,7 +77,7 @@ private:
 
     status_t status_{status_t::connecting};
 
-    static uint64_t sid_index;
+    static std::atomic_uint64_t sid_index;
 };
 
 }  // namespace hestina

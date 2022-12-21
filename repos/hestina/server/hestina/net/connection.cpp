@@ -15,7 +15,7 @@
 
 namespace hestina {
 
-uint64_t connection::sid_index = 0;
+std::atomic_uint64_t connection::sid_index = 0;
 
 connection::connection(event_loop* loop,
     std::unique_ptr<socket>&& sock,
