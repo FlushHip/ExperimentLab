@@ -55,6 +55,8 @@ Checks: >
     -android-*,
     -performance-trivially-destructible,
     -fuchsia-overloaded-operator,
+    -readability-function-cognitive-complexity,
+    -cert-err58-cpp,
 
 CheckOptions:
     -

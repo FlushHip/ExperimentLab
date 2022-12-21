@@ -1,5 +1,4 @@
 #include "connection.h"
-#include <unistd.h>
 
 #include "log/logger.h"
 
@@ -7,6 +6,8 @@
 #include "buffer.h"
 #include "channel.h"
 #include "socket.h"
+
+#include <unistd.h>
 
 #include <cassert>
 #include <cstring>

@@ -84,6 +84,8 @@ std::string thread_id_string() {
 
 }  // namespace
 
+bool logger::sis_init = false;
+
 struct logger::context {
     context(bool console, bool async, level_t level)
         : console_(console)
@@ -113,6 +115,9 @@ struct logger::context {
 };
 
 logger::stream::~stream() {
+    if (!logger::instance().sis_init) {
+        return;
+    }
     std::string msg = format();
     if (i_level_ >= logger::instance().context_->level_) {
         logger::instance().write(i_level_, std::move(msg));
@@ -155,40 +160,45 @@ void logger::init(level_t level,
     bool async,
     std::string_view log_dir,
     std::string_view file_name) {
-    assert(context_ == nullptr);
-    context_ = std::make_unique<context>(console, async, level);
-    if (context_->async_) {
-        std::get<context::async_ctx>(context_->ctx_).is_running_ = false;
-    }
-
-    if (!log_dir.empty()) {
-        using namespace std::string_literals;
-
-        // TODO (flushhip): log file name append date
-
-        std::string file_path =
-            (std::filesystem::path(log_dir) / file_name).string();
-
-        // TODO (flushhip): log file permissions
-
-        context_->fp_ = std::fopen(file_path.c_str(), "a+");
-        if (context_->fp_ == nullptr) {
-            std::cerr << "log path " << file_path << " open fail" << std::endl;
-            std::exit(-1);
+    std::call_once(once_flag_, [=, this] {
+        assert(context_ == nullptr);
+        context_ = std::make_unique<context>(console, async, level);
+        if (context_->async_) {
+            std::get<context::async_ctx>(context_->ctx_).is_running_ = false;
         }
-    }
 
-    if (context_->async_) {
-        std::get<context::async_ctx>(context_->ctx_).is_running_ = true;
-        std::promise<void> pro;
-        auto fu = pro.get_future();
-        std::get<context::async_ctx>(context_->ctx_).thread_ =
-            std::thread([this, pro = std::move(pro)]() mutable {
-                pro.set_value();
-                run();
-            });
-        fu.wait();
-    }
+        if (!log_dir.empty()) {
+            using namespace std::string_literals;
+
+            // TODO (flushhip): log file name append date
+
+            std::string file_path =
+                (std::filesystem::path(log_dir) / file_name).string();
+
+            // TODO (flushhip): log file permissions
+
+            context_->fp_ = std::fopen(file_path.c_str(), "a+");
+            if (context_->fp_ == nullptr) {
+                std::cerr << "log path " << file_path << " open fail"
+                          << std::endl;
+                std::exit(-1);
+            }
+        }
+
+        if (context_->async_) {
+            std::get<context::async_ctx>(context_->ctx_).is_running_ = true;
+            std::promise<void> pro;
+            auto fu = pro.get_future();
+            std::get<context::async_ctx>(context_->ctx_).thread_ =
+                std::thread([this, pro = std::move(pro)]() mutable {
+                    pro.set_value();
+                    run();
+                });
+            fu.wait();
+        }
+
+        sis_init = true;
+    });
 }
 
 void logger::uninit() {

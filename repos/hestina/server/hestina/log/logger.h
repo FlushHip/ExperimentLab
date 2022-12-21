@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <mutex>
 #include <sstream>
 
 namespace hestina {
@@ -51,6 +52,9 @@ private:
 
     struct context;
     std::unique_ptr<context> context_;
+
+    std::once_flag once_flag_;
+    static bool sis_init;
 };
 }  // namespace hestina
 

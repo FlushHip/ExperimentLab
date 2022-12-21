@@ -1,9 +1,9 @@
 #include <doctest/doctest.h>
 
-#include "log/logger.h"
-#include "timer/timer_queue.h"
+#include <hestina/timer/timer_queue.h>
 
 #include <chrono>
+#include <iostream>
 #include <thread>
 
 TEST_CASE("timer queue") {
@@ -24,5 +24,5 @@ TEST_CASE("timer queue") {
     std::this_thread::sleep_for(1.1s);
     CHECK(value == top);
 
-    log_info << "finish";
+    std::cerr << "finish" << std::endl;
 }
