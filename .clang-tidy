@@ -40,6 +40,23 @@ Checks: >
     -readability-isolate-declaration,
     -performance-inefficient-vector-operation,
     -altera-struct-pack-align,
+    -misc-const-correctness,
+    -readability-static-accessed-through-instance,
+    -fuchsia-default-arguments-declarations,
+    -misc-unused-parameters,
+    -cppcoreguidelines-owning-memory,
+    -bugprone-lambda-function-name,
+    -modernize-use-nodiscard,
+    -cppcoreguidelines-pro-type-reinterpret-cast,
+    -cppcoreguidelines-pro-bounds-constant-array-index,
+    -cppcoreguidelines-pro-type-vararg,
+    -hicpp-vararg,
+    -readability-make-member-function-const,
+    -android-*,
+    -performance-trivially-destructible,
+    -fuchsia-overloaded-operator,
+    -readability-function-cognitive-complexity,
+    -cert-err58-cpp,
 
 CheckOptions:
     -

@@ -18,6 +18,12 @@ if("${BOOST_ROOT}" STREQUAL "")
     set(BOOST_ROOT ${BOOST_ROOT} CACHE PATH "BOOST_ROOT dependency path" FORCE)
 endif()
 
+# Init Qt5_DIR
+if("${Qt5_DIR}" STREQUAL "")
+    file(TO_CMAKE_PATH "$ENV{Qt5_DIR}" Qt5_DIR)
+    set(Qt5_DIR ${Qt5_DIR} CACHE PATH "Qt5_DIR dependency path" FORCE)
+endif()
+
 # Set default cxx standard
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

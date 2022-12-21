@@ -19,7 +19,3 @@ endif()
 add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/src
     ${CMAKE_CURRENT_BINARY_DIR}/build
     EXCLUDE_FROM_ALL)
-
-set(DOCTEST_SRCIPTS_CMAKE_DIR ${CMAKE_CURRENT_BINARY_DIR}/src/scripts/cmake
-    CACHE PATH "Path to cmake scripts folder for doctest")
-mark_as_advanced(DOCTEST_SRCIPTS_CMAKE_DIR)

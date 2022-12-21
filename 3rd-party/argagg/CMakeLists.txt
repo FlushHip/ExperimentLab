@@ -16,6 +16,9 @@ if(result)
     message(FATAL_ERROR "build 3rd-party failed, result : ${result}")
 endif()
 
+file(REMOVE src/CMakeLists.txt)
+configure_file(argagg.cmake src/CMakeLists.txt COPYONLY)
+
 add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/src
     ${CMAKE_CURRENT_BINARY_DIR}/build
     EXCLUDE_FROM_ALL)
