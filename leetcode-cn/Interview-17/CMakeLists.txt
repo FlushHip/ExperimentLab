@@ -24,15 +24,16 @@ function(make_leetcode_target)
     string(REGEX REPLACE "_$" "" TARGET_NAME ${TARGET_NAME})
 
     add_executable(${TARGET_NAME} ${FILES})
+    target_link_libraries(${TARGET_NAME} PRIVATE enable_sanitize)
     target_include_directories(${TARGET_NAME}
         PRIVATE ${CMAKE_SOURCE_DIR}/template/LeetCode)
     set_target_properties(${TARGET_NAME}
         PROPERTIES FOLDER ${ROOT_FOLDER}/${FRIST_FOLDER}/${ARGV0})
 
     if(AppleClang)
-        set_target_properties(${TARGET_NAME} PROPERTIES CXX_STANDARD 17)
+        set_target_properties(${TARGET_NAME} PROPERTIES CXX_STANDARD 20)
     else()
-        target_compile_features(${TARGET_NAME} PUBLIC cxx_std_17)
+        target_compile_features(${TARGET_NAME} PUBLIC cxx_std_20)
     endif()
 endfunction()
 

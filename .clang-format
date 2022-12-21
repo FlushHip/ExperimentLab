@@ -12,5 +12,6 @@ BreakInheritanceList: BeforeComma
 IndentPPDirectives : AfterHash
 PPIndentWidth : 2
 AlignOperands : DontAlign
+IndentCaseLabels : false
 # SeparateDefinitionBlocks : Always
 ...
