@@ -18,6 +18,12 @@ if("${BOOST_ROOT}" STREQUAL "")
     set(BOOST_ROOT ${BOOST_ROOT} CACHE PATH "BOOST_ROOT dependency path" FORCE)
 endif()
 
+# Init Qt5_DIR
+if("${Qt5_DIR}" STREQUAL "")
+    file(TO_CMAKE_PATH "$ENV{Qt5_DIR}" Qt5_DIR)
+    set(Qt5_DIR ${Qt5_DIR} CACHE PATH "Qt5_DIR dependency path" FORCE)
+endif()
+
 # Set default cxx standard
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -38,11 +44,13 @@ include(CPack)
 enable_testing()
 
 # Add sub module
-include_subdirs("effective-cpp")
-add_subdirectory(yz)
-include_subdirs(compiling)
-add_subdirectory(tutorial)
-include_subdirs(ideal)
-add_subdirectory(leetcode-cn)
-add_subdirectory(qt)
+# include_subdirs("effective-cpp")
+# add_subdirectory(yz)
+# include_subdirs(compiling)
+# add_subdirectory(tutorial)
+# include_subdirs(ideal)
+
+# add_subdirectory(leetcode-cn)
+# add_subdirectory(qt)
 add_subdirectory(3rd-party)
+add_subdirectory(repos)
