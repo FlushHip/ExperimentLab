@@ -98,20 +98,17 @@ void connection::set_connection_close_callback(
 }
 
 void connection::do_read() {
-    constexpr int buff_length = 1024;
-    thread_local char sbuff[buff_length] = {0};
-    buffer_->clear();
     while (true) {
-        std::memset(sbuff, 0, sizeof(sbuff));
-        int n = socket_->read(sbuff, buff_length);
+        int err = 0;
+        int n = buffer_->read_fd(socket_->fd(), err);
         if (n > 0) {
-            buffer_->append({sbuff, static_cast<size_t>(n)});
+            // buffer_->append({sbuff, static_cast<size_t>(n)});
         } else if (n == 0) {
             do_close();
             break;
-        } else if (n == -1 && errno == EINTR) {
+        } else if (n == -1 && err == EINTR) {
             continue;
-        } else if (n == -1 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
+        } else if (n == -1 && (err == EAGAIN || err == EWOULDBLOCK)) {
             read_finished();
             break;
         }
@@ -120,9 +117,9 @@ void connection::do_read() {
 
 void connection::read_finished() {
     log_trace << "conn " << id_ << ", recv <-- " << peer_addr_->point() << ": "
-              << buffer_->data();
+              << buffer_->peek();
     if (data_arrive_callback_) {
-        data_arrive_callback_(shared_from_this(), buffer_->data());
+        data_arrive_callback_(shared_from_this(), buffer_.get());
     }
 }
 

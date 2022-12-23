@@ -1,4 +1,5 @@
 #include <hestina/log/logger.h>
+#include <hestina/net/buffer.h>
 #include <hestina/net/connection.h>
 #include <hestina/net/tcp_client.h>
 #include <hestina/net/tcp_server.h>
@@ -10,9 +11,9 @@ int main(int argc, char* argv[]) {
     server.set_new_connection_callback(
         [](std::weak_ptr<hestina::connection> conn) {});
     server.set_data_arrive_callback(
-        [](std::weak_ptr<hestina::connection> conn, std::string_view data) {
+        [](std::weak_ptr<hestina::connection> conn, hestina::buffer* buff) {
             if (!conn.expired()) {
-                conn.lock()->send(data);
+                conn.lock()->send(buff->read());
             }
         });
     server.set_connection_close_callback(
@@ -29,9 +30,9 @@ int main(int argc, char* argv[]) {
                 }
             });
         client.set_data_arrive_callback(
-            [](std::weak_ptr<hestina::connection> conn, std::string_view data) {
+            [](std::weak_ptr<hestina::connection> conn, hestina::buffer* buff) {
                 if (!conn.expired()) {
-                    conn.lock()->send(data);
+                    conn.lock()->send(buff->read());
                 }
             });
         client.set_connection_close_callback(
