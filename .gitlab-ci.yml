@@ -1,26 +1,27 @@
 image: ubuntu:22.04
 
-build:
+build_linux:
   stage: build
   only:
     - hestina
 
   before_script:
-    - apt install -y wget
-    - wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
-    - echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-15 main\ndeb-src http://apt.llvm.org/jammy/ llvm-toolchain-jammy-15 main" | tee -a  /etc/apt/sources.list
     - apt update
     - apt install -y gcc-12 g++-12
-    - apt install -y clang-15 lldb-15 lld-15
-    - apt install cmake ninja ccache
+    - apt install -y cmake ninja ccache
     - mkdir -p .build
 
   script:
     - cd .build
-    - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=clang-15 -DCMAKE_CXX_COMPILER=clang++-15 -S.. -B. -G Ninja
+    - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc-12 -DCMAKE_CXX_COMPILER=g++-12 -S.. -B. -G Ninja
     - cmake --build . --config Debug --target all
 
-test:
+  artifacts:
+    paths:
+      - .build
+    expire_in: 1d
+
+test_linux:
   stage: test
   only:
     - hestina
