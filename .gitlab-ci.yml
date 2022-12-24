@@ -8,12 +8,12 @@ build_linux:
   before_script:
     - apt update
     - apt install -y gcc-12 g++-12
-    - apt install -y cmake ninja ccache
+    - apt install -y cmake
     - mkdir -p .build
 
   script:
     - cd .build
-    - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc-12 -DCMAKE_CXX_COMPILER=g++-12 -S.. -B. -G Ninja
+    - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc-12 -DCMAKE_CXX_COMPILER=g++-12 -S.. -B.
     - cmake --build . --config Debug --target all
 
   artifacts:
