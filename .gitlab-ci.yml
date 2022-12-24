@@ -1,4 +1,4 @@
-image: ubuntu:22.04
+image: gcc:12
 
 build_linux:
   stage: build
@@ -7,7 +7,6 @@ build_linux:
 
   before_script:
     - apt update
-    - apt install -y gcc-12 g++-12
     - apt install -y git cmake
     - mkdir -p .build
 
@@ -28,7 +27,6 @@ test_linux:
 
   before_script:
     - apt update
-    - apt install -y gcc-12 g++-12
     - apt install -y cmake
 
   script:
