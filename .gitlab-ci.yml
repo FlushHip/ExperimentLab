@@ -1,0 +1,26 @@
+image: ubuntu:22.04
+
+build:
+  stage: build
+  only:
+    - hestina
+
+  before_script:
+    - apt update
+    - apt install -y gcc-12 g++-12
+    - apt install -y clang-15 lldb-15 lld-15
+    - apt install cmake ninja ccache
+    - mkdir -p .build
+
+  script:
+    - cd .build
+    - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=clang-15 -DCMAKE_CXX_COMPILER=clang++-15 -S.. -B. -G Ninja
+    - cmake --build . --config Debug --target all
+
+test:
+  stage: test
+  only:
+    - hestina
+
+  script:
+    - ctest -C Debug -T test --output-on-failure
