@@ -12,7 +12,7 @@ build_linux:
 
   script:
     - cd .build
-    - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc-12 -DCMAKE_CXX_COMPILER=g++-12 -S.. -B.
+    - cmake -DCMAKE_BUILD_TYPE=Debug -S.. -B.
     - cmake --build . --config Debug --target all
 
   artifacts:
