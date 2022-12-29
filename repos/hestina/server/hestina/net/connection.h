@@ -4,6 +4,7 @@
 
 #include <atomic>
 #include <memory>
+#include <utility>
 
 namespace hestina {
 
@@ -39,6 +40,10 @@ public:
 
     const addr& local_addr() const;
     const addr& peer_addr() const;
+
+    void set_context(std::shared_ptr<void> ctx);
+    template <typename T>
+    std::shared_ptr<T> get_context();
 
 private:
     friend class tcp_server;
@@ -78,6 +83,17 @@ private:
     status_t status_{status_t::connecting};
 
     static std::atomic_uint64_t sid_index;
+
+    std::shared_ptr<void> context_;
 };
+
+inline void connection::set_context(std::shared_ptr<void> ctx) {
+    context_ = std::move(ctx);
+}
+
+template <typename T>
+std::shared_ptr<T> connection::get_context() {
+    return std::static_pointer_cast<T>(context_);
+}
 
 }  // namespace hestina

@@ -163,4 +163,14 @@ void buffer::retrieve_all() {
     data_.shrink_to_fit();
 }
 
+size_t buffer::sinvalid = -1;
+
+size_t buffer::find(std::string_view str) const {
+    auto pos = peek().find(str);
+    if (pos == std::string_view::npos) {
+        return sinvalid;
+    }
+    return pos;
+}
+
 }  // namespace hestina

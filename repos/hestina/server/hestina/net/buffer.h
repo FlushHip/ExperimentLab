@@ -32,6 +32,9 @@ public:
     void retrieve(size_t len);
     void retrieve_all();
 
+    static size_t sinvalid;
+    size_t find(std::string_view str) const;
+
     void clear();
 
 private:
