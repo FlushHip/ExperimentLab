@@ -37,6 +37,9 @@ std::string_view to_status_text(status_code_t code);
 
 constexpr const std::string_view kcontent_length_tag = "Content-Length";
 constexpr const std::string_view kcontent_type_tag = "Content-Type";
+constexpr const std::string_view kconnection = "Connection";
+constexpr const std::string_view kconnection_close = "close";
+constexpr const std::string_view kconnection_keep_alive = "keep-alive";
 
 enum class content_type_t {
     knone = 0,

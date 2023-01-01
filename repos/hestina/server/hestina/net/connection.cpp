@@ -82,6 +82,12 @@ void connection::shutdown() {
     }
 }
 
+void connection::close() {
+    shutdown();
+
+    closed();
+}
+
 void connection::set_connection_establish_callback(
     const connection_establish_callback_t& callback) {
     new_connection_callback_ = callback;

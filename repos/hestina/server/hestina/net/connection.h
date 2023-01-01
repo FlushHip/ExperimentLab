@@ -45,13 +45,14 @@ public:
     template <typename T>
     std::shared_ptr<T> get_context();
 
+    void close();
+
 private:
     friend class tcp_server;
     friend class tcp_client;
 
     void established();
     void closed();
-
     void shutdown();
 
     void set_connection_establish_callback(

@@ -53,7 +53,25 @@ void http_server::do_read(const std::weak_ptr<connection>& conn, buffer* buff) {
             on_request(request, response);
 
             if (auto con = conn.lock()) {
+                bool should_close =
+                    (request.version() == version_t::khttp10 &&
+                        (!request.headers().contains(kconnection.data()) ||
+                            request.headers().at(kconnection.data()) ==
+                                kconnection_close)) ||
+                    (request.version() == version_t::khttp11 &&
+                        request.headers().contains(kconnection.data()) &&
+                        request.headers().at(kconnection.data()) ==
+                            kconnection_close);
+                response.add_header(kconnection.data(),
+                    should_close ? kconnection_close.data()
+                                 : kconnection_keep_alive.data());
+
+                // response to client
                 con->send(response.data());
+
+                if (should_close) {
+                    con->close();
+                }
             }
         }
     }
