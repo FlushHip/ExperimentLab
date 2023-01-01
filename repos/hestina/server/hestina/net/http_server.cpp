@@ -2,6 +2,7 @@
 
 #include <hestina/log/logger.h>
 #include <hestina/net/connection.h>
+#include <hestina/net/http_common.h>
 #include <hestina/net/http_parser.h>
 #include <hestina/net/http_request.h>
 #include <hestina/net/http_response.h>
@@ -81,6 +82,8 @@ void http_server::on_request(const http_request& request,
     http_response& response) {
     if (!handlers_.contains(request.path())) {
         response.set_code(status_code_t::knot_find);
+        response.set_content_type(content_type_t::ktext_html);
+        response.set_body(not_found_404_page_body());
     } else {
         handlers_[request.path()](request, response);
     }

@@ -51,4 +51,6 @@ enum class content_type_t {
 std::string_view from_content_type(content_type_t type);
 content_type_t to_content_type(std::string_view type);
 
+std::string_view not_found_404_page_body();
+
 }  // namespace hestina
