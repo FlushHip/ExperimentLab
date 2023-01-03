@@ -94,6 +94,13 @@ void connection::idle_timeout(size_t timeout, timer_queue* timer_que) {
 
 void connection::extend_life() {
     if (idle_timeout_ > 0) {
+        if (last_timer_update_point_ + std::chrono::seconds(1) <=
+            std::chrono::steady_clock::now()) {
+            return;
+        }
+
+        last_timer_update_point_ = std::chrono::steady_clock::now();
+
         if (last_timer_id_ != timer::sinvalid_id) {
             idle_timer_->remove_timer(last_timer_id_);
         }

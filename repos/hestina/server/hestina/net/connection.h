@@ -95,6 +95,7 @@ private:
     size_t idle_timeout_{0};
     timer_queue* idle_timer_{nullptr};
     timer_id last_timer_id_{timer::sinvalid_id};
+    time_point last_timer_update_point_;
 };
 
 inline void connection::set_context(std::shared_ptr<void> ctx) {
