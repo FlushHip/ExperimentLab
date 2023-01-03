@@ -18,7 +18,7 @@ public:
 
     timer_id add_timer(timer_callback_t&& callback,
         time_point when,
-        time_duration interval);
+        time_duration interval = time_duration{});
 
     void remove_timer(timer_id id);
 
