@@ -24,6 +24,7 @@ public:
     void restart(time_point now);
 
     bool operator>(const timer& other) const { return when_ > other.when_; }
+    static timer_id sinvalid_id;
 
 private:
     timer_id id_;

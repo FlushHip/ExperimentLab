@@ -1,5 +1,6 @@
 #include "connection.h"
 
+#include <hestina/timer/timer_queue.h>
 #include "log/logger.h"
 
 #include "addr.h"
@@ -10,8 +11,10 @@
 #include <unistd.h>
 
 #include <cassert>
+#include <chrono>
 #include <cstring>
 #include <iostream>
+#include <memory>
 
 namespace hestina {
 
@@ -82,6 +85,30 @@ void connection::shutdown() {
     }
 }
 
+void connection::idle_timeout(size_t timeout, timer_queue* timer_que) {
+    idle_timeout_ = timeout;
+    idle_timer_ = timer_que;
+
+    extend_life();
+}
+
+void connection::extend_life() {
+    if (idle_timeout_ > 0) {
+        if (last_timer_id_ != timer::sinvalid_id) {
+            idle_timer_->remove_timer(last_timer_id_);
+        }
+        std::weak_ptr<connection> self_weak = shared_from_this();
+        last_timer_id_ = idle_timer_->add_timer(
+            [self_weak] {
+                if (auto self = self_weak.lock()) {
+                    self->close();
+                }
+            },
+            std::chrono::steady_clock::now() +
+                std::chrono::seconds(idle_timeout_));
+    }
+}
+
 void connection::close() {
     shutdown();
 
@@ -124,6 +151,9 @@ void connection::do_read() {
 void connection::read_finished() {
     log_trace << "conn " << id_ << ", recv <-- " << peer_addr_->point() << ": "
               << buffer_->peek();
+
+    extend_life();
+
     if (data_arrive_callback_) {
         data_arrive_callback_(shared_from_this(), buffer_.get());
     }
@@ -132,6 +162,9 @@ void connection::read_finished() {
 void connection::send(std::string_view data) {
     log_trace << "conn " << id_ << ", send --> " << peer_addr_->point() << ": "
               << data;
+
+    extend_life();
+
     socket_->write(data.data(), data.size());
 }
 

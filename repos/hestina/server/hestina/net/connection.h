@@ -1,6 +1,7 @@
 #pragma once
 
 #include <hestina/net/callback.h>
+#include <hestina/timer/timer.h>
 
 #include <atomic>
 #include <memory>
@@ -13,6 +14,7 @@ class socket;
 class event_loop;
 class buffer;
 class addr;
+class timer_queue;
 
 class connection : public std::enable_shared_from_this<connection> {
 public:
@@ -55,6 +57,9 @@ private:
     void closed();
     void shutdown();
 
+    void idle_timeout(size_t timeout, timer_queue* timer_que);
+    void extend_life();
+
     void set_connection_establish_callback(
         const connection_establish_callback_t& callback);
     void set_data_arrive_callback(const data_arrive_callback_t& callback);
@@ -86,6 +91,10 @@ private:
     static std::atomic_uint64_t sid_index;
 
     std::shared_ptr<void> context_;
+
+    size_t idle_timeout_{0};
+    timer_queue* idle_timer_{nullptr};
+    timer_id last_timer_id_{timer::sinvalid_id};
 };
 
 inline void connection::set_context(std::shared_ptr<void> ctx) {
