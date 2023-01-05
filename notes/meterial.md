@@ -61,6 +61,7 @@
 
 - [FileCentipede](https://github.com/filecxx/FileCentipede)
 - [Qv2ray](https://github.com/Qv2ray/Qv2ray)
+- [klogg](https://github.com/variar/klogg)
 
 ### 网络调试
 
@@ -70,3 +71,8 @@
 ## 库
 
 - [coost](https://github.com/idealvin/coost)
+
+## CMake包管理
+
+- [CPM.cmake](https://github.com/cpm-cmake/CPM.cmake)
+- [ExternalProject](https://cmake.org/cmake/help/latest/module/ExternalProject.html)
