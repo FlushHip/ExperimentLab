@@ -1,5 +1,6 @@
 #include "connection.h"
 
+#include <hestina/timer/timer_queue.h>
 #include "log/logger.h"
 
 #include "addr.h"
@@ -10,15 +11,20 @@
 #include <unistd.h>
 
 #include <cassert>
+#include <chrono>
 #include <cstring>
 #include <iostream>
+#include <memory>
 
 namespace hestina {
+
+std::atomic_uint64_t connection::sid_index = 0;
 
 connection::connection(event_loop* loop,
     std::unique_ptr<socket>&& sock,
     peer_type_t type)
-    : peer_type_(type)
+    : id_(++sid_index)
+    , peer_type_(type)
     , socket_(std::move(sock))
     , channel_(std::make_unique<channel>(loop, socket_->fd()))
     , local_addr_(socket_->local_addr())
@@ -38,11 +44,11 @@ void connection::established() {
     channel_->reading();
 
     if (peer_type_ == peer_type_t::client) {
-        log_debug << "new connection established, " << local_addr_->port()
-                  << " <- " << peer_addr_->point();
+        log_debug << "new connection " << id_ << ", established, "
+                  << local_addr_->port() << " <- " << peer_addr_->point();
     } else {
-        log_debug << "new connection established, " << local_addr_->port()
-                  << " -> " << peer_addr_->point();
+        log_debug << "new connection " << id_ << ", established, "
+                  << local_addr_->port() << " -> " << peer_addr_->point();
     }
     assert(status_ == status_t::connecting);
     status_ = status_t::connected;
@@ -59,11 +65,11 @@ void connection::closed() {
         status_ = status_t::disconnected;
 
         if (peer_type_ == peer_type_t::client) {
-            log_debug << "connection closed, " << local_addr_->port() << " <- "
-                      << peer_addr_->point();
+            log_debug << "connection " << id_ << ", closed, "
+                      << local_addr_->port() << " <- " << peer_addr_->point();
         } else {
-            log_debug << "connection closed, " << local_addr_->port() << " -> "
-                      << peer_addr_->point();
+            log_debug << "connection " << id_ << ", closed, "
+                      << local_addr_->port() << " -> " << peer_addr_->point();
         }
     }
 }
@@ -77,6 +83,43 @@ void connection::shutdown() {
             connection_close_callback_(shared_from_this());
         }
     }
+}
+
+void connection::idle_timeout(size_t timeout, timer_queue* timer_que) {
+    idle_timeout_ = timeout;
+    idle_timer_ = timer_que;
+
+    extend_life();
+}
+
+void connection::extend_life() {
+    if (idle_timeout_ > 0) {
+        if (last_timer_update_point_ + std::chrono::seconds(1) <=
+            std::chrono::steady_clock::now()) {
+            return;
+        }
+
+        last_timer_update_point_ = std::chrono::steady_clock::now();
+
+        if (last_timer_id_ != timer::sinvalid_id) {
+            idle_timer_->remove_timer(last_timer_id_);
+        }
+        std::weak_ptr<connection> self_weak = shared_from_this();
+        last_timer_id_ = idle_timer_->add_timer(
+            [self_weak] {
+                if (auto self = self_weak.lock()) {
+                    self->close();
+                }
+            },
+            std::chrono::steady_clock::now() +
+                std::chrono::seconds(idle_timeout_));
+    }
+}
+
+void connection::close() {
+    shutdown();
+
+    closed();
 }
 
 void connection::set_connection_establish_callback(
@@ -95,20 +138,17 @@ void connection::set_connection_close_callback(
 }
 
 void connection::do_read() {
-    constexpr int buff_length = 1024;
-    thread_local char sbuff[buff_length] = {0};
-    buffer_->clear();
     while (true) {
-        std::memset(sbuff, 0, sizeof(sbuff));
-        int n = socket_->read(sbuff, buff_length);
+        int err = 0;
+        int n = buffer_->read_fd(socket_->fd(), err);
         if (n > 0) {
-            buffer_->append({sbuff, static_cast<size_t>(n)});
+            // buffer_->append({sbuff, static_cast<size_t>(n)});
         } else if (n == 0) {
             do_close();
             break;
-        } else if (n == -1 && errno == EINTR) {
+        } else if (n == -1 && err == EINTR) {
             continue;
-        } else if (n == -1 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
+        } else if (n == -1 && (err == EAGAIN || err == EWOULDBLOCK)) {
             read_finished();
             break;
         }
@@ -116,14 +156,22 @@ void connection::do_read() {
 }
 
 void connection::read_finished() {
-    log_trace << "recv <-- " << peer_addr_->point() << ": " << buffer_->data();
+    log_trace << "conn " << id_ << ", recv <-- " << peer_addr_->point() << ": "
+              << buffer_->peek();
+
+    extend_life();
+
     if (data_arrive_callback_) {
-        data_arrive_callback_(shared_from_this(), buffer_->data());
+        data_arrive_callback_(shared_from_this(), buffer_.get());
     }
 }
 
 void connection::send(std::string_view data) {
-    log_trace << "send --> " << peer_addr_->point() << ": " << data;
+    log_trace << "conn " << id_ << ", send --> " << peer_addr_->point() << ": "
+              << data;
+
+    extend_life();
+
     socket_->write(data.data(), data.size());
 }
 
@@ -142,13 +190,17 @@ void connection::do_close() {
 void connection::do_error() {
     int err = socket_->last_error();
     if (err != 0) {
-        log_error << "fd " << socket_->fd() << " err " << err
-                  << " msg : " << strerror(err);
+        log_error << "connection " << id_ << ", fd " << socket_->fd() << " err "
+                  << err << " msg : " << strerror(err);
     }
 }
 
 connection::status_t connection::status() const {
     return status_;
+}
+
+uint64_t connection::id() const {
+    return id_;
 }
 
 }  // namespace hestina

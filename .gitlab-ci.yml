@@ -1,0 +1,34 @@
+image: gcc:12
+
+build_linux:
+  stage: build
+  only:
+    - hestina
+
+  before_script:
+    - apt update
+    - apt install -y git cmake
+    - mkdir -p .build
+
+  script:
+    - cd .build
+    - cmake -DCMAKE_BUILD_TYPE=Debug -S.. -B.
+    - cmake --build . --config Debug --target all
+
+  artifacts:
+    paths:
+      - .build
+    expire_in: 1d
+
+test_linux:
+  stage: test
+  only:
+    - hestina
+
+  before_script:
+    - apt update
+    - apt install -y cmake
+
+  script:
+    - cd .build
+    - ctest -C Debug -T test --output-on-failure

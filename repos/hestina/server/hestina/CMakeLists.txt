@@ -6,7 +6,8 @@ foreach(dir
     "log"
     "net"
     "pool"
-    "timer")
+    "timer"
+    "util")
     set(files)
     aux_source_directory(${dir} files)
     list(APPEND source_files ${files})

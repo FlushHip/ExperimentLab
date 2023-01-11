@@ -3,12 +3,13 @@
 
 namespace hestina {
 
-timer_id timer::sbegin_id = 0;
+std::atomic<timer_id> timer::sbegin_id = 1;
+timer_id timer::sinvalid_id = 0;
 
 timer::timer(timer_callback_t&& callback,
     time_point when,
     time_duration interval)
-    : id_(++sbegin_id)
+    : id_(sbegin_id++)
     , callback_(callback)
     , when_(when)
     , interval_(interval)

@@ -29,6 +29,17 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Ccache
+find_program(CCACHE_FOUND ccache
+    DOC "Ccache is a compiler cache. It speeds up recompilation by caching previous compilations and detecting when the same compilation is being done again. ")
+
+if(CCACHE_FOUND)
+    message(STATUS "ccache finded, use it")
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+
+    # set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+endif()
+
 # set_property(GLOBAL PROPERTY GLOBAL_DEPENDS_DEBUG_MODE 1)
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX ${PROJECT_BINARY_DIR}/install CACHE PATH "Install prefix directory" FORCE)
