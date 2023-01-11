@@ -12,8 +12,8 @@ public:
             lines[std::string(n - (ptr - str.data()), '0') +
                 std::string(str.data(), ptr)] = false;
         }
-        std::string ans(lines.begin()->first);
-        lines.begin()->second = true;
+        std::string ans(n, '0');
+        lines[ans] = true;
         for (int i = 1; i < top; ++i) {
             std::string start(ans.data() + i, ans.data() + i + n - 1);
             start.push_back('0');
