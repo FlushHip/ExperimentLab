@@ -62,6 +62,7 @@ Checks: >
   -fuchsia-overloaded-operator,
   -readability-function-cognitive-complexity,
   -cert-err58-cpp,
+  -modernize-use-nodiscard,
 
 CheckOptions:
   - key: readability-identifier-naming.PrivateMemberCase
