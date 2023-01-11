@@ -10,6 +10,8 @@
 #include "event_loop.h"
 #include "socket.h"
 
+#include <hestina/timer/timer_queue.h>
+
 #include <iostream>
 #include <memory>
 #include <thread>
@@ -49,6 +51,9 @@ void tcp_server::new_connection(std::unique_ptr<socket>&& sock) {
     conn->set_connection_close_callback([this](auto&& conn) {
         connection_close(std::forward<decltype(conn)>(conn));
     });
+    if (idle_timeout_ > 0) {
+        conn->idle_timeout(idle_timeout_, idle_timer_.get());
+    }
 
     connections_.emplace(conn);
 
@@ -64,6 +69,11 @@ void tcp_server::connection_close(std::weak_ptr<connection>&& conn) {
         connections_.erase(con);
         con->closed();
     }
+}
+
+void tcp_server::off_idle_connections(size_t timeout) {
+    idle_timeout_ = timeout;
+    idle_timer_ = std::make_unique<timer_queue>();
 }
 
 bool tcp_server::stop() {

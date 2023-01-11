@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <chrono>
 #include <functional>
 #include <ratio>
@@ -23,6 +24,7 @@ public:
     void restart(time_point now);
 
     bool operator>(const timer& other) const { return when_ > other.when_; }
+    static timer_id sinvalid_id;
 
 private:
     timer_id id_;
@@ -31,7 +33,7 @@ private:
     time_duration interval_;
     bool repeat_;
 
-    static timer_id sbegin_id;
+    static std::atomic<timer_id> sbegin_id;
 };
 
 }  // namespace hestina
