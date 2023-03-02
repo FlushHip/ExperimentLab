@@ -4,12 +4,18 @@
 #include <functional>
 #include <iomanip>
 #include <iostream>
+#include <mutex>
 #include <sstream>
 #include <thread>
 
 #include <argagg/argagg.hpp>
 
 int dpi = 100;
+int total_nums;
+int thread_nums;
+bool verbose;
+
+std::mutex mtx_out;
 
 void convert(const std::filesystem::path& infile,
     size_t count,
@@ -17,21 +23,34 @@ void convert(const std::filesystem::path& infile,
     auto tofile = infile.u8string();
     tofile.replace(0, count, prefix.u8string());
 
-    if (!std::filesystem::exists(std::filesystem::path(tofile).parent_path())) {
-        std::filesystem::create_directories(
-            std::filesystem::path(tofile).parent_path());
+    auto des_parent_path =
+        (std::filesystem::path(tofile).parent_path() / "__")
+            .concat(std::filesystem::path(tofile).stem().u8string());
+    if (!std::filesystem::exists(des_parent_path)) {
+        std::filesystem::create_directories(des_parent_path);
     }
+    auto des_path = des_parent_path / "img";
 
     std::stringstream ss;
 
     ss << "inc\\pdftopng.exe "
-       << "-r " << dpi << " " << std::quoted(infile.u8string()) << " "
-       << std::quoted(
-              std::filesystem::path(tofile).replace_extension().u8string());
+       << "-r " << dpi << (verbose ? " -verbose" : "") << " "
+       << std::quoted(infile.u8string()) << " "
+       << std::quoted(des_path.u8string());
 
-    std::cout << ss.rdbuf() << std::endl;
+    auto ret = std::system(ss.str().c_str());
 
-    std::system(ss.str().c_str());
+    std::unique_lock<std::mutex> lock(mtx_out, std::defer_lock);
+    if (thread_nums != 1) {
+        lock.lock();
+    }
+    if (ret == 0) {
+        std::clog << "+++ " << tofile << " -> " << des_parent_path << std::endl;
+        ++total_nums;
+        std::clog.flush();
+    } else {
+        std::cerr << "--- " << tofile << " -> " << des_parent_path << std::endl;
+    }
 }
 
 int main(int argc, char* argv[]) {
@@ -42,6 +61,8 @@ int main(int argc, char* argv[]) {
         {"input", {"-i", "--input"}, "folder or filename", 1},
         {"output", {"-o", "--output"}, "output folder", 1},
         {"dpi", {"-r"}, "dpi, more large more clear, default is 100", 1},
+        {"verbose", {"-v"},
+            "verbose will use single thread, so will slower than normal", 0},
     }};
 
     do {
@@ -78,6 +99,13 @@ int main(int argc, char* argv[]) {
         if (args["dpi"]) {
             dpi = args["dpi"].as<int>();
         }
+        if (!args["verbose"]) {
+            thread_nums = std::thread::hardware_concurrency();
+            verbose = false;
+        } else {
+            thread_nums = 1;
+            verbose = true;
+        }
 
         std::filesystem::path prefix;
         if (!output_path.empty() && output_path.has_root_path()) {
@@ -94,7 +122,6 @@ int main(int argc, char* argv[]) {
         } else {
             size_t count = input_path.u8string().size();
 
-            int thread_nums = std::thread::hardware_concurrency();
             std::vector<std::vector<std::function<void()>>> tasks_queue(
                 thread_nums);
 
@@ -122,6 +149,10 @@ int main(int argc, char* argv[]) {
                 threads[i].join();
             }
         }
+
+        std::cout << std::endl
+                  << "Total convert " << total_nums << " files" << std::endl;
+
     } while (false);
 
     return ret;
