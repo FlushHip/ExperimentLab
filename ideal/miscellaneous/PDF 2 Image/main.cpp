@@ -20,12 +20,12 @@ std::mutex mtx_out;
 void convert(const std::filesystem::path& infile,
     size_t count,
     const std::filesystem::path& prefix) {
-    auto tofile = infile.u8string();
-    tofile.replace(0, count, prefix.u8string());
+    auto tofile = infile.string();
+    tofile.replace(0, count, prefix.string());
 
     auto des_parent_path =
         (std::filesystem::path(tofile).parent_path() / "__")
-            .concat(std::filesystem::path(tofile).stem().u8string());
+            .concat(std::filesystem::path(tofile).stem().string());
     if (!std::filesystem::exists(des_parent_path)) {
         std::filesystem::create_directories(des_parent_path);
     }
@@ -35,8 +35,7 @@ void convert(const std::filesystem::path& infile,
 
     ss << "inc\\pdftopng.exe "
        << "-r " << dpi << (verbose ? " -verbose" : "") << " "
-       << std::quoted(infile.u8string()) << " "
-       << std::quoted(des_path.u8string());
+       << std::quoted(infile.string()) << " " << std::quoted(des_path.string());
 
     auto ret = std::system(ss.str().c_str());
 
@@ -79,7 +78,7 @@ int main(int argc, char* argv[]) {
         }
 
         if (argc == 1 || args["help"]) {
-            auto exe_name = std::filesystem::path(argv[0]).stem().u8string();
+            auto exe_name = std::filesystem::path(argv[0]).stem().string();
             std::cerr << "Usage: " << exe_name
                       << " <-i name> [options] [-o name]" << std::endl
                       << argparser;
@@ -118,9 +117,9 @@ int main(int argc, char* argv[]) {
 
         if (!std::filesystem::is_directory(input_path)) {
             convert(
-                input_path, input_path.parent_path().u8string().size(), prefix);
+                input_path, input_path.parent_path().string().size(), prefix);
         } else {
-            size_t count = input_path.u8string().size();
+            size_t count = input_path.string().size();
 
             std::vector<std::vector<std::function<void()>>> tasks_queue(
                 thread_nums);
