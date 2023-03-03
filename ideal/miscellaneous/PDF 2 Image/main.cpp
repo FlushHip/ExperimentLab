@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <iostream>
 #include <mutex>
+#include <queue>
 #include <sstream>
 #include <system_error>
 #include <thread>
@@ -12,9 +13,12 @@
 #include <argagg/argagg.hpp>
 
 int dpi = 100;
-int total_nums;
-int thread_nums = std::thread::hardware_concurrency();
+int success_nums;
+int thread_nums;
 bool verbose = false;
+
+std::mutex mtx_queue;
+std::queue<std::function<void()>> tasks_queue;
 
 std::mutex mtx_out;
 
@@ -49,7 +53,7 @@ void convert(const std::filesystem::path& infile,
         if (ret == 0) {
             std::clog << "+++ " << tofile << " -> " << des_parent_path
                       << std::endl;
-            ++total_nums;
+            ++success_nums;
             std::clog.flush();
         } else {
             std::cerr << "--- " << tofile << " -> " << des_parent_path
@@ -123,7 +127,6 @@ int main(int argc, char* argv[]) {
                 dpi = args["dpi"].as<int>();
             }
             if (args["verbose"]) {
-                thread_nums = 1;
                 verbose = true;
             }
         }
@@ -144,30 +147,48 @@ int main(int argc, char* argv[]) {
         }
 
         if (!std::filesystem::is_directory(input_path)) {
-            convert(
-                input_path, input_path.parent_path().string().size(), prefix);
+            tasks_queue.emplace([&] {
+                convert(input_path, input_path.parent_path().string().size(),
+                    prefix);
+            });
         } else {
             size_t count = input_path.string().size();
 
-            std::vector<std::vector<std::function<void()>>> tasks_queue(
-                thread_nums);
-
-            int index = 0;
             for (const auto& entry :
                 std::filesystem::recursive_directory_iterator(input_path)) {
                 if (entry.path().has_extension() &&
                     entry.path().extension() == ".pdf") {
-                    tasks_queue[index++ % thread_nums].emplace_back(
+                    tasks_queue.emplace(
                         [infile = entry.path(), count, &prefix] {
                             return convert(infile, count, prefix);
                         });
                 }
             }
+        }
 
+        int total_cnt = tasks_queue.size();
+
+        if (tasks_queue.size() == 1) {
+            verbose = true;
+            thread_nums = 1;
+            tasks_queue.front()();
+        } else if (tasks_queue.size() > 1) {
             std::vector<std::thread> threads;
+            thread_nums = verbose
+                ? 1
+                : std::min(static_cast<unsigned int>(tasks_queue.size()),
+                      std::thread::hardware_concurrency());
             for (int i = 0; i < thread_nums; ++i) {
-                threads.emplace_back([&, i] {
-                    for (const auto& task : tasks_queue[i]) {
+                threads.emplace_back([&] {
+                    while (true) {
+                        std::unique_lock<std::mutex> lock(mtx_queue);
+                        if (tasks_queue.empty()) {
+                            break;
+                        }
+                        auto task = tasks_queue.front();
+                        tasks_queue.pop();
+                        lock.unlock();
+
                         task();
                     }
                 });
@@ -178,7 +199,8 @@ int main(int argc, char* argv[]) {
         }
 
         std::cout << std::endl
-                  << "Total convert " << total_nums << " files" << std::endl;
+                  << "Total " << total_cnt << ", convert success "
+                  << success_nums << " files" << std::endl;
 
     } while (false);
 
