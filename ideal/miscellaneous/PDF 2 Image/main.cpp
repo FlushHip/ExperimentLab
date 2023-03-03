@@ -79,6 +79,7 @@ int main(int argc, char* argv[]) {
     }};
 
     do {
+        // parse args
         std::filesystem::path input_path{};
         std::filesystem::path output_path{};
 
@@ -131,6 +132,7 @@ int main(int argc, char* argv[]) {
             }
         }
 
+        // deal path
         std::filesystem::path prefix;
         if (!output_path.empty() && output_path.has_root_path()) {
             prefix = output_path;
@@ -146,6 +148,7 @@ int main(int argc, char* argv[]) {
             break;
         }
 
+        // collect task
         if (!std::filesystem::is_directory(input_path)) {
             tasks_queue.emplace([&] {
                 convert(input_path, input_path.parent_path().string().size(),
@@ -168,6 +171,7 @@ int main(int argc, char* argv[]) {
 
         int total_cnt = tasks_queue.size();
 
+        // execute task
         if (tasks_queue.size() == 1) {
             verbose = true;
             thread_nums = 1;
