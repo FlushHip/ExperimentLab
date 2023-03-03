@@ -6,49 +6,59 @@
 #include <iostream>
 #include <mutex>
 #include <sstream>
+#include <system_error>
 #include <thread>
 
 #include <argagg/argagg.hpp>
 
 int dpi = 100;
 int total_nums;
-int thread_nums;
-bool verbose;
+int thread_nums = std::thread::hardware_concurrency();
+bool verbose = false;
 
 std::mutex mtx_out;
 
 void convert(const std::filesystem::path& infile,
     size_t count,
     const std::filesystem::path& prefix) {
-    auto tofile = infile.string();
-    tofile.replace(0, count, prefix.string());
+    try {
+        auto tofile = infile.string();
+        tofile.replace(0, count, prefix.string());
 
-    auto des_parent_path =
-        (std::filesystem::path(tofile).parent_path() / "__")
-            .concat(std::filesystem::path(tofile).stem().string());
-    if (!std::filesystem::exists(des_parent_path)) {
-        std::filesystem::create_directories(des_parent_path);
-    }
-    auto des_path = des_parent_path / "img";
+        auto des_parent_path =
+            (std::filesystem::path(tofile).parent_path() / "__")
+                .concat(std::filesystem::path(tofile).stem().string());
+        if (!std::filesystem::exists(des_parent_path)) {
+            std::filesystem::create_directories(des_parent_path);
+        }
+        auto des_path = des_parent_path / "img";
 
-    std::stringstream ss;
+        std::stringstream ss;
 
-    ss << "inc\\pdftopng.exe "
-       << "-r " << dpi << (verbose ? " -verbose" : "") << " "
-       << std::quoted(infile.string()) << " " << std::quoted(des_path.string());
+        ss << "inc\\pdftopng.exe "
+           << "-r " << dpi << (verbose ? " -verbose" : "") << " "
+           << std::quoted(infile.string()) << " "
+           << std::quoted(des_path.string());
 
-    auto ret = std::system(ss.str().c_str());
+        auto ret = std::system(ss.str().c_str());
 
-    std::unique_lock<std::mutex> lock(mtx_out, std::defer_lock);
-    if (thread_nums != 1) {
-        lock.lock();
-    }
-    if (ret == 0) {
-        std::clog << "+++ " << tofile << " -> " << des_parent_path << std::endl;
-        ++total_nums;
-        std::clog.flush();
-    } else {
-        std::cerr << "--- " << tofile << " -> " << des_parent_path << std::endl;
+        std::unique_lock<std::mutex> lock(mtx_out, std::defer_lock);
+        if (thread_nums != 1) {
+            lock.lock();
+        }
+        if (ret == 0) {
+            std::clog << "+++ " << tofile << " -> " << des_parent_path
+                      << std::endl;
+            ++total_nums;
+            std::clog.flush();
+        } else {
+            std::cerr << "--- " << tofile << " -> " << des_parent_path
+                      << std::endl;
+        }
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << std::endl;
+    } catch (...) {
+        std::cerr << "unkown exception" << std::endl;
     }
 }
 
@@ -77,33 +87,45 @@ int main(int argc, char* argv[]) {
             break;
         }
 
-        if (argc == 1 || args["help"]) {
-            auto exe_name = std::filesystem::path(argv[0]).stem().string();
-            std::cerr << "Usage: " << exe_name
-                      << " <-i name> [options] [-o name]" << std::endl
-                      << argparser;
-            ret = 1;
-            break;
-        }
-        if (args["input"]) {
-            input_path = args["input"].as<std::string>();
+        if (argc == 1) {
+            auto exe_parent_path = std::filesystem::path(argv[0]).parent_path();
+            auto inc_path = exe_parent_path / "__files__";
+
+            input_path = inc_path;
+
+            std::cout << input_path.make_preferred()
+                      << " 's pdf will be convert" << std::endl;
+            if (std::filesystem::exists(inc_path)) {
+                std::filesystem::create_directory(inc_path);
+            }
         } else {
-            std::cerr << "Not input, invalid." << std::endl;
-            ret = 1;
-            break;
-        }
-        if (args["output"]) {
-            output_path = args["output"].as<std::string>();
-        }
-        if (args["dpi"]) {
-            dpi = args["dpi"].as<int>();
-        }
-        if (!args["verbose"]) {
-            thread_nums = std::thread::hardware_concurrency();
-            verbose = false;
-        } else {
-            thread_nums = 1;
-            verbose = true;
+            if (args["help"]) {
+                auto exe_name = std::filesystem::path(argv[0]).stem().string();
+                std::cerr << "Usage: " << exe_name
+                          << " [<-i name> [options] [-o name]]   ps: no params "
+                             "will convert exe's floder / __files__"
+                          << std::endl
+                          << argparser;
+                ret = 1;
+                break;
+            }
+            if (args["input"]) {
+                input_path = args["input"].as<std::string>();
+            } else {
+                std::cerr << "Not input, invalid." << std::endl;
+                ret = 1;
+                break;
+            }
+            if (args["output"]) {
+                output_path = args["output"].as<std::string>();
+            }
+            if (args["dpi"]) {
+                dpi = args["dpi"].as<int>();
+            }
+            if (args["verbose"]) {
+                thread_nums = 1;
+                verbose = true;
+            }
         }
 
         std::filesystem::path prefix;
@@ -113,6 +135,12 @@ int main(int argc, char* argv[]) {
             prefix = input_path;
         } else {
             prefix = input_path.parent_path();
+        }
+
+        if (!std::filesystem::exists(input_path)) {
+            std::cerr << input_path << " not exist" << std::endl;
+            ret = 1;
+            break;
         }
 
         if (!std::filesystem::is_directory(input_path)) {
@@ -153,6 +181,8 @@ int main(int argc, char* argv[]) {
                   << "Total convert " << total_nums << " files" << std::endl;
 
     } while (false);
+
+    std::system("pause");
 
     return ret;
 }
