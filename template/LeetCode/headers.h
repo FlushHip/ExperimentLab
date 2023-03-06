@@ -35,6 +35,12 @@
 #include <unordered_set>
 #include <vector>
 
+#include <atomic>
+#include <condition_variable>
+#include <future>
+#include <mutex>
+#include <thread>
+
 #include "prettyprint.hpp"
 
 using namespace std;
