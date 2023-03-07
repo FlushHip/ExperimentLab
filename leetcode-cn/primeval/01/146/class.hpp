@@ -10,7 +10,7 @@ public:
             auto head_next = list_.insert(std::next(head_), *iter->second);
             list_.erase(iter->second);
             iter->second = head_next;
-            return iter->second->second;
+            return iter->second->value;
         }
         return -1;
     }
@@ -21,23 +21,27 @@ public:
             auto head_next = list_.insert(std::next(head_), *iter->second);
             list_.erase(iter->second);
             iter->second = head_next;
-            iter->second->second = value;
-        } else if (map_.size() == capacity_) {
-            auto last = std::prev(tail_);
-            int last_key = last->first;
-            list_.erase(last);
-            map_.erase(last_key);
-
-            map_[key] = list_.insert(std::next(head_), {key, value});
+            iter->second->value = value;
         } else {
+            if (map_.size() == capacity_) {
+                auto last = std::prev(tail_);
+                int last_key = last->key;
+                list_.erase(last);
+                map_.erase(last_key);
+            }
+
             map_[key] = list_.insert(std::next(head_), {key, value});
         }
     }
 
 private:
     int capacity_;
-    std::list<std::pair<int, int>> list_{2};
-    std::list<std::pair<int, int>>::iterator head_{list_.begin()};
-    std::list<std::pair<int, int>>::iterator tail_{std::next(list_.begin())};
-    std::unordered_map<int, std::list<std::pair<int, int>>::iterator> map_;
+    struct node_t {
+        int key;
+        int value;
+    };
+    std::list<node_t> list_{2};
+    std::list<node_t>::iterator head_{list_.begin()};
+    std::list<node_t>::iterator tail_{std::next(list_.begin())};
+    std::unordered_map<int, std::list<node_t>::iterator> map_;
 };
