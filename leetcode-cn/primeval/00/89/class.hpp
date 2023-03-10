@@ -9,9 +9,6 @@ public:
                 ans[k] = ans[j] | (1 << (i - 1));
             }
         }
-        for (int i : ans) {
-            std::cout << std::bitset<4>(i) << std::endl;
-        }
         return ans;
     }
 };
