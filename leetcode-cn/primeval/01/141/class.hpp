@@ -12,8 +12,8 @@ public:
         if (head == nullptr || head->next == nullptr) {
             return false;
         }
-        for (ListNode *p_1 = head, *p_2 = head->next; p_2 != nullptr;
-             p_1 = p_1->next, p_2 = p_2->next->next) {
+        for (ListNode *p_1 = head->next, *p_2 = head->next->next;
+             p_2 != nullptr; p_1 = p_1->next, p_2 = p_2->next->next) {
             if (p_1 == p_2) {
                 return true;
             }
