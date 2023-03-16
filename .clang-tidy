@@ -63,6 +63,7 @@ Checks: >
   -readability-function-cognitive-complexity,
   -cert-err58-cpp,
   -modernize-use-nodiscard,
+  -misc-no-recursion,
 
 CheckOptions:
   - key: readability-identifier-naming.PrivateMemberCase
