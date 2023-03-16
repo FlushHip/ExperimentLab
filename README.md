@@ -1,10 +1,16 @@
-# 做实验
+# ExperimentLab
 
-- yz（考研机试训练）
-- effective c++（C++高级特性实验）
-- ideal（小而新的想法）
-- tutorial（CMake高级用法）
-- template（简单方便的相关C++项目模板）
-- c++ idioms（C++惯用法）
-- LaTeX
-- MPE
+个人实验室。
+
+## 目录结构
+
+- *3rd-party*
+- *cmake*
+- *compiling*
+- *effective-cpp*
+- *ideal*
+- *leetcode-cn*
+- *miscellaneous*
+- *qt*
+- *template*
+- *yz*

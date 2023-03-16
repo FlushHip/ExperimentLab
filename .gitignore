@@ -2,8 +2,10 @@
 .idea
 .build
 build
-.build_idea
+.build_idea*
 .vs
+cmake-build
+.clion.source.upload.marker
 
 # Prerequisites
 *.d
