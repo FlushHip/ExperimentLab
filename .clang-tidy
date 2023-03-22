@@ -45,7 +45,6 @@ Checks: >
   -cppcoreguidelines-pro-bounds-constant-array-index,
   -cppcoreguidelines-narrowing-conversions,
   -readability-implicit-bool-conversion,
-  -bugprone-easily-swappable-parameters,
   -misc-const-correctness,
   -readability-static-accessed-through-instance,
   -fuchsia-default-arguments-declarations,
