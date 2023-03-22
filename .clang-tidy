@@ -23,6 +23,7 @@ Checks: >
     -bugprone-easily-swappable-parameters,
     -modernize-use-nodiscard,
     -misc-no-recursion,
+    -cppcoreguidelines-owning-memory,
 
 CheckOptions:
     - key: readability-identifier-naming.PrivateMemberCase
