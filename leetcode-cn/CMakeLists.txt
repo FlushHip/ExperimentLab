@@ -11,7 +11,7 @@ target_compile_options(enable_sanitize INTERFACE
     -fsanitize=address
     -fsanitize=undefined
 
-    -O1
+    -O0
     -fno-omit-frame-pointer
     -fno-optimize-sibling-calls
     -fno-common>
