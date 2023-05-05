@@ -5,16 +5,12 @@
 int main(int argc, char** argv) {
     auto sol = std::make_unique<Solution>();
 
-    VTList<ListNode*, int> v{
-        {new ListNode(1,
-             new ListNode(
-                 2, new ListNode(3, new ListNode(4, new ListNode(5))))),
-            2},
-        {new ListNode(1,
-             new ListNode(
-                 2, new ListNode(3, new ListNode(4, new ListNode(5))))),
-            3},
-        {new ListNode(1, new ListNode(2)), 2},
+    VList<ListNode*> v{
+        new ListNode(1, new ListNode(2, new ListNode(3, new ListNode(4)))),
+        nullptr,
+        new ListNode(1),
+        new ListNode(1,
+            new ListNode(2, new ListNode(3, new ListNode(4, new ListNode(5))))),
     };
 
     auto print = [](ListNode* head) {
@@ -29,12 +25,12 @@ int main(int argc, char** argv) {
     for (auto L = 0U; L < v.size(); ++L) {
         std::cout << "\x1b[32mExample " << L + 1 << " :\x1b[0m" << std::endl;
 
-        std::cout << "  |-   \x1b[33mdata-> \x1b[0m" << print(std::get<0>(v[L]))
+        std::cout << "  |-   \x1b[33mdata-> \x1b[0m" << print(v[L])
                   << std::endl;
 
         auto start_epoch = std::chrono::steady_clock::now();
 
-        auto ans = print(sol->reverseKGroup(UNPACK_2(v[L])));
+        auto ans = print(sol->swapPairs(v[L]));
 
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
             (std::chrono::steady_clock::now() - start_epoch) * 1000);
