@@ -6,6 +6,9 @@ int main(int argc, char** argv) {
     auto sol = std::make_unique<Solution>();
 
     VList<TreeNode*> v{
+        new TreeNode(4,
+            new TreeNode(1, new TreeNode(2, new TreeNode(3), nullptr), nullptr),
+            nullptr),
         new TreeNode(1, new TreeNode(3, nullptr, new TreeNode(2)), nullptr),
         new TreeNode(
             3, new TreeNode(1), new TreeNode(4, new TreeNode(2), nullptr)),
