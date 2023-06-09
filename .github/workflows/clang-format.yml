@@ -3,6 +3,7 @@ name: Clang Format Diff
 on:
   push:
     branches:
+      - main
       - ideal
       - hestina
       - leetcode-cn
