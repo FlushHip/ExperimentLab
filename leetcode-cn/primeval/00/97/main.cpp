@@ -5,20 +5,11 @@
 int main(int argc, char** argv) {
     auto sol = std::make_unique<Solution>();
 
-    VTList<std::vector<std::vector<int>>, int> v{
-        {{
-             {1, 3},
-             {2, 2},
-             {3, 1},
-         },
-            4},
-        {{
-             {5, 10},
-             {2, 5},
-             {4, 7},
-             {3, 9},
-         },
-            10},
+    VTList<std::string, std::string, std::string> v{
+        {"db", "b", "cbb"},
+        {"aabcc", "dbbca", "aadbbcbcac"},
+        {"aabcc", "dbbca", "aadbbbaccc"},
+        {"", "", ""},
     };
 
     for (auto L = 0U; L < v.size(); ++L) {
@@ -28,8 +19,7 @@ int main(int argc, char** argv) {
 
         auto start_epoch = std::chrono::steady_clock::now();
 
-        // auto ans = aux::call(&Solution::maximumUnits, sol, v[L]);
-        auto ans = sol->maximumUnits(UNPACK_2(v[L]));
+        auto ans = sol->isInterleave(UNPACK_3(v[L]));
 
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
             (std::chrono::steady_clock::now() - start_epoch) * 1000);

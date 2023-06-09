@@ -18,7 +18,8 @@ int main(int argc, char** argv) {
 
         auto start_epoch = std::chrono::steady_clock::now();
 
-        auto ans = aux::call(&Solution::getLastMoment, sol, v[L]);
+        // auto ans = aux::call(&Solution::getLastMoment, sol, v[L]);
+        auto ans = sol->getLastMoment(UNPACK_3(v[L]));
 
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
             (std::chrono::steady_clock::now() - start_epoch) * 1000);

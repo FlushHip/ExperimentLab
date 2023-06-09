@@ -1,23 +1,22 @@
 #include "headers.h"
 
-int rand7()
-{
-    int ans = std::uniform_int_distribution<>(1, 7)(
-        std::mt19937(std::random_device{}()));
+int rand7() {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    int ans = std::uniform_int_distribution<>(1, 7)(gen);
     return ans;
 }
 
 #include "class.hpp"
 
-int main(int argc, char **argv)
-{
+int main(int argc, char** argv) {
     const int EN = 2;
 
     auto sol = std::make_unique<Solution>();
 
     int n[EN]{
         1000,
-        100000,
+        100000 / 3,
     };
 
     for (int L = 0; L < EN; ++L) {

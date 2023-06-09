@@ -28,6 +28,11 @@ function(make_leetcode_target)
     else()
         target_compile_features(${TARGET_NAME} PUBLIC cxx_std_20)
     endif()
+
+    add_test(NAME ${TARGET_NAME} COMMAND ${TARGET_NAME})
+    set_tests_properties(${TARGET_NAME} PROPERTIES
+        TIMEOUT ${ctest_timeout_cnt}
+        ENVIRONMENT ASAN_OPTIONS=detect_leaks=0)
 endfunction()
 
 file(GLOB subdirs RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*)
