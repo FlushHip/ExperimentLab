@@ -56,6 +56,7 @@ template <class... Args>
 using VTList = std::vector<std::tuple<Args...>>;
 
 namespace aux {
+// f signture can't have & or &&, if have, please use macro `UNPACK_*`
 template <class F, class T0, class T1>
 constexpr decltype(auto) call(F&& f, T0& ptr, T1&& t) {
     return std::invoke(std::forward<F>(f), ptr.get(), std::forward<T1>(t));
@@ -64,7 +65,7 @@ constexpr decltype(auto) call(F&& f, T0& ptr, T1&& t) {
 template <class F, class T0, class... TN>
 constexpr decltype(auto) call(F&& f, T0& ptr, std::tuple<TN...>& arg) {
     return std::apply(std::forward<F>(f),
-        std::tuple_cat(std::forward_as_tuple(ptr.get()), std::move(arg)));
+        std::tuple_cat(std::forward_as_tuple(ptr.get()), arg));
 }
 
 }  // namespace aux
