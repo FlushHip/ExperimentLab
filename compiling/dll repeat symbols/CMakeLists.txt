@@ -24,7 +24,7 @@ target_link_libraries(${TARGET_NAME}_b
 target_compile_definitions(${TARGET_NAME}_b
     PRIVATE CASE_1)
 
-add_executable(${TARGET_NAME}_c main.cpp)
+add_executable(${TARGET_NAME}_c EXCLUDE_FROM_ALL main.cpp)
 set_target_properties(${TARGET_NAME}_c PROPERTIES FOLDER "advanced compiling")
 
 target_link_libraries(${TARGET_NAME}_c

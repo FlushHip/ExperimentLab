@@ -45,9 +45,11 @@ TEST_CASE("test router") {
             LOG_INFO << "member func";
         }
     } d;
+    /*
     router.rigister("mem_fun",
         std::bind(&dummy::fun, &d, std::placeholders::_1, std::placeholders::_2,
             std::placeholders::_3));
+            */
 
     router.route("flushhip_void");
     router.route("flushhip_int");

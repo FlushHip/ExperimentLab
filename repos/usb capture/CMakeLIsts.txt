@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 
 include(usb_cap/usb_cap.cmake)
 
-add_executable(usb_capture
+add_executable(usb_capture EXCLUDE_FROM_ALL
     logger.hpp
     utils.h
     utils.cpp
