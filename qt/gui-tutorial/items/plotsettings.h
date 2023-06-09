@@ -1,9 +1,8 @@
 #pragma once
 
-class PlotSettings
-{
+class PlotSettings {
 public:
-    PlotSettings();
+    PlotSettings() = default;
 
     void scroll(int dx, int dy);
     void adjust();
@@ -16,5 +15,5 @@ public:
     int numXTicks, numYTicks;
 
 private:
-    static void adjustAxis(double &min, double &max, int &numTicks);
+    static void adjustAxis(double& min, double& max, int& numTicks);
 };

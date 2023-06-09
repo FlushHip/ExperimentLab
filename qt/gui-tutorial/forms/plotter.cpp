@@ -1,15 +1,14 @@
 #include "plotter.h"
 
-#include <QToolButton>
-#include <QStylePainter>
-#include <QStyleOptionFocusRect>
 #include <QMouseEvent>
+#include <QStyleOptionFocusRect>
+#include <QStylePainter>
+#include <QToolButton>
 
+#include "forms/plotter.h"
 #include "items/plotsettings.h"
 
-Plotter::Plotter(QWidget *parent)
-    : QWidget(parent)
-{
+Plotter::Plotter(QWidget* parent) : QWidget(parent) {
     setBackgroundRole(QPalette::Dark);
     setAutoFillBackground(true);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -32,8 +31,7 @@ Plotter::Plotter(QWidget *parent)
 
 Plotter::~Plotter() = default;
 
-void Plotter::setPlotSettings(const PlotSettings &settings)
-{
+void Plotter::setPlotSettings(const PlotSettings& settings) {
     zoomStack_.clear();
     zoomStack_.append(settings);
     curZoom_ = 0;
@@ -42,8 +40,7 @@ void Plotter::setPlotSettings(const PlotSettings &settings)
     refreshPixmap();
 }
 
-void Plotter::zoomOut()
-{
+void Plotter::zoomOut() {
     if (curZoom_ > 0) {
         --curZoom_;
         zoomOutButton_->setEnabled(curZoom_ > 0);
@@ -54,8 +51,7 @@ void Plotter::zoomOut()
     }
 }
 
-void Plotter::zoomIn()
-{
+void Plotter::zoomIn() {
     if (curZoom_ < zoomStack_.count() - 1) {
         --curZoom_;
         zoomInButton_->setEnabled(curZoom_ < zoomStack_.count() - 1);
@@ -66,30 +62,25 @@ void Plotter::zoomIn()
     }
 }
 
-void Plotter::setCurveData(int id, const QVector<QPointF> &data)
-{
+void Plotter::setCurveData(int id, const QVector<QPointF>& data) {
     curveMap_[id] = data;
     refreshPixmap();
 }
 
-void Plotter::clearCurve(int id)
-{
+void Plotter::clearCurve(int id) {
     curveMap_.remove(id);
     refreshPixmap();
 }
 
-QSize Plotter::minimumSizeHint() const
-{
+QSize Plotter::minimumSizeHint() const {
     return QSize(6 * Margin, 4 * Margin);
 }
 
-QSize Plotter::sizeHint() const
-{
+QSize Plotter::sizeHint() const {
     return QSize(12 * Margin, 8 * Margin);
 }
 
-void Plotter::paintEvent(QPaintEvent *event)
-{
+void Plotter::paintEvent(QPaintEvent* event) {
     QStylePainter painter(this);
     painter.drawPixmap(0, 0, pixmap_);
 
@@ -106,20 +97,18 @@ void Plotter::paintEvent(QPaintEvent *event)
     }
 }
 
-void Plotter::resizeEvent(QResizeEvent *event)
-{
-    int x = width() - (zoomInButton_->width() + zoomOutButton_->width() + 5 + 5);
+void Plotter::resizeEvent(QResizeEvent* event) {
+    int x =
+        width() - (zoomInButton_->width() + zoomOutButton_->width() + 5 + 5);
     zoomInButton_->move(x, 5);
     zoomOutButton_->move(x + zoomInButton_->width() + 5, 5);
 
     refreshPixmap();
 }
 
-void Plotter::mousePressEvent(QMouseEvent *event)
-{
+void Plotter::mousePressEvent(QMouseEvent* event) {
     QRect rect(Margin, Margin, width() - 2 * Margin, height() - 2 * Margin);
-    if (event->button() == Qt::LeftButton
-        && rect.contains(event->pos())) {
+    if (event->button() == Qt::LeftButton && rect.contains(event->pos())) {
         rubberBandIsShown_ = true;
         rubberBandRect_.setTopLeft(event->pos());
         rubberBandRect_.setBottomRight(event->pos());
@@ -128,8 +117,7 @@ void Plotter::mousePressEvent(QMouseEvent *event)
     }
 }
 
-void Plotter::mouseMoveEvent(QMouseEvent *event)
-{
+void Plotter::mouseMoveEvent(QMouseEvent* event) {
     if (rubberBandIsShown_) {
         updateRubberBandRegion();
         rubberBandRect_.setBottomRight(event->pos());
@@ -137,8 +125,7 @@ void Plotter::mouseMoveEvent(QMouseEvent *event)
     }
 }
 
-void Plotter::mouseReleaseEvent(QMouseEvent *event)
-{
+void Plotter::mouseReleaseEvent(QMouseEvent* event) {
     if (rubberBandIsShown_ && event->button() == Qt::LeftButton) {
         rubberBandIsShown_ = false;
         updateRubberBandRegion();
@@ -146,7 +133,7 @@ void Plotter::mouseReleaseEvent(QMouseEvent *event)
 
         QRect rect = rubberBandRect_.normalized();
         if (rect.width() < 4 || rect.height() < 4) {
-            return ;
+            return;
         }
         rect.translate(-Margin, -Margin);
 
@@ -154,3 +141,7 @@ void Plotter::mouseReleaseEvent(QMouseEvent *event)
         PlotSettings settings;
     }
 }
+
+void Plotter::updateRubberBandRegion() {}
+
+void Plotter::refreshPixmap() {}
