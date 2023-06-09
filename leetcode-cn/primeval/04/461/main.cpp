@@ -2,15 +2,14 @@
 
 #include "class.hpp"
 
-int main(int argc, char **argv)
-{
+int main(int argc, char** argv) {
     const int EN = 2;
 
     auto sol = std::make_unique<Solution>();
 
     std::pair<int, int> xy[EN]{
-        { 1, 4 },
-        { 3, 1 },
+        {1, 4},
+        {3, 1},
     };
 
     for (int L = 0; L < EN; ++L) {

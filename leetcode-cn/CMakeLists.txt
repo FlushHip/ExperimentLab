@@ -3,6 +3,7 @@ get_filename_component(ROOT_FOLDER ${ROOT_FOLDER_ABSOLUTE} NAME)
 
 set(programs_cnt_total 0)
 set(targets_cnt_total 0)
+set(ctest_timeout_cnt 5)
 
 # sanitize
 add_library(enable_sanitize INTERFACE)
