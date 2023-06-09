@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
 
     int n[EN]{
         1000,
-        100000,
+        100000 / 3,
     };
 
     for (int L = 0; L < EN; ++L) {
