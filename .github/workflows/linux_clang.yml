@@ -1,0 +1,31 @@
+name: Ubuntu 22.04 (clang)
+
+on:
+  push:
+    branches: leetcode-cn]
+  pull_request:
+    branches: []
+
+jobs:
+  build_by_clang:
+    strategy:
+      matrix:
+        mode: [Debug, Release]
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install ninja-build tool
+        uses: seanmiddleditch/gha-setup-ninja@v3
+
+      - name: Configure CMake
+        run: CXX=clang++ CC=clang cmake -B ${{github.workspace}}/.build -DCMAKE_BUILD_TYPE=${{matrix.mode}} -G Ninja
+
+      - name: Build
+        run: cmake --build ${{github.workspace}}/.build --config ${{matrix.mode}}
+
+      - name: Test
+        working-directory: ${{github.workspace}}/.build
+        run: ctest -C ${{matrix.mode}} -j `nproc` -V --output-on-failure --tests-regex leetcode-cn* --exclude-regex leetcode-cn_primeval.1117
