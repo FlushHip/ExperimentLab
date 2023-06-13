@@ -2,7 +2,7 @@ name: Ubuntu 22.04 (clang)
 
 on:
   push:
-    branches: leetcode-cn]
+    branches: [leetcode-cn]
   pull_request:
     branches: []
 
