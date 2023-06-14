@@ -3,8 +3,6 @@ name: Windows Server 2022
 on:
   push:
     branches: [leetcode-cn]
-  pull_request:
-    branches: []
 
 jobs:
   build_on_windows:
