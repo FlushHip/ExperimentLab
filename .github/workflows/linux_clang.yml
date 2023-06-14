@@ -28,4 +28,4 @@ jobs:
 
       - name: Test
         working-directory: ${{github.workspace}}/.build
-        run: ctest -C ${{matrix.mode}} -j `nproc` -V --output-on-failure --tests-regex leetcode-cn* --exclude-regex leetcode-cn_primeval.(1117|470_.|393_A)
+        run: ctest -C ${{matrix.mode}} -j `nproc` -V --output-on-failure --tests-regex leetcode-cn* --exclude-regex "leetcode-cn_primeval.(1117|470_.|393_A)"
