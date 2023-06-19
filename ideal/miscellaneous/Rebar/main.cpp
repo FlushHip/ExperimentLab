@@ -2,13 +2,15 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <ostream>
 #include <vector>
 
 #include <prettyprint.hpp>
 
+constexpr int krebar_length = 12000;
 constexpr int kunit = 50;
 
-int main(int argc, char* argv[]) {
+int main(int /*argc*/, char* /*argv*/[]) {
     std::ifstream fin("./in.dat", std::ios::in);
     if (!fin.is_open()) {
         std::cerr << "file isn't open" << std::endl;
@@ -42,8 +44,11 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    int cnt_rebar_d_9 = 0;
+    int cnt_rebar_d_12 = 0;
+    std::ofstream fout("./out.dat");
     for (auto&& [rebar_d, lines] : mp_lines) {
-        const int total_len = 12000 / kunit;
+        const int total_len = krebar_length / kunit;
         std::vector<std::pair<info, size_t>> last;
         for (size_t i = 0; i < lines.size(); ++i) {
             last.emplace_back(lines[i], i);
@@ -100,30 +105,44 @@ int main(int argc, char* argv[]) {
                 (total_len - dp[n - 1][total_len]) * kunit, std::move(idxs)});
         }
 
-        std::cout << "rebar_d : " << rebar_d << " | cnt :" << lines.size()
-                  << std::endl;
-        std::cout << "-----------------------------------------------"
-                  << std::endl;
+        fout << "rebar_d : " << rebar_d << " | cnt :" << lines.size()
+             << std::endl;
+        fout << "-----------------------------------------------" << std::endl;
+        int cnt_12 = 0;
+        int cnt_9 = 0;
         for (int i = 0; i < result.cnt; ++i) {
-            std::cout << "No." << i + 1 << "\t" << total_len * kunit << "\t"
-                      << result.raber_line[i].total_len << "\t"
-                      << result.raber_line[i].rest_len << "\t";
+            int rebar_to_use =
+                result.raber_line[i].total_len > 9000 ? krebar_length : 9000;
+            int total_len = result.raber_line[i].total_len;
+            int rest_len = rebar_to_use - total_len;
+            if (rebar_to_use == krebar_length) {
+                ++cnt_12;
+            } else {
+                ++cnt_9;
+            }
+            fout << "No." << i + 1 << "\t" << rebar_to_use << "\t" << total_len
+                 << "\t" << rest_len << "\t";
             std::vector<std::tuple<int, std::string, std::string, int>> items;
             for (auto idx : result.raber_line[i].idxs) {
                 items.emplace_back(lines[idx].num, lines[idx].label,
                     lines[idx].name, lines[idx].len * kunit);
             }
 
-            std::cout << items.size() << "\t" << items << std::endl;
+            fout << items.size() << "\t" << items << std::endl;
         }
-        std::cout << "==============================================="
-                  << std::endl;
-        std::cout << "12m's : " << result.cnt << "\t"
-                  << "9m's : 0" << std::endl;
-        std::cout << "-----------------------------------------------"
-                  << std::endl;
-        std::cout << std::endl;
+        cnt_rebar_d_12 += cnt_12;
+        cnt_rebar_d_9 += cnt_9;
+        fout << "===============================================" << std::endl;
+        fout << "12m's : " << cnt_12 << "\t"
+             << "9m's : " << cnt_9 << std::endl;
+        fout << "-----------------------------------------------" << std::endl;
+        fout << std::endl;
     }
+
+    fout << "-----------------------------------------------" << std::endl;
+    fout << "total : "
+         << "12m's : " << cnt_rebar_d_12 << "\t"
+         << "9m's : " << cnt_rebar_d_9 << std::endl;
 
     return 0;
 }
