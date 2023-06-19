@@ -19,4 +19,4 @@ add_custom_target(${TARGET_NAME}_AUX
 
 add_dependencies(${TARGET_NAME} ${TARGET_NAME}_AUX)
 
-target_link_libraries(${TARGET_NAME} PRIVATE $<$<NOT:$<PLATFORM_ID:Windows>>:pthread>)
+target_link_libraries(${TARGET_NAME} PRIVATE $<$<NOT:$<PLATFORM_ID:Windows>>:pthread> prettyprint::prettyprint)
