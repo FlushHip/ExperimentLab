@@ -86,3 +86,4 @@ std::ostream& operator<<(std::ostream& os, std::span<T, N>&& view) {
 #define UNPACK_4(vp) UNPACK_3(vp), std::get<3>(vp)
 #define UNPACK_5(vp) UNPACK_4(vp), std::get<4>(vp)
 #define UNPACK_6(vp) UNPACK_5(vp), std::get<5>(vp)
+#define UNPACK_7(vp) UNPACK_6(vp), std::get<6>(vp)
