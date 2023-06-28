@@ -5,6 +5,7 @@
 #include <ostream>
 #include <vector>
 
+#include <dbg.h>
 #include <prettyprint.hpp>
 
 constexpr int krebar_length = 12000;
@@ -46,7 +47,8 @@ int main(int /*argc*/, char* /*argv*/[]) {
 
     int cnt_rebar_d_9 = 0;
     int cnt_rebar_d_12 = 0;
-    std::ofstream fout("./out.dat");
+    std::string file_path = "./out.dat";
+    std::ofstream fout(dbg(file_path));
     for (auto&& [rebar_d, lines] : mp_lines) {
         const int total_len = krebar_length / kunit;
         std::vector<std::pair<info, size_t>> last;
@@ -65,7 +67,7 @@ int main(int /*argc*/, char* /*argv*/[]) {
         } result;
 
         for (; !last.empty();) {
-            int n = static_cast<int>(last.size());
+            int n = static_cast<int>(dbg(last.size()));
             std::vector<std::vector<int>> dp(
                 n, std::vector<int>(total_len + 1));
             for (int w = last[0].first.len; w <= total_len; ++w) {
@@ -105,7 +107,7 @@ int main(int /*argc*/, char* /*argv*/[]) {
                 (total_len - dp[n - 1][total_len]) * kunit, std::move(idxs)});
         }
 
-        fout << "rebar_d : " << rebar_d << " | cnt :" << lines.size()
+        fout << "rebar_d : " << dbg(rebar_d) << " | cnt :" << lines.size()
              << std::endl;
         fout << "-----------------------------------------------" << std::endl;
         int cnt_12 = 0;
@@ -133,8 +135,8 @@ int main(int /*argc*/, char* /*argv*/[]) {
         cnt_rebar_d_12 += cnt_12;
         cnt_rebar_d_9 += cnt_9;
         fout << "===============================================" << std::endl;
-        fout << "12m's : " << cnt_12 << "\t"
-             << "9m's : " << cnt_9 << std::endl;
+        fout << "12m's : " << dbg(cnt_12) << "\t"
+             << "9m's : " << dbg(cnt_9) << std::endl;
         fout << "-----------------------------------------------" << std::endl;
         fout << std::endl;
     }
