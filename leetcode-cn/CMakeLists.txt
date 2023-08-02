@@ -20,6 +20,13 @@ target_compile_options(enable_sanitize INTERFACE
 target_link_libraries(enable_sanitize INTERFACE
     $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:asan ubsan>)
 
+# warnings as error
+add_library(enable_warnings_as_error INTERFACE)
+target_compile_options(enable_warnings_as_error INTERFACE
+    $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic -Werror>
+)
+
 add_subdirectory(Interview-17)
 add_subdirectory(Interview-04)
 add_subdirectory(LCP)
