@@ -76,3 +76,7 @@
 
 - [CPM.cmake](https://github.com/cpm-cmake/CPM.cmake)
 - [ExternalProject](https://cmake.org/cmake/help/latest/module/ExternalProject.html)
+
+## Qt
+
+- [aqtinstall](https://github.com/miurahr/aqtinstall)
