@@ -68,6 +68,10 @@
 - [sokit](https://github.com/sinpolib/sokit)
 - [NetDebugger](https://github.com/Zhou-zhi-peng/NetDebugger)
 
+### 程序调试
+
+- [seer](https://github.com/epasveer/seer)
+
 ## 库
 
 - [coost](https://github.com/idealvin/coost)
