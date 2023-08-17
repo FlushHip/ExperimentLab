@@ -1,0 +1,7 @@
+#include <cstdio>
+
+struct dummy_t {
+    dummy_t() {
+        (void)std::freopen(R"(@freopen_path@/in.dat)", "r", stdin);
+    }
+} dummy;
