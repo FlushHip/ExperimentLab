@@ -29,6 +29,7 @@ foreach(month ${months})
             add_executable(${target} ${source_files})
             target_compile_features(${target}
                 PRIVATE cxx_std_20)
+            target_include_directories(${target} PRIVATE ${CMAKE_SOURCE_DIR}/template/Interview/dbg-macro)
 
             # freopen std::cin to in.dat
             set(freopen_path ${CMAKE_CURRENT_SOURCE_DIR}/${month}/${company}/${no})
