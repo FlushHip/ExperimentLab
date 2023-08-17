@@ -14,7 +14,6 @@ foreach(month ${months})
         ${CMAKE_CURRENT_SOURCE_DIR}/${month}/*)
 
     foreach(company ${companies})
-        set(tmp ${CMAKE_CURRENT_SOURCE_DIR}/${month}/${company})
         file(GLOB nos
             LIST_DIRECTORIES true
             RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/${month}/${company}
