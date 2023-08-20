@@ -18,7 +18,7 @@ foreach(month ${months})
             LIST_DIRECTORIES true
             RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/${month}/${company}
             CONFIGURE_DEPENDS
-            ${CMAKE_CURRENT_SOURCE_DIR}/${month}/${company}/?)
+            ${CMAKE_CURRENT_SOURCE_DIR}/${month}/${company}/*)
 
         foreach(no ${nos})
             set(target ${root}.${year}-${month}_${company}.${no})
