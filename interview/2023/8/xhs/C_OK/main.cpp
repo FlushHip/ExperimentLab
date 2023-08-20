@@ -1,7 +1,18 @@
 #include <iostream>
 #include <limits>
+#include <ostream>
 #include <unordered_map>
 #include <vector>
+
+#include <dbg.h>
+struct node_t {
+    int idx;
+    long long w;
+    friend std::ostream& operator<<(std::ostream& out, const node_t& node) {
+        out << "{" << node.idx << ", " << node.w << "}";
+        return out;
+    }
+};
 
 int main() {
     for (int n{}, m{}, k{}; std::cin >> n >> m >> k;) {
@@ -12,10 +23,6 @@ int main() {
         for (int i = 0; i < n; ++i) {
             std::cin >> h[i];
         }
-        struct node_t {
-            int idx;
-            long long w;
-        };
         std::unordered_map<int, std::vector<node_t>> ump;
         for (int i = 0; i < m; ++i) {
             int u{}, v{}, w{};
@@ -23,6 +30,9 @@ int main() {
             ump[u - 1].push_back(node_t{v - 1, w});
             ump[v - 1].push_back(node_t{u - 1, w});
         }
+
+        dbg(ump);
+
         long long ans = std::numeric_limits<long long>::min();
         // 1
         for (int i = 0; i < n; ++i) {

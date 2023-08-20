@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 
+#include <dbg.h>
+
 int main() {
     for (int T{}; std::cin >> T;) {
         for (int L = 0; L < T; ++L) {
@@ -30,6 +32,9 @@ int main() {
                     break;
                 }
             }
+
+            dbg(line);
+
             bool ans = true;
             int n = static_cast<int>(line.size());
             for (int lhs = 0, rhs = n - 1; lhs < rhs; ++lhs, --rhs) {
