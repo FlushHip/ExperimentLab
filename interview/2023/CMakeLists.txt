@@ -43,6 +43,11 @@ foreach(month ${months})
                 FILES ${source_files})
             set_target_properties(${target}
                 PROPERTIES FOLDER ${root}/${year}/${month}/${company})
+
+            add_test(${target} ${target})
+            set_tests_properties(${target}
+                PROPERTIES TIMEOUT 1
+                LABELS interview)
         endforeach()
     endforeach()
 endforeach()
