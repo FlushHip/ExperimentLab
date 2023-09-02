@@ -14,12 +14,11 @@ foreach(month ${months})
         ${CMAKE_CURRENT_SOURCE_DIR}/${month}/*)
 
     foreach(company ${companies})
-        set(tmp ${CMAKE_CURRENT_SOURCE_DIR}/${month}/${company})
         file(GLOB nos
             LIST_DIRECTORIES true
             RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/${month}/${company}
             CONFIGURE_DEPENDS
-            ${CMAKE_CURRENT_SOURCE_DIR}/${month}/${company}/?)
+            ${CMAKE_CURRENT_SOURCE_DIR}/${month}/${company}/*)
 
         foreach(no ${nos})
             set(target ${root}.${year}-${month}_${company}.${no})
@@ -44,6 +43,11 @@ foreach(month ${months})
                 FILES ${source_files})
             set_target_properties(${target}
                 PROPERTIES FOLDER ${root}/${year}/${month}/${company})
+
+            add_test(${target} ${target})
+            set_tests_properties(${target}
+                PROPERTIES TIMEOUT 1
+                LABELS interview)
         endforeach()
     endforeach()
 endforeach()
