@@ -45,10 +45,10 @@ foreach(year
 
         math(EXPR total_targets "${total_targets} + ${cnt_targets}")
 
-        list(APPEND output_lines "  |   \"${month}\" == < <sessions : ${cnt_company}> <targets : ${cnt_targets}> >")
+        list(APPEND output_lines "  |   #${month}# == < <sessions : '${cnt_company}'> <targets : '${cnt_targets}'> >")
     endforeach()
 
-    list(APPEND output_lines "-- {  ${year}  } == <total sessions : ${total_companies}> <total targets : ${total_targets}>")
+    list(APPEND output_lines "-- @${year}@ == <total sessions : '${total_companies}'> <total targets : '${total_targets}'>")
 
     math(EXPR all_sessions "${all_sessions} + ${total_companies}")
     math(EXPR all_targets "${all_targets} + ${total_targets}")
@@ -56,7 +56,7 @@ endforeach()
 
 list(APPEND output_lines
     "-----------------------------------------------------------------------"
-    "Interview summary : < <all_sessions : ${all_sessions}> <all_targets : ${all_targets}> >"
+    "Interview summary : < <all_sessions : '${all_sessions}'> <all_targets : '${all_targets}'> >"
     "-----------------------------------------------------------------------")
 
 list(REVERSE output_lines)
