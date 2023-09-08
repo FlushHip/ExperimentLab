@@ -3,6 +3,11 @@ file(GLOB nos
     RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/*)
 
+list(LENGTH nos cnt_nos)
+math(EXPR cnt_targets "${cnt_targets} + ${cnt_nos} - 1")
+
+set(cnt_targets ${cnt_targets} PARENT_SCOPE)
+
 foreach(no ${nos})
     if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${no})
         set(target ${root}.${year}-${month}_${company}.${no})
