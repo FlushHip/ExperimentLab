@@ -26,6 +26,8 @@ int main(int /*argc*/, char* /*argv*/[]) {
         int len = 0;
     };
     std::map<std::string, std::vector<info>> mp_lines;
+    // G
+    std::map<int, int> g_cnts;
     while (true) {
         int num = 0;
         std::string label;
@@ -37,6 +39,7 @@ int main(int /*argc*/, char* /*argv*/[]) {
             break;
         }
         if (rebar_d == "8") {
+            g_cnts[len] += cnt;
             continue;
         }
         while (cnt--) {
@@ -67,7 +70,7 @@ int main(int /*argc*/, char* /*argv*/[]) {
         } result;
 
         for (; !last.empty();) {
-            int n = static_cast<int>(dbg(last.size()));
+            int n = static_cast<int>(last.size());
             std::vector<std::vector<int>> dp(
                 n, std::vector<int>(total_len + 1));
             for (int w = last[0].first.len; w <= total_len; ++w) {
@@ -143,8 +146,13 @@ int main(int /*argc*/, char* /*argv*/[]) {
 
     fout << "-----------------------------------------------" << std::endl;
     fout << "total : "
-         << "12m's : " << cnt_rebar_d_12 << "\t"
-         << "9m's : " << cnt_rebar_d_9 << std::endl;
+         << "12m's : " << dbg(cnt_rebar_d_12) << "\t"
+         << "9m's : " << dbg(cnt_rebar_d_9) << std::endl;
+
+    fout << "g :" << std::endl;
+    for (const auto& [len, cnt] : dbg(g_cnts)) {
+        fout << "  " << len << " " << cnt << std::endl;
+    }
 
     return 0;
 }
