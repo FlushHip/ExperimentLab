@@ -51,7 +51,9 @@ int main(int /*argc*/, char* /*argv*/[]) {
     int cnt_rebar_d_9 = 0;
     int cnt_rebar_d_12 = 0;
     std::string file_path = "./out.dat";
+    std::string aux_file_path = "./out2.dat";
     std::ofstream fout(dbg(file_path));
+    std::ofstream fout2(dbg(aux_file_path));
     for (auto&& [rebar_d, lines] : mp_lines) {
         const int total_len = krebar_length / kunit;
         std::vector<std::pair<info, size_t>> last;
@@ -113,6 +115,9 @@ int main(int /*argc*/, char* /*argv*/[]) {
         fout << "rebar_d : " << dbg(rebar_d) << " | cnt :" << lines.size()
              << std::endl;
         fout << "-----------------------------------------------" << std::endl;
+        fout2 << "rebar_d : " << dbg(rebar_d) << " | cnt :" << lines.size()
+              << std::endl;
+        fout2 << "-----------------------------------------------" << std::endl;
         int cnt_12 = 0;
         int cnt_9 = 0;
         for (int i = 0; i < result.cnt; ++i) {
@@ -131,6 +136,10 @@ int main(int /*argc*/, char* /*argv*/[]) {
             for (auto idx : result.raber_line[i].idxs) {
                 items.emplace_back(lines[idx].num, lines[idx].label,
                     lines[idx].name, lines[idx].len * kunit);
+                fout2 << i + 1 << "\t" << rebar_to_use << "\t" << total_len
+                      << "\t" << rest_len << "\t"
+                      << result.raber_line[i].idxs.size() << "\t"
+                      << lines[idx].len * kunit << std::endl;
             }
 
             fout << items.size() << "\t" << items << std::endl;
