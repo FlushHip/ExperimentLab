@@ -5,6 +5,7 @@
 #include <ostream>
 #include <vector>
 
+#include <dbg.h>
 #include <prettyprint.hpp>
 
 constexpr int krebar_length = 12000;
@@ -25,6 +26,8 @@ int main(int /*argc*/, char* /*argv*/[]) {
         int len = 0;
     };
     std::map<std::string, std::vector<info>> mp_lines;
+    // G
+    std::map<int, int> g_cnts;
     while (true) {
         int num = 0;
         std::string label;
@@ -36,6 +39,7 @@ int main(int /*argc*/, char* /*argv*/[]) {
             break;
         }
         if (rebar_d == "8") {
+            g_cnts[len] += cnt;
             continue;
         }
         while (cnt--) {
@@ -46,7 +50,10 @@ int main(int /*argc*/, char* /*argv*/[]) {
 
     int cnt_rebar_d_9 = 0;
     int cnt_rebar_d_12 = 0;
-    std::ofstream fout("./out.dat");
+    std::string file_path = "./out.dat";
+    std::string aux_file_path = "./out2.dat";
+    std::ofstream fout(dbg(file_path));
+    std::ofstream fout2(dbg(aux_file_path));
     for (auto&& [rebar_d, lines] : mp_lines) {
         const int total_len = krebar_length / kunit;
         std::vector<std::pair<info, size_t>> last;
@@ -105,9 +112,12 @@ int main(int /*argc*/, char* /*argv*/[]) {
                 (total_len - dp[n - 1][total_len]) * kunit, std::move(idxs)});
         }
 
-        fout << "rebar_d : " << rebar_d << " | cnt :" << lines.size()
+        fout << "rebar_d : " << dbg(rebar_d) << " | cnt :" << lines.size()
              << std::endl;
         fout << "-----------------------------------------------" << std::endl;
+        fout2 << "rebar_d : " << dbg(rebar_d) << " | cnt :" << lines.size()
+              << std::endl;
+        fout2 << "-----------------------------------------------" << std::endl;
         int cnt_12 = 0;
         int cnt_9 = 0;
         for (int i = 0; i < result.cnt; ++i) {
@@ -126,6 +136,10 @@ int main(int /*argc*/, char* /*argv*/[]) {
             for (auto idx : result.raber_line[i].idxs) {
                 items.emplace_back(lines[idx].num, lines[idx].label,
                     lines[idx].name, lines[idx].len * kunit);
+                fout2 << i + 1 << "\t" << rebar_to_use << "\t" << total_len
+                      << "\t" << rest_len << "\t"
+                      << result.raber_line[i].idxs.size() << "\t"
+                      << lines[idx].len * kunit << std::endl;
             }
 
             fout << items.size() << "\t" << items << std::endl;
@@ -133,16 +147,21 @@ int main(int /*argc*/, char* /*argv*/[]) {
         cnt_rebar_d_12 += cnt_12;
         cnt_rebar_d_9 += cnt_9;
         fout << "===============================================" << std::endl;
-        fout << "12m's : " << cnt_12 << "\t"
-             << "9m's : " << cnt_9 << std::endl;
+        fout << "12m's : " << dbg(cnt_12) << "\t"
+             << "9m's : " << dbg(cnt_9) << std::endl;
         fout << "-----------------------------------------------" << std::endl;
         fout << std::endl;
     }
 
     fout << "-----------------------------------------------" << std::endl;
     fout << "total : "
-         << "12m's : " << cnt_rebar_d_12 << "\t"
-         << "9m's : " << cnt_rebar_d_9 << std::endl;
+         << "12m's : " << dbg(cnt_rebar_d_12) << "\t"
+         << "9m's : " << dbg(cnt_rebar_d_9) << std::endl;
+
+    fout << "g :" << std::endl;
+    for (const auto& [len, cnt] : dbg(g_cnts)) {
+        fout << "  " << len << " " << cnt << std::endl;
+    }
 
     return 0;
 }
