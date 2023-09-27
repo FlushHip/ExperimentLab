@@ -20,7 +20,8 @@ foreach(no ${nos})
         target_compile_definitions(${target}
             PRIVATE $<$<CXX_COMPILER_ID:MSVC>:_CRT_SECURE_NO_WARNINGS>
             DBG_MACRO_NO_WARNING)
-        target_include_directories(${target} PRIVATE ${CMAKE_SOURCE_DIR}/template/Interview/dbg-macro)
+        target_include_directories(${target} PRIVATE ${CMAKE_SOURCE_DIR}/template/Interview/include/dbg-macro
+            ${CMAKE_SOURCE_DIR}/template/Interview/include)
         target_compile_options(${target} PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/wd4819>)
 
         # freopen std::cin to in.dat
