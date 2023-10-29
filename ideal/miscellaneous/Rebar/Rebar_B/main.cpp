@@ -2,7 +2,9 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <numeric>
 #include <ostream>
+#include <unordered_map>
 #include <vector>
 
 #include <dbg.h>
@@ -19,6 +21,9 @@ int main(int /*argc*/, char* /*argv*/[]) {
     }
     std::string file_path = "./out.dat";
     std::ofstream fout(dbg(file_path));
+
+    std::string file_path_ban_map = "./out2.dat";
+    std::ofstream fout2(dbg(file_path_ban_map));
 
     struct info {
         std::string num;
@@ -60,6 +65,51 @@ int main(int /*argc*/, char* /*argv*/[]) {
 
         int cnt_rebar_d_9 = 0;
         int cnt_rebar_d_12 = 0;
+
+        struct context {
+            std::vector<int> line;
+            int cnt;
+            int sum;
+            int rest;
+            bool operator==(const context& other) const {
+                return cnt == other.cnt &&
+                    std::equal(line.begin(), line.end(), other.line.begin());
+            }
+        };
+        /*
+        struct hash {
+            std::size_t operator()(const context& ctx) const {
+                constexpr long long mod = 1e9 + 7;
+                long long base = 9973, m = 1;
+                std::size_t result = 0;
+                for (auto n : ctx.line) {
+                    result = (result + m * n % mod) % mod;
+                    m = (m * base) % mod;
+                }
+                return result;
+            }
+        };
+        std::unordered_map<context, int, hash> ban_map;
+        */
+
+        // use std::map to avoid sort
+        auto ctx_cmp = [](const context& lhs, const context& rhs) {
+            if (lhs.sum == rhs.sum) {
+                if (lhs.cnt == rhs.cnt) {
+                    for (int i = 0; i < lhs.cnt; ++i) {
+                        if (lhs.line[i] == rhs.line[i]) {
+                            continue;
+                        }
+                        return lhs.line[i] < rhs.line[i];
+                    }
+                    return false;
+                }
+                return lhs.cnt > rhs.cnt;
+            }
+            return lhs.sum > rhs.sum;
+        };
+        std::map<context, int, decltype(ctx_cmp)> ban_map(ctx_cmp);
+
         for (auto&& [rebar_d, lines] : mp_lines) {
             const int total_len =
                 (std::stod(rebar_d) > 10 ? 12000 : krebar_length) / kunit;
@@ -77,6 +127,13 @@ int main(int /*argc*/, char* /*argv*/[]) {
                 std::vector<raber_line_n> raber_line;
                 int cnt{};
             } result;
+
+            bool need_ban_map = rebar_d == "10";
+            if (need_ban_map) {
+                ban_map.clear();
+                fout2 << "----------------------------------------------------"
+                      << std::endl;
+            }
 
             for (; !last.empty();) {
                 int n = static_cast<int>(last.size());
@@ -147,6 +204,19 @@ int main(int /*argc*/, char* /*argv*/[]) {
                 }
 
                 fout << items.size() << "\t" << items << std::endl;
+
+                if (need_ban_map) {
+                    std::vector<int> line;
+                    for (auto idx : result.raber_line[i].idxs) {
+                        line.emplace_back(lines[idx].len * kunit);
+                    }
+                    std::sort(line.begin(), line.end());
+                    int t_cnt = static_cast<int>(line.size());
+                    int t_sum = std::accumulate(line.begin(), line.end(), 0);
+                    int t_rest = 9000 - t_sum;
+                    auto ctx = context{std::move(line), t_cnt, t_sum, t_rest};
+                    ++ban_map[ctx];
+                }
             }
             cnt_rebar_d_12 += cnt_12;
             cnt_rebar_d_9 += cnt_9;
@@ -157,6 +227,17 @@ int main(int /*argc*/, char* /*argv*/[]) {
             fout << "-----------------------------------------------"
                  << std::endl;
             fout << std::endl;
+
+            if (need_ban_map) {
+                auto index = 0, sum_cnt = 0;
+                for (const auto& [ctx, cnt] : ban_map) {
+                    fout2 << ++index << "\t" << cnt << "\t" << 9 << "\t"
+                          << ctx.sum << "\t" << ctx.cnt << "\t" << ctx.line
+                          << "\t" << ctx.rest << std::endl;
+                    sum_cnt += cnt;
+                }
+                fout2 << "-------> " << sum_cnt << std::endl;
+            }
         }
 
         fout << "-----------------------------------------------" << std::endl;
