@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <bitset>
+#include <cassert>
 #include <charconv>
 #include <complex>
 #include <cstring>
