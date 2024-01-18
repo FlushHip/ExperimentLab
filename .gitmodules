@@ -1,3 +1,6 @@
 [submodule "miscellaneous/flutter/gsy_flutter_demo"]
 	path = miscellaneous/flutter/gsy_flutter_demo
 	url = https://github.com/CarGuo/gsy_flutter_demo.git
+[submodule "miscellaneous/flutter/gsy_github_app_flutter"]
+	path = miscellaneous/flutter/gsy_github_app_flutter
+	url = https://github.com/CarGuo/gsy_github_app_flutter.git
