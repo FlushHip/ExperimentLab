@@ -7,6 +7,7 @@ set(all_targets 0)
 
 foreach(year
     2023
+    2025
 )
     file(GLOB months
         LIST_DIRECTORIES true
